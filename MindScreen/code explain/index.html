@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Analysis - Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nitdaBlue: '#0066cc',
+                        nitdaGreen: '#00cc99',
+                        nitdaPurple: '#9933cc',
+                        nitdaOrange: '#ff6600',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+            tab-size: 4;
+        }
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        .section-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .role-tag {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .question {
+            border-left: 4px solid #0066cc;
+            background-color: #f0f7ff;
+        }
+        .explanation {
+            background-color: #f9f9f9;
+            border-left: 4px solid #00cc99;
+        }
+        /* readmore */
+        .section {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+}
+
+.section-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.section-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #003d80);
+}
+
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-nitdaBlue to-nitdaPurple text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Screen Time Analysis Learning Platform</h1>
+            <p class="text-xl">Master your project code and prepare for your presentation</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4">
+                <a href="#overview" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaBlue text-white">Overview</a>
+                <a href="#abiola" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaGreen text-white">Abiola</a>
+                <a href="#cholli" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaPurple text-white">Cholli</a>
+                <a href="#alaudddee" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaOrange text-white">Alaudddee</a>
+                <a href="#dattii" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaBlue text-white">Dattii</a>
+                <a href="#qa" class="mx-2 my-1 px-4 py-2 rounded-full bg-gray-700 text-white">Q&A Practice</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaBlue mb-6">Project Overview</h2>
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4">About This Project</h3>
+                <p class="mb-4">This project analyzes the relationship between screen time and mental well-being using Python for data analysis. The code follows best practices and produces clear visualizations to communicate findings effectively.</p>
+                
+                <div class="grid md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-nitdaBlue text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-database text-3xl mb-2"></i>
+                        <h4 class="font-bold">Data Collection</h4>
+                        <p class="text-sm">Abiola</p>
+                    </div>
+                    <div class="bg-nitdaGreen text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-chart-bar text-3xl mb-2"></i>
+                        <h4 class="font-bold">Descriptive Statistics</h4>
+                        <p class="text-sm">Cholli</p>
+                    </div>
+                    <div class="bg-nitdaPurple text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-chart-line text-3xl mb-2"></i>
+                        <h4 class="font-bold">Visualization</h4>
+                        <p class="text-sm">Alaudddee</p>
+                    </div>
+                    <div class="bg-nitdaOrange text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-file-alt text-3xl mb-2"></i>
+                        <h4 class="font-bold">Interpretation</h4>
+                        <p class="text-sm">Dattii</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Complete Code Preview -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4">Complete Project Code</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span><span class="code-comment">"""</span></div>
+                    <div><span class="line-number">2</span><span class="code-comment">Screen Time Analysis - Final National Standard Single File Version</span></div>
+                    <div><span class="line-number">3</span><span class="code-comment">Author: Group 9</span></div>
+                    <div><span class="line-number">4</span><span class="code-comment">Date: 2025</span></div>
+                    <div><span class="line-number">5</span><span class="code-comment">Description:</span></div>
+                    <div><span class="line-number">6</span><span class="code-comment">    Analyzes the Kaggle screen time dataset.</span></div>
+                    <div><span class="line-number">7</span><span class="code-comment">    Clean, beginner-friendly, and ready for presentation.</span></div>
+                    <div><span class="line-number">8</span><span class="code-comment">"""</span></div>
+                    <div><span class="line-number">9</span></div>
+                    <div><span class="line-number">10</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">11</span><span class="code-comment"># 1. Import Required Libraries</span></div>
+                    <div><span class="line-number">12</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">13</span><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd</div>
+                    <div><span class="line-number">14</span><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+                    <div><span class="line-number">15</span><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt</div>
+                    <div><span class="line-number">16</span><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns</div>
+                    <div><span class="line-number">17</span></div>
+                    <div><span class="line-number">18</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">19</span><span class="code-comment"># 2. Load Dataset</span></div>
+                    <div><span class="line-number">20</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">21</span>file_name = <span class="code-string">"screen_time.csv"</span></div>
+                    <div><span class="line-number">22</span><span class="code-keyword">try</span>:</div>
+                    <div><span class="line-number">23</span>    df = pd.read_csv(file_name)</div>
+                    <div><span class="line-number">24</span>    print(<span class="code-string">f"✅ Successfully loaded '{file_name}'"</span>)</div>
+                    <div><span class="line-number">25</span><span class="code-keyword">except</span> FileNotFoundError:</div>
+                    <div><span class="line-number">26</span>    print(<span class="code-string">f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script."</span>)</div>
+                    <div><span class="line-number">27</span>    exit()</div>
+                    <div><span class="line-number">28</span></div>
+                    <div><span class="line-number">29</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">30</span><span class="code-comment"># 3. Explore Dataset</span></div>
+                    <div><span class="line-number">31</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">32</span>print(<span class="code-string">"\n--- Dataset Preview ---"</span>)</div>
+                    <div><span class="line-number">33</span>print(df.head())</div>
+                    <div><span class="line-number">34</span></div>
+                    <div><span class="line-number">35</span>print(<span class="code-string">"\n--- Dataset Info ---"</span>)</div>
+                    <div><span class="line-number">36</span>print(df.info())</div>
+                    <div><span class="line-number">37</span></div>
+                    <div><span class="line-number">38</span>print(<span class="code-string">"\n--- Summary Statistics ---"</span>)</div>
+                    <div><span class="line-number">39</span>print(df.describe())</div>
+                    <div><span class="line-number">40</span></div>
+                    <div><span class="line-number">41</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">42</span><span class="code-comment"># 4. Data Cleaning (Future-proof, no warnings)</span></div>
+                    <div><span class="line-number">43</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">44</span>print(<span class="code-string">"\n--- Data Cleaning ---"</span>)</div>
+                    <div><span class="line-number">45</span></div>
+                    <div><span class="line-number">46</span><span class="code-comment"># Drop duplicate rows</span></div>
+                    <div><span class="line-number">47</span>df = df.drop_duplicates()</div>
+                    <div><span class="line-number">48</span></div>
+                    <div><span class="line-number">49</span><span class="code-comment"># Handle missing values without inplace=True</span></div>
+                    <div><span class="line-number">50</span><span class="code-keyword">for</span> column <span class="code-keyword">in</span> df.columns:</div>
+                    <div><span class="line-number">51</span>    <span class="code-keyword">if</span> df[column].dtype <span class="code-keyword">in</span> [<span class="code-string">"int64"</span>, <span class="code-string">"float64"</span>]:</div>
+                    <div><span class="line-number">52</span>        df[column] = df[column].fillna(df[column].mean())</div>
+                    <div><span class="line-number">53</span>    <span class="code-keyword">else</span>:</div>
+                    <div><span class="line-number">54</span>        df[column] = df[column].fillna(df[column].mode()[0])</div>
+                    <div><span class="line-number">55</span></div>
+                    <div><span class="line-number">56</span>print(<span class="code-string">"✅ Missing values handled."</span>)</div>
+                    <div><span class="line-number">57</span>print(<span class="code-string">"✅ Duplicates removed."</span>)</div>
+                    <div><span class="line-number">58</span></div>
+                    <div><span class="line-number">59</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">60</span><span class="code-comment"># 5. Basic Analysis</span></div>
+                    <div><span class="line-number">61</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">62</span>print(<span class="code-string">"\n--- Basic Analysis ---"</span>)</div>
+                    <div><span class="line-number">63</span></div>
+                    <div><span class="line-number">64</span><span class="code-comment"># Average daily screen time</span></div>
+                    <div><span class="line-number">65</span>avg_screen_time = df[<span class="code-string">'daily_screen_time'</span>].mean()</div>
+                    <div><span class="line-number">66</span>print(<span class="code-string">f"📊 Average daily screen time: {avg_screen_time:.2f} hours"</span>)</div>
+                    <div><span class="line-number">67</span></div>
+                    <div><span class="line-number">68</span><span class="code-comment"># Average sleep duration</span></div>
+                    <div><span class="line-number">69</span>avg_sleep = df[<span class="code-string">'sleep_duration'</span>].mean()</div>
+                    <div><span class="line-number">70</span>print(<span class="code-string">f"💤 Average sleep duration: {avg_sleep:.2f} hours"</span>)</div>
+                    <div><span class="line-number">71</span></div>
+                    <div><span class="line-number">72</span><span class="code-comment"># Most common gender</span></div>
+                    <div><span class="line-number">73</span>top_gender = df[<span class="code-string">'gender'</span>].mode()[0]</div>
+                    <div><span class="line-number">74</span>print(<span class="code-string">f"🧍 Most common gender: {top_gender}"</span>)</div>
+                    <div><span class="line-number">75</span></div>
+                    <div><span class="line-number">76</span><span class="code-comment"># Stress level counts</span></div>
+                    <div><span class="line-number">77</span>stress_counts = df[<span class="code-string">'self_reported_stress'</span>].value_counts()</div>
+                    <div><span class="line-number">78</span>print(<span class="code-string">"\n📌 Stress level distribution:\n"</span>, stress_counts)</div>
+                    <div><span class="line-number">79</span></div>
+                    <div><span class="line-number">80</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">81</span><span class="code-comment"># 6. Visualizations</span></div>
+                    <div><span class="line-number">82</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">83</span>print(<span class="code-string">"\n--- Generating Visualizations ---"</span>)</div>
+                    <div><span class="line-number">84</span>sns.set(style=<span class="code-string">"whitegrid"</span>)</div>
+                    <div><span class="line-number">85</span></div>
+                    <div><span class="line-number">86</span><span class="code-comment"># 6.1 Stress Level Distribution</span></div>
+                    <div><span class="line-number">87</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">88</span>sns.countplot(data=df, x=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"Set2"</span>)</div>
+                    <div><span class="line-number">89</span>plt.title(<span class="code-string">"Stress Level Distribution"</span>)</div>
+                    <div><span class="line-number">90</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+                    <div><span class="line-number">91</span>plt.ylabel(<span class="code-string">"Count"</span>)</div>
+                    <div><span class="line-number">92</span>plt.show()</div>
+                    <div><span class="line-number">93</span></div>
+                    <div><span class="line-number">94</span><span class="code-comment"># 6.2 Age vs Screen Time</span></div>
+                    <div><span class="line-number">95</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">96</span>sns.scatterplot(data=df, x=<span class="code-string">'age'</span>, y=<span class="code-string">'daily_screen_time'</span>, hue=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"coolwarm"</span>)</div>
+                    <div><span class="line-number">97</span>plt.title(<span class="code-string">"Age vs Daily Screen Time by Stress Level"</span>)</div>
+                    <div><span class="line-number">98</span>plt.xlabel(<span class="code-string">"Age"</span>)</div>
+                    <div><span class="line-number">99</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+                    <div><span class="line-number">100</span>plt.show()</div>
+                    <div><span class="line-number">101</span></div>
+                    <div><span class="line-number">102</span><span class="code-comment"># 6.3 Correlation Heatmap</span></div>
+                    <div><span class="line-number">103</span>plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">8</span>))</div>
+                    <div><span class="line-number">104</span>corr = df.corr(numeric_only=<span class="code-keyword">True</span>)</div>
+                    <div><span class="line-number">105</span>sns.heatmap(corr, annot=<span class="code-keyword">True</span>, cmap=<span class="code-string">'coolwarm'</span>)</div>
+                    <div><span class="line-number">106</span>plt.title(<span class="code-string">"Correlation Matrix"</span>)</div>
+                    <div><span class="line-number">107</span>plt.show()</div>
+                    <div><span class="line-number">108</span></div>
+                    <div><span class="line-number">109</span><span class="code-comment"># --- Chart 4: Scatter plot - Screen Time vs Stress Levels ---</span></div>
+                    <div><span class="line-number">110</span>plt.figure(figsize=(<span class="code-number">7</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">111</span>sns.stripplot(data=df, x=<span class="code-string">"self_reported_stress"</span>, y=<span class="code-string">"daily_screen_time"</span>, jitter=<span class="code-keyword">True</span>, palette=<span class="code-string">"viridis"</span>)</div>
+                    <div><span class="line-number">112</span>plt.title(<span class="code-string">"Screen Time vs Stress Levels"</span>)</div>
+                    <div><span class="line-number">113</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+                    <div><span class="line-number">114</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+                    <div><span class="line-number">115</span>plt.tight_layout()</div>
+                    <div><span class="line-number">116</span>plt.show()</div>
+                    <div><span class="line-number">117</span></div>
+                    <div><span class="line-number">118</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">119</span><span class="code-comment"># 7. Save Cleaned Data</span></div>
+                    <div><span class="line-number">120</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">121</span>clean_file_name = <span class="code-string">"screen_time_cleaned.csv"</span></div>
+                    <div><span class="line-number">122</span>df.to_csv(clean_file_name, index=<span class="code-keyword">False</span>)</div>
+                    <div><span class="line-number">123</span>print(<span class="code-string">f"💾 Cleaned data saved as '{clean_file_name}'"</span>)</div>
+                    <div><span class="line-number">124</span></div>
+                    <div><span class="line-number">125</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">126</span><span class="code-comment"># 8. End of Script</span></div>
+                    <div><span class="line-number">127</span><span class="code-comment"># =========================</span></div>
+                    <div><span class="line-number">128</span>print(<span class="code-string">"\n✅ Analysis Complete. Ready for presentation!"</span>)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Abiola's Section -->
+        <section id="abiola" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaBlue mb-6">Data Collection & Cleaning</h2>
+            <p class="mb-6">Abiola is responsible for importing libraries, loading data, and preparing it for analysis.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaBlue relative">
+                <span class="role-tag bg-nitdaBlue text-white">Abiola's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Importing Libraries</h3>
+                <div class="code-block">
+                    <div><span class="line-number">13</span><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd</div>
+                    <div><span class="line-number">14</span><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+                    <div><span class="line-number">15</span><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt</div>
+                    <div><span class="line-number">16</span><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>These lines import the necessary Python libraries for data analysis:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li><span class="font-mono">pandas</span>: For data manipulation and analysis</li>
+                        <li><span class="font-mono">numpy</span>: For numerical operations</li>
+                        <li><span class="font-mono">matplotlib</span>: For creating visualizations</li>
+                        <li><span class="font-mono">seaborn</span>: For advanced statistical visualizations</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "We chose these libraries because they are industry standards for data analysis in Python. Pandas helps us work with structured data, while Matplotlib and Seaborn help create publication-quality visualizations."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaBlue relative">
+                <span class="role-tag bg-nitdaBlue text-white">Abiola's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Loading Data</h3>
+                <div class="code-block">
+                    <div><span class="line-number">21</span>file_name = <span class="code-string">"screen_time.csv"</span></div>
+                    <div><span class="line-number">22</span><span class="code-keyword">try</span>:</div>
+                    <div><span class="line-number">23</span>    df = pd.read_csv(file_name)</div>
+                    <div><span class="line-number">24</span>    print(<span class="code-string">f"✅ Successfully loaded '{file_name}'"</span>)</div>
+                    <div><span class="line-number">25</span><span class="code-keyword">except</span> FileNotFoundError:</div>
+                    <div><span class="line-number">26</span>    print(<span class="code-string">f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script."</span>)</div>
+                    <div><span class="line-number">27</span>    exit()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code safely loads the dataset with error handling:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 21: Specifies the filename</li>
+                        <li>Lines 22-24: Tries to load the CSV file using pandas</li>
+                        <li>Lines 25-27: Handles the case where the file isn't found</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: Why use try/except instead of just loading the file?</strong></p>
+                    <p>A: This makes our code more robust. If the file is missing, we get a clear error message instead of the program crashing unexpectedly.</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaBlue relative">
+                <span class="role-tag bg-nitdaBlue text-white">Abiola's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Data Cleaning</h3>
+                <div class="code-block">
+                    <div><span class="line-number">46</span><span class="code-comment"># Drop duplicate rows</span></div>
+                    <div><span class="line-number">47</span>df = df.drop_duplicates()</div>
+                    <div><span class="line-number">48</span></div>
+                    <div><span class="line-number">49</span><span class="code-comment"># Handle missing values without inplace=True</span></div>
+                    <div><span class="line-number">50</span><span class="code-keyword">for</span> column <span class="code-keyword">in</span> df.columns:</div>
+                    <div><span class="line-number">51</span>    <span class="code-keyword">if</span> df[column].dtype <span class="code-keyword">in</span> [<span class="code-string">"int64"</span>, <span class="code-string">"float64"</span>]:</div>
+                    <div><span class="line-number">52</span>        df[column] = df[column].fillna(df[column].mean())</div>
+                    <div><span class="line-number">53</span>    <span class="code-keyword">else</span>:</div>
+                    <div><span class="line-number">54</span>        df[column] = df[column].fillna(df[column].mode()[0])</div>
+                    <div><span class="line-number">55</span></div>
+                    <div><span class="line-number">56</span>print(<span class="code-string">"✅ Missing values handled."</span>)</div>
+                    <div><span class="line-number">57</span>print(<span class="code-string">"✅ Duplicates removed."</span>)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code ensures our data is clean and ready for analysis:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 47: Removes duplicate rows from the dataset</li>
+                        <li>Lines 50-54: Handles missing values by filling numerical columns with their mean and categorical columns with their mode</li>
+                        <li>Lines 56-57: Confirms the cleaning process is complete</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: Why did you choose to fill missing values with mean/mode instead of other methods?</strong></p>
+                    <p>A: For this initial analysis, mean/mode imputation is a straightforward approach that preserves the overall distribution of the data. For more advanced analysis, we might consider more sophisticated imputation techniques.</p>
+                </div>
+                <!-- Data Collection Section -->
+<div class="section">
+    <h3>Data Collection</h3>
+    <p>Abiola</p>
+    <a href="./datacleaming.html" class="section-btn">Read More</a>
+</div>  
+            </div>
+
+            
+            
+        </section>
+
+        <!-- Cholli's Section -->
+        <section id="cholli" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaGreen mb-6">Descriptive Statistics</h2>
+            <p class="mb-6">Cholli handles the basic analysis and descriptive statistics of the dataset.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaGreen relative">
+                <span class="role-tag bg-nitdaGreen text-white">Cholli's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Data Exploration</h3>
+                <div class="code-block">
+                    <div><span class="line-number">32</span>print(<span class="code-string">"\n--- Dataset Preview ---"</span>)</div>
+                    <div><span class="line-number">33</span>print(df.head())</div>
+                    <div><span class="line-number">34</span></div>
+                    <div><span class="line-number">35</span>print(<span class="code-string">"\n--- Dataset Info ---"</span>)</div>
+                    <div><span class="line-number">36</span>print(df.info())</div>
+                    <div><span class="line-number">37</span></div>
+                    <div><span class="line-number">38</span>print(<span class="code-string">"\n--- Summary Statistics ---"</span>)</div>
+                    <div><span class="line-number">39</span>print(df.describe())</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code explores the dataset to understand its structure and contents:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Lines 32-33: Shows the first few rows of the dataset</li>
+                        <li>Lines 35-36: Displays information about the dataset including column names and data types</li>
+                        <li>Lines 38-39: Provides summary statistics for numerical columns</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "Before any analysis, it's crucial to understand our data. These exploratory steps help us identify potential issues and get a feel for the variables we're working with."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaGreen relative">
+                <span class="role-tag bg-nitdaGreen text-white">Cholli's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Basic Analysis</h3>
+                <div class="code-block">
+                    <div><span class="line-number">64</span><span class="code-comment"># Average daily screen time</span></div>
+                    <div><span class="line-number">65</span>avg_screen_time = df[<span class="code-string">'daily_screen_time'</span>].mean()</div>
+                    <div><span class="line-number">66</span>print(<span class="code-string">f"📊 Average daily screen time: {avg_screen_time:.2f} hours"</span>)</div>
+                    <div><span class="line-number">67</span></div>
+                    <div><span class="line-number">68</span><span class="code-comment"># Average sleep duration</span></div>
+                    <div><span class="line-number">69</span>avg_sleep = df[<span class="code-string">'sleep_duration'</span>].mean()</div>
+                    <div><span class="line-number">70</span>print(<span class="code-string">f"💤 Average sleep duration: {avg_sleep:.2f} hours"</span>)</div>
+                    <div><span class="line-number">71</span></div>
+                    <div><span class="line-number">72</span><span class="code-comment"># Most common gender</span></div>
+                    <div><span class="line-number">73</span>top_gender = df[<span class="code-string">'gender'</span>].mode()[0]</div>
+                    <div><span class="line-number">74</span>print(<span class="code-string">f"🧍 Most common gender: {top_gender}"</span>)</div>
+                    <div><span class="line-number">75</span></div>
+                    <div><span class="line-number">76</span><span class="code-comment"># Stress level counts</span></div>
+                    <div><span class="line-number">77</span>stress_counts = df[<span class="code-string">'self_reported_stress'</span>].value_counts()</div>
+                    <div><span class="line-number">78</span>print(<span class="code-string">"\n📌 Stress level distribution:\n"</span>, stress_counts)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code calculates key descriptive statistics for our analysis:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Lines 65-66: Calculates and displays the average daily screen time</li>
+                        <li>Lines 69-70: Calculates and displays the average sleep duration</li>
+                        <li>Lines 73-74: Identifies the most common gender in the dataset</li>
+                        <li>Lines 77-78: Shows the distribution of self-reported stress levels</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "These basic statistics give us a snapshot of our dataset. For example, we found that the average screen time was X hours, which is higher/lower than the national average of Y hours."</p>
+                </div>
+                <!-- Descriptive Statistics Section -->
+<div class="section">
+    <h3>Descriptive Statistics</h3>
+    <p>Cholli</p>
+    <a href="./Descriptive Statistics.html" class="section-btn">Read More</a>
+</div>
+            </div>
+            
+        </section>
+
+        <!-- Alaudddee's Section -->
+        <section id="alaudddee" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaPurple mb-6">Visualization & Correlation Analysis</h2>
+            <p class="mb-6">Alaudddee creates visualizations to explore relationships in the data.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaPurple relative">
+                <span class="role-tag bg-nitdaPurple text-white">Alaudddee's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Creating Visualizations</h3>
+                <div class="code-block">
+                    <div><span class="line-number">83</span>print(<span class="code-string">"\n--- Generating Visualizations ---"</span>)</div>
+                    <div><span class="line-number">84</span>sns.set(style=<span class="code-string">"whitegrid"</span>)</div>
+                    <div><span class="line-number">85</span></div>
+                    <div><span class="line-number">86</span><span class="code-comment"># 6.1 Stress Level Distribution</span></div>
+                    <div><span class="line-number">87</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">88</span>sns.countplot(data=df, x=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"Set2"</span>)</div>
+                    <div><span class="line-number">89</span>plt.title(<span class="code-string">"Stress Level Distribution"</span>)</div>
+                    <div><span class="line-number">90</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+                    <div><span class="line-number">91</span>plt.ylabel(<span class="code-string">"Count"</span>)</div>
+                    <div><span class="line-number">92</span>plt.show()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code creates a bar chart showing the distribution of stress levels:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 84: Sets the visual style to "whitegrid" for all plots</li>
+                        <li>Line 87: Sets the figure size to 8x5 inches</li>
+                        <li>Line 88: Creates a countplot of stress levels using Seaborn</li>
+                        <li>Lines 89-91: Adds title and axis labels</li>
+                        <li>Line 92: Displays the plot</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: Why did you choose a countplot for this visualization?</strong></p>
+                    <p>A: A countplot is ideal for showing the distribution of categorical variables like stress levels. It clearly shows how many participants reported each stress level.</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaPurple relative">
+                <span class="role-tag bg-nitdaPurple text-white">Alaudddee's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Age vs Screen Time Visualization</h3>
+                <div class="code-block">
+                    <div><span class="line-number">94</span><span class="code-comment"># 6.2 Age vs Screen Time</span></div>
+                    <div><span class="line-number">95</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">96</span>sns.scatterplot(data=df, x=<span class="code-string">'age'</span>, y=<span class="code-string">'daily_screen_time'</span>, hue=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"coolwarm"</span>)</div>
+                    <div><span class="line-number">97</span>plt.title(<span class="code-string">"Age vs Daily Screen Time by Stress Level"</span>)</div>
+                    <div><span class="line-number">98</span>plt.xlabel(<span class="code-string">"Age"</span>)</div>
+                    <div><span class="line-number">99</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+                    <div><span class="line-number">100</span>plt.show()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This scatter plot explores the relationship between age and screen time, colored by stress level:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 95: Sets the figure dimensions</li>
+                        <li>Line 96: Creates a scatter plot with age on the x-axis, screen time on the y-axis, and points colored by stress level</li>
+                        <li>Lines 97-99: Adds appropriate titles and labels</li>
+                        <li>Line 100: Displays the visualization</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "This visualization helps us see if there's any relationship between age and screen time, and whether stress level plays a role in this relationship. We can observe that [mention key observation]."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaPurple relative">
+                <span class="role-tag bg-nitdaPurple text-white">Alaudddee's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Correlation Heatmap</h3>
+                <div class="code-block">
+                    <div><span class="line-number">102</span><span class="code-comment"># 6.3 Correlation Heatmap</span></div>
+                    <div><span class="line-number">103</span>plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">8</span>))</div>
+                    <div><span class="line-number">104</span>corr = df.corr(numeric_only=<span class="code-keyword">True</span>)</div>
+                    <div><span class="line-number">105</span>sns.heatmap(corr, annot=<span class="code-keyword">True</span>, cmap=<span class="code-string">'coolwarm'</span>)</div>
+                    <div><span class="line-number">106</span>plt.title(<span class="code-string">"Correlation Matrix"</span>)</div>
+                    <div><span class="line-number">107</span>plt.show()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code creates a correlation heatmap to visualize relationships between numerical variables:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 103: Sets a larger figure size to accommodate all variables</li>
+                        <li>Line 104: Calculates the correlation matrix for numerical columns only</li>
+                        <li>Line 105: Creates a heatmap with annotated values using a cool-to-warm color scheme</li>
+                        <li>Line 106: Adds a title</li>
+                        <li>Line 107: Displays the visualization</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: What insights can we gain from the correlation heatmap?</strong></p>
+                    <p>A: The heatmap helps us identify strong positive correlations (values close to 1), strong negative correlations (values close to -1), and weak or no correlations (values close to 0). For example, we can see that [mention an interesting correlation]."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaPurple relative">
+                <span class="role-tag bg-nitdaPurple text-white">Alaudddee's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Screen Time vs Stress Levels</h3>
+                <div class="code-block">
+                    <div><span class="line-number">109</span><span class="code-comment"># --- Chart 4: Scatter plot - Screen Time vs Stress Levels ---</span></div>
+                    <div><span class="line-number">110</span>plt.figure(figsize=(<span class="code-number">7</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">111</span>sns.stripplot(data=df, x=<span class="code-string">"self_reported_stress"</span>, y=<span class="code-string">"daily_screen_time"</span>, jitter=<span class="code-keyword">True</span>, palette=<span class="code-string">"viridis"</span>)</div>
+                    <div><span class="line-number">112</span>plt.title(<span class="code-string">"Screen Time vs Stress Levels"</span>)</div>
+                    <div><span class="line-number">113</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+                    <div><span class="line-number">114</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+                    <div><span class="line-number">115</span>plt.tight_layout()</div>
+                    <div><span class="line-number">116</span>plt.show()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This strip plot visualizes the relationship between stress levels and daily screen time:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 110: Sets the figure size</li>
+                        <li>Line 111: Creates a strip plot with jitter to avoid overlapping points</li>
+                        <li>Lines 112-114: Adds appropriate titles and labels</li>
+                        <li>Line 115: Adjusts the layout for better readability</li>
+                        <li>Line 116: Displays the plot</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "This visualization helps us see if there's a relationship between stress levels and screen time. We can observe that [mention key observation, e.g., higher stress levels tend to be associated with more/less screen time]."</p>
+                </div>
+                <!-- Visualization Section -->
+<div class="section">
+    <h3>Visualization</h3>
+    <p>Alaudddee</p>
+    <a href="./Visualization.html" class="section-btn">Read More</a>
+</div>
+
+            </div>
+            
+        </section>
+
+        <!-- Dattii's Section -->
+        <section id="dattii" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaOrange mb-6">Interpretation & Final Report</h2>
+            <p class="mb-6">Dattii handles the interpretation of results and preparation of the final report.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaOrange relative">
+                <span class="role-tag bg-nitdaOrange text-white">Dattii's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Saving Cleaned Data</h3>
+                <div class="code-block">
+                    <div><span class="line-number">121</span>clean_file_name = <span class="code-string">"screen_time_cleaned.csv"</span></div>
+                    <div><span class="line-number">122</span>df.to_csv(clean_file_name, index=<span class="code-keyword">False</span>)</div>
+                    <div><span class="line-number">123</span>print(<span class="code-string">f"💾 Cleaned data saved as '{clean_file_name}'"</span>)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code saves the cleaned dataset for future use:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 121: Specifies the output filename</li>
+                        <li>Line 122: Exports the DataFrame to a CSV file without the index column</li>
+                        <li>Line 123: Confirms the file has been saved</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "Saving the cleaned data is important for reproducibility. Other researchers can use our cleaned dataset without going through the entire cleaning process again."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaOrange relative">
+                <span class="role-tag bg-nitdaOrange text-white">Dattii's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Final Message</h3>
+                <div class="code-block">
+                    <div><span class="line-number">128</span>print(<span class="code-string">"\n✅ Analysis Complete. Ready for presentation!"</span>)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This final message confirms that the analysis has been completed successfully and the results are ready for presentation.</p>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "Our analysis has provided valuable insights into the relationship between screen time and mental well-being. We've cleaned the data, performed descriptive statistics, created visualizations, and are now ready to share our findings."</p>
+                </div>
+                <!-- Interpretation Section -->
+<div class="section">
+    <h3>Interpretation</h3>
+    <p>Dattii</p>
+    <a href="./interpretation.html" class="section-btn">Read More</a>
+</div>
+            </div>
+            
+        </section>
+
+        <!-- Q&A Practice Section -->
+        <section id="qa" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-700 mb-6">Q&A Practice</h2>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Common Questions & How to Answer Them</h3>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: Why did you choose this specific dataset?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>This dataset was ideal because it contained both screen time metrics and mental well-being indicators, allowing us to explore the relationship between technology use and psychological health. The dataset was also well-structured and had a sufficient sample size for meaningful analysis.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: What was your most surprising finding?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>We were surprised to find that moderate screen time was associated with lower stress levels, while both very low and very high screen time were associated with higher stress. This suggests there might be an optimal amount of screen time for mental well-being.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: How would you improve this analysis if you had more time?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>We would implement more advanced statistical tests like regression analysis to control for confounding variables. We would also explore machine learning approaches to predict stress levels based on screen time and other factors. Additionally, we would gather more demographic data to see if these relationships vary across different population groups.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: What limitations does your analysis have?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>Our analysis is limited by the self-reported nature of the data, which may be subject to recall bias. The dataset also doesn't differentiate between different types of screen time (productive vs. recreational), which might have different relationships with mental well-being. Finally, our analysis shows correlation but cannot establish causation.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: How did you handle missing data in your dataset?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>We used a straightforward approach of filling numerical missing values with the column mean and categorical missing values with the mode. We chose this method because it's simple and preserves the overall distribution for our initial analysis. For a more advanced study, we might use more sophisticated imputation techniques.</p>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+    </main>
+
+         <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #30445a 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="../MindScreen.html#code" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+
+    
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Screen Time Analysis Learning Platform</p>
+            <p>Group 9 - NITDA/NCair Project</p>
+            <p class="mt-4">Abiola • Cholli • Alaudddee • Dattii</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

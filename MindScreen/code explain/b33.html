@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Examples</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6dd5ed;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(109, 213, 237, 0.4);
+        }
+        
+        h2 {
+            color: #6dd5ed;
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #6dd5ed;
+        }
+        
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .chart-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chart-title {
+            color: #a6e22e;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-title i {
+            margin-right: 10px;
+        }
+        
+        .chart-img {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #2d2d2d, #1e1e1e);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .chart-placeholder i {
+            font-size: 4rem;
+            color: #6dd5ed;
+            margin-bottom: 15px;
+        }
+        
+        .chart-description {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .chart-details {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            margin: 8px 0;
+            display: flex;
+        }
+        
+        .detail-label {
+            min-width: 120px;
+            color: #fd971f;
+            font-weight: 500;
+        }
+        
+        .purpose-box {
+            background: rgba(166, 226, 46, 0.1);
+            border-left: 4px solid #a6e22e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .interpretation-box {
+            background: rgba(102, 217, 239, 0.1);
+            border-left: 4px solid #66d9ef;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .chart-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        .flow-step {
+            text-align: center;
+            width: 22%;
+        }
+        
+        .flow-number {
+            width: 40px;
+            height: 40px;
+            background: #6dd5ed;
+            color: #0f2027;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .flow-text {
+            font-size: 0.9rem;
+        }
+        
+        .flow-arrow {
+            color: #6dd5ed;
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-flow {
+                flex-direction: column;
+            }
+            
+            .flow-step {
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+        }
+        /* chart */
+
+          /* chat */
+      .img-placeholder {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.img-placeholder img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.chart-caption {
+    margin-top: 10px;
+    color: #6dd5ed;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Visualization Examples & Explanations</h1>
+        
+        <div class="chart-flow">
+            <div class="flow-step">
+                <div class="flow-number">1</div>
+                <div class="flow-text">Distribution Analysis</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <div class="flow-number">2</div>
+                <div class="flow-text">Relationship Analysis</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <div class="flow-number">3</div>
+                <div class="flow-text">Correlation Analysis</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <div class="flow-number">4</div>
+                <div class="flow-text">Detailed Distribution</div>
+            </div>
+        </div>
+        
+        <h2>Visualization Examples</h2>
+        
+        <div class="chart-container">
+            <div class="chart-card">
+                <h3 class="chart-title"><i class="fas fa-chart-bar"></i> 1. Stress Level Distribution (Countplot)</h3>
+                
+                 <div class="img-placeholder">
+                    <img src="./Figure_1.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                       <i class="fas fa-chart-scatter fa-3x"></i>
+                        <p>Scatterplot visualization would appear here showing age vs screen time by stress level</p>
+                  </div>
+                    
+                </div>
+                
+                <div class="chart-description">
+                    A countplot displays the frequency distribution of categorical data. In this case, it shows how many participants reported each stress level.
+                </div>
+                
+                <div class="chart-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Chart Type:</span>
+                        <span>Countplot (Bar Chart)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">X-Axis:</span>
+                        <span>Stress Levels (Low, Medium, High)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Y-Axis:</span>
+                        <span>Number of Participants (Count)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Purpose:</span>
+                        <span>Show distribution of categorical data</span>
+                    </div>
+                </div>
+                
+                <div class="purpose-box">
+                    <strong>When to Use:</strong> When you need to visualize the frequency or distribution of categorical variables.
+                </div>
+                
+                <div class="interpretation-box">
+                    <strong>How to Interpret:</strong> Look for which category has the highest bar (most frequent). The relative heights show the distribution of categories in your data.
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title"><i class="fas fa-braille"></i> 2. Age vs Screen Time (Scatterplot)</h3>
+                
+                                    
+                   <div class="img-placeholder">
+                    <img src="./Figure_2.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                         <i class="fas fa-braille"></i>
+                        <p>Scatterplot showing relationship between age and screen time</p>
+                                </div>
+                </div>
+
+               
+                
+                <div class="chart-description">
+                    A scatterplot displays values for two numerical variables as points on a 2D plane. This one is enhanced with color to represent a third variable (stress level).
+                </div>
+                
+                <div class="chart-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Chart Type:</span>
+                        <span>Scatterplot</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">X-Axis:</span>
+                        <span>Age (Numerical)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Y-Axis:</span>
+                        <span>Screen Time in Hours (Numerical)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Color:</span>
+                        <span>Stress Level (Categorical)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Purpose:</span>
+                        <span>Show relationship between two numerical variables</span>
+                    </div>
+                </div>
+                
+                <div class="purpose-box">
+                    <strong>When to Use:</strong> When you want to visualize the relationship between two numerical variables and potentially a third categorical variable through color coding.
+                </div>
+                
+                <div class="interpretation-box">
+                    <strong>How to Interpret:</strong> Look for patterns in the points. An upward trend indicates positive correlation, downward indicates negative correlation. Clusters may indicate groups in the data.
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title"><i class="fas fa-th"></i> 3. Correlation Heatmap</h3>
+                                  
+                   <div class="img-placeholder">
+                    <img src="./Figure_3.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                        <i class="fas fa-th"></i>
+                        <p>Heatmap showing correlations between variables</p>                    </div>
+                </div>
+              
+                
+                <div class="chart-description">
+                    A heatmap represents data values as colors. Correlation heatmaps specifically show how each variable correlates with every other variable in the dataset.
+                </div>
+                
+                <div class="chart-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Chart Type:</span>
+                        <span>Heatmap</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Cells:</span>
+                        <span>Correlation values (-1 to 1)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Color Scale:</span>
+                        <span>Red (positive) to Blue (negative)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Annotations:</span>
+                        <span>Numerical correlation values</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Purpose:</span>
+                        <span>Show relationships between all numerical variables</span>
+                    </div>
+                </div>
+                
+                <div class="purpose-box">
+                    <strong>When to Use:</strong> When you need to quickly identify relationships (correlations) between multiple variables in a dataset.
+                </div>
+                
+                <div class="interpretation-box">
+                    <strong>How to Interpret:</strong> Look for strong colors. Red indicates positive correlation (as one increases, the other increases). Blue indicates negative correlation (as one increases, the other decreases). Values near 0 indicate no correlation.
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title"><i class="fas fa-dot-circle"></i> 4. Screen Time vs Stress Levels (Stripplot)</h3>
+                
+                 <div class="img-placeholder">
+                    <img src="./Figure_4.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                        <i class="fas fa-dot-circle"></i>
+                        <p>Stripplot showing screen time distribution across stress levels</p>
+        </div>
+             
+                <div class="chart-description">
+                    A stripplot is like a scatterplot for categorical data. It shows the distribution of a numerical variable across different categories, with jitter to prevent overlapping.
+                </div>
+                
+                <div class="chart-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Chart Type:</span>
+                        <span>Stripplot</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">X-Axis:</span>
+                        <span>Stress Levels (Categorical)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Y-Axis:</span>
+                        <span>Screen Time in Hours (Numerical)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Jitter:</span>
+                        <span>Yes (prevents overlapping points)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Purpose:</span>
+                        <span>Show distribution of numerical data across categories</span>
+                    </div>
+                </div>
+                
+                <div class="purpose-box">
+                    <strong>When to Use:</strong> When you want to visualize the distribution of a numerical variable across different categories while maintaining visibility of individual data points.
+                </div>
+                
+                <div class="interpretation-box">
+                    <strong>How to Interpret:</strong> Look for where points are concentrated vertically. Higher concentrations indicate common values. Compare the vertical distributions across categories to see differences.
+                </div>
+            </div>
+        </div>
+        
+        <h2>Visualization Flow Explanation</h2>
+        
+        <div class="purpose-box">
+            <p><strong>1. Distribution Analysis (Countplot)</strong>: The analysis begins by examining how stress levels are distributed across participants. This gives a baseline understanding of the dataset's composition.</p>
+        </div>
+        
+        <div class="purpose-box">
+            <p><strong>2. Relationship Analysis (Scatterplot)</strong>: Next, we explore relationships between variables. The scatterplot helps identify if there are patterns between age and screen time, and how stress level might relate to these variables.</p>
+        </div>
+        
+        <div class="purpose-box">
+            <p><strong>3. Correlation Analysis (Heatmap)</strong>: The heatmap provides a comprehensive view of how all numerical variables relate to each other. This helps identify strong relationships that might warrant further investigation.</p>
+        </div>
+        
+        <div class="purpose-box">
+            <p><strong>4. Detailed Distribution (Stripplot)</strong>: Finally, the stripplot offers a detailed view of how screen time varies across different stress levels, showing individual data points to give a sense of the actual distribution.</p>
+        </div>
+        
+        <div class="interpretation-box">
+            <p><strong>Why This Order Matters:</strong> This progression follows a logical data exploration workflow: 1) Understand basic distributions, 2) Explore relationships between key variables, 3) Examine all variable correlations, and 4) Dive deeper into specific relationships of interest.</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation for the flow steps
+        document.addEventListener('DOMContentLoaded', function() {
+            const flowSteps = document.querySelectorAll('.flow-step');
+            
+            flowSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    step.style.opacity = 1;
+                    step.style.transform = 'translateY(0)';
+                }, index * 300);
+            });
+        });
+    </script>
+</body>
+</html>

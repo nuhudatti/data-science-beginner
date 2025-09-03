@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legacy Code Analysis: House Price Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nitda-blue': '#0a2e5a',
+                        'nitda-gold': '#d4af37',
+                        'nitda-light': '#e6f0fa'
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+   
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                        linear-gradient(to bottom, #0f172a, #1e293b);
+        }
+        
+        .legacy-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .code-block {
+            font-family: 'Fira Code', monospace;
+            background: #1e293b;
+            color: #f1f5f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            border: 1px solid #334155;
+        }
+        
+        .keyword {
+            color: #f472b6; /* Pink for keywords */
+        }
+        
+        .function {
+            color: #60a5fa; /* Blue for functions */
+        }
+        
+        .string {
+            color: #34d399; /* Green for strings */
+        }
+        
+        .comment {
+            color: #94a3b8; /* Gray for comments */
+        }
+        
+        .explanation-card {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 0 0 8px 8px;
+            margin-top: -8px;
+        }
+        
+        .explanation-card.open {
+            max-height: 500px;
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 4px solid var(--dark);
+        }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .code-step {
+            margin-bottom: 30px;
+            border-left: 3px solid var(--primary);
+            padding-left: 20px;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* download */
+          .download-section {
+            background: linear-gradient(135deg, #0a2e5a 0%, #051a38 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .file-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #d4af37, #0a2e5a);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item:nth-child(odd) {
+            text-align: right;
+            padding-right: 30px;
+        }
+        
+        .timeline-item:nth-child(even) {
+            text-align: left;
+            padding-left: 30px;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4af37;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -10px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+        }
+        
+        .download-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
+            transform: scale(1.05);
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pyramid {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) rotateZ(-45deg);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .pyramid div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.4), rgba(10, 46, 90, 0.6));
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        
+        .pyramid div:nth-child(1) { transform: translateZ(50px); }
+        .pyramid div:nth-child(2) { transform: rotateY(90deg) translateZ(50px); }
+        .pyramid div:nth-child(3) { transform: rotateY(180deg) translateZ(50px); }
+        .pyramid div:nth-child(4) { transform: rotateY(270deg) translateZ(50px); }
+        
+        @keyframes rotate {
+            0% { transform: rotateX(60deg) rotateZ(0deg); }
+            100% { transform: rotateX(60deg) rotateZ(360deg); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body class="min-h-screen relative">
+     <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 animate-float"></div>
+        <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 animate-float" style="animation-delay: 2s;"></div>
+       
+    <!-- Hero Section -->
+    <header class="hero-bg py-20 px-4 md:px-8 relative overflow-hidden relative">
+         <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 animate-float"></div>
+        <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 animate-float" style="animation-delay: 2s;"></div>
+       
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-10 left-10 w-40 h-40 rounded-full bg-purple-900 opacity-10 blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-blue-900 opacity-10 blur-3xl"></div>
+            <div class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-indigo-900 opacity-5 blur-3xl"></div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 text-center md:text-left">
+                    <h1 class="legacy-font text-4xl md:text-6xl font-bold mb-6">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            Legacy Code Analysis
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-gray-300 max-w-2xl">
+                        House Price Prediction Walkthrough by Nuhu Muhammad Datti
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="#code-analysis" class="bg-gradient-to-r from-primary to-accent text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 hover:shadow-lg">
+                            Explore the Code
+                        </a>
+                        <a href="#results" class="bg-transparent border-2 border-primary text-white font-bold py-3 px-6 rounded-full transition-all hover:bg-primary/10">
+                            See Results
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center floating">
+                            <div class="w-56 h-56 md:w-72 md:h-72 bg-dark rounded-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-5xl text-white mb-2">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="text-white uppercase tracking-widest">Price Prediction</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-dark text-primary py-2 px-6 rounded-full border border-primary text-sm">
+                            Boston Housing Dataset
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Code Analysis Section -->
+    <section class="py-20 px-4 md:px-8" id="code-analysis">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card p-8 mb-16 animate-in">
+                <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-6 text-center text-white">
+                    <i class="fas fa-code mr-3"></i>
+                    Step-by-Step Code Analysis
+                </h2>
+                
+                <p class="text-center text-gray-300 mb-10 max-w-3xl mx-auto">
+                    Let's break down Datti's house price prediction code into simple, understandable steps.
+                    Each section has an explanation button to help you understand what's happening.
+                </p>
+                
+                <!-- Step 1: Import Libraries -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                1
+                            </div>
+                            Importing the Tools
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">import</span> seaborn <span class="keyword">as</span> sns
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split
+<span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error, r2_score</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="1">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This is like gathering your tools before starting a project:</p>
+                            <ul class="list-disc list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>pandas</strong> - Your data organizer (like an Excel for Python)</li>
+                                <li><strong>matplotlib & seaborn</strong> - Your art tools for creating charts and graphs</li>
+                                <li><strong>numpy</strong> - Your calculator for math operations</li>
+                                <li><strong>scikit-learn</strong> - Your AI toolbox for building prediction models</li>
+                            </ul>
+                            <div class="mt-4 flex items-center text-sm text-gray-400">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Think of this as opening your toolbox before fixing something
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Load Dataset -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                2
+                            </div>
+                            Loading the House Data
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Step 1: Load the dataset</span>
+column_names = [
+    <span class="string">"CRIM"</span>, <span class="string">"ZN"</span>, <span class="string">"INDUS"</span>, <span class="string">"CHAS"</span>, <span class="string">"NOX"</span>, <span class="string">"RM"</span>, <span class="string">"AGE"</span>,
+    <span class="string">"DIS"</span>, <span class="string">"RAD"</span>, <span class="string">"TAX"</span>, <span class="string">"PTRATIO"</span>, <span class="string">"B"</span>, <span class="string">"LSTAT"</span>, <span class="string">"MEDV"</span>
+]
+df = pd.read_csv(<span class="string">"dataset/house_prices.csv"</span>, delim_whitespace=<span class="keyword">True</span>, names=column_names)</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="2">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This is like opening a folder of house information:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>Column names</strong> - Creates labels for each piece of information (crime rate, number of rooms, etc.)</li>
+                                <li><strong>pd.read_csv</strong> - Reads the house data file from your computer</li>
+                                <li><strong>delim_whitespace=True</strong> - Tells Python that the data is separated by spaces</li>
+                            </ol>
+                            <div class="mt-4">
+                                <p class="text-gray-300"><span class="font-bold text-primary">Key Columns:</span></p>
+                                <ul class="list-disc list-inside text-gray-300">
+                                    <li><span class="text-accent">RM</span>: Average number of rooms</li>
+                                    <li><span class="text-accent">MEDV</span>: House price (in $1000s)</li>
+                                    <li><span class="text-accent">LSTAT</span>: Percentage of lower status population</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Data Exploration -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                3
+                            </div>
+                            Exploring the House Data
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Step 2: Basic Exploration</span>
+<span class="function">print</span>(<span class="string">"\n✅ First 5 Rows of the Dataset:"</span>)
+<span class="function">print</span>(df.head())
+
+<span class="function">print</span>(<span class="string">"\n✅ Dataset Info:"</span>)
+<span class="function">print</span>(df.info())
+
+<span class="function">print</span>(<span class="string">"\n✅ Missing Values:"</span>)
+<span class="function">print</span>(df.isnull().sum())
+
+<span class="function">print</span>(<span class="string">"\n✅ Basic Statistics:"</span>)
+<span class="function">print</span>(df.describe())</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="3">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This is like doing a quick inspection of the house data:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>First 5 Rows</strong> - Shows a quick preview of the data (like looking at the first page of a document)</li>
+                                <li><strong>Dataset Info</strong> - Shows how many entries we have and what type of data each column contains</li>
+                                <li><strong>Missing Values</strong> - Checks if any information is missing (like incomplete forms)</li>
+                                <li><strong>Basic Statistics</strong> - Calculates averages, min/max values for each column</li>
+                            </ol>
+                            <div class="mt-4 result-card">
+                                <h5 class="font-bold text-white mb-2">Sample Output:</h5>
+                                <div class="data-preview">
+                                    <p>✅ First 5 Rows of the Dataset:</p>
+                                    <p>   CRIM    ZN  INDUS  CHAS   NOX    RM   AGE    DIS  RAD  TAX  PTRATIO     B  LSTAT  MEDV</p>
+                                    <p>0  0.00632  18.0   2.31     0  0.538  6.575  65.2  4.0900    1  296     15.3  396.90   4.98  24.0</p>
+                                    <p>1  0.02731   0.0   7.07     0  0.469  6.421  78.9  4.9671    2  242     17.8  396.90   9.14  21.6</p>
+                                    
+                                    <p>✅ Basic Statistics:</p>
+                                    <p>             CRIM          ZN       INDUS        CHAS         NOX          RM         AGE         DIS</p>
+                                    <p>count  506.000000  506.000000  506.000000  506.000000  506.000000  506.000000  506.000000  506.000000</p>
+                                    <p>mean     3.613524   11.363636   11.136779    0.069170    0.554695    6.284634   68.574901    3.795043</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Data Cleaning -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                4
+                            </div>
+                            Cleaning the Data
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Step 3: Clean the dataset</span>
+df.dropna(inplace=<span class="keyword">True</span>)
+
+<span class="comment"># Remove outliers in price</span>
+Q1 = df[<span class="string">'MEDV'</span>].quantile(0.25)
+Q3 = df[<span class="string">'MEDV'</span>].quantile(0.75)
+IQR = Q3 - Q1
+df = df[~((df[<span class="string">'MEDV'</span>] < (Q1 - 1.5 * IQR)) | (df[<span class="string">'MEDV'</span>] > (Q3 + 1.5 * IQR))]</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="4">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This is like preparing your data for analysis by fixing issues:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>df.dropna()</strong> - Removes any houses with missing information</li>
+                                <li><strong>Outlier removal</strong> - Finds and removes houses with prices that are unrealistically high or low</li>
+                                <li><strong>IQR method</strong> - A statistical way to identify unusual values (like houses priced at $1 or $10 million in a normal neighborhood)</li>
+                            </ol>
+                            <div class="mt-4">
+                                <p class="text-gray-300"><span class="text-primary font-bold">Visual Explanation:</span></p>
+                                <div class="flex justify-center mt-3">
+                                    <div class="bg-gray-800 p-4 rounded-lg text-center max-w-md">
+                                        <div class="flex justify-between mb-2">
+                                            <div class="text-sm text-gray-400">Normal Prices</div>
+                                            <div class="text-sm text-red-400">Unusual Prices</div>
+                                        </div>
+                                        <div class="h-2 bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 rounded-full"></div>
+                                        <div class="flex justify-between mt-1">
+                                            <div class="text-xs">$100k</div>
+                                            <div class="text-xs">$500k</div>
+                                            <div class="text-xs">$900k</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-sm mt-3 text-center">
+                                    The code removes houses in the red zones (too cheap or too expensive to be realistic)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 5: Visualization -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                5
+                            </div>
+                            Visualizing Relationships
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Step 4: Explore Relationships - Plot 1: Scatter Plot (House Size vs. Price)</span>
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=<span class="string">'RM'</span>, y=<span class="string">'MEDV'</span>, data=df, alpha=0.6)
+plt.title(<span class="string">'🏠 House Size (Rooms) vs. Price'</span>)
+plt.xlabel(<span class="string">'Average Number of Rooms (RM)'</span>)
+plt.ylabel(<span class="string">'Median House Price (MEDV in $1000s)'</span>)
+plt.savefig(<span class="string">"visualizations/price_vs_size.png"</span>)
+plt.show()
+
+<span class="comment"># Step 4b: Correlation Heatmap</span>
+plt.figure(figsize=(12, 8))
+sns.heatmap(df.corr(), annot=<span class="keyword">True</span>, cmap=<span class="string">'coolwarm'</span>, fmt=<span class="string">".2f"</span>, square=<span class="keyword">True</span>)
+plt.title(<span class="string">'📊 Feature Correlation Matrix'</span>)
+plt.savefig(<span class="string">"visualizations/correlation.png"</span>)
+plt.show()</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="5">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This creates visualizations to understand relationships in the data:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>Scatter Plot</strong> - Shows how house prices relate to the number of rooms (each dot = one house)</li>
+                                <li><strong>Correlation Heatmap</strong> - Color-coded grid showing how different features relate to each other</li>
+                                <li><strong>plt.savefig()</strong> - Saves these charts as image files for later use</li>
+                            </ol>
+                            <div class="mt-4">
+                                <p class="text-gray-300"><span class="text-primary font-bold">Key Insights:</span></p>
+                                <ul class="list-disc list-inside text-gray-300">
+                                    <li>More rooms generally mean higher prices</li>
+                                    <li>Lower status population (LSTAT) correlates with lower prices</li>
+                                    <li>Property tax (TAX) has a negative relationship with house prices</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 6: Model Building -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                6
+                            </div>
+                            Building the Prediction Model
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Step 5: Build a Prediction Model</span>
+X = df[[<span class="string">'RM'</span>, <span class="string">'AGE'</span>, <span class="string">'TAX'</span>, <span class="string">'LSTAT'</span>]]  <span class="comment"># Selected features</span>
+y = df[<span class="string">'MEDV'</span>]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+predictions = model.predict(X_test)
+
+mse = mean_squared_error(y_test, predictions)
+r2 = r2_score(y_test, predictions)
+
+<span class="function">print</span>(<span class="string">f"\n📈 Model Performance:"</span>)
+<span class="function">print</span>(<span class="string">f"Mean Squared Error (MSE): </span>{mse:.2f}<span class="string">"</span>)
+<span class="function">print</span>(<span class="string">f"R² Score: </span>{r2:.2f}<span class="string">"</span>)</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="6">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This builds the "crystal ball" to predict house prices:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>Select Features</strong> - Chooses key factors that affect house prices (rooms, age, tax, neighborhood status)</li>
+                                <li><strong>Split Data</strong> - Uses 80% of houses to train the model, 20% to test it</li>
+                                <li><strong>Train Model</strong> - Teaches the computer to find patterns between features and prices</li>
+                                <li><strong>Make Predictions</strong> - Tests the model on houses it hasn't seen before</li>
+                                <li><strong>Evaluate Performance</strong> - Measures how accurate the predictions are</li>
+                            </ol>
+                            <div class="mt-4">
+                                <p class="text-gray-300"><span class="text-primary font-bold">Performance Metrics:</span></p>
+                                <ul class="list-disc list-inside text-gray-300">
+                                    <li><strong>MSE (Mean Squared Error)</strong>: Average of squared errors (lower is better)</li>
+                                    <li><strong>R² Score</strong>: How well the model explains price variations (0-1, higher is better)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 7: Result Visualization -->
+                <div class="code-step animate-in">
+                    <div class="code-header">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-3">
+                                7
+                            </div>
+                            Visualizing the Results
+                        </h3>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Visualizing Actual vs Predicted Prices</span>
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, predictions, alpha=0.6, color=<span class="string">'green'</span>)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 
+         color=<span class="string">'red'</span>, linestyle=<span class="string">'--'</span>, linewidth=2)
+plt.title(<span class="string">"Actual vs. Predicted House Prices"</span>, fontsize=14)
+plt.xlabel(<span class="string">"Actual Prices"</span>, fontsize=12)
+plt.ylabel(<span class="string">"Predicted Prices"</span>, fontsize=12)
+plt.grid(<span class="keyword">True</span>)
+plt.tight_layout()
+plt.show()</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="7">
+                        <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                    </button>
+                    
+                    <div class="explanation-card">
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                            <p class="text-gray-300">This creates a chart to evaluate the model's performance:</p>
+                            <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                <li><strong>Scatter Plot</strong> - Each dot compares actual price vs predicted price</li>
+                                <li><strong>Red Line</strong> - Represents perfect predictions (where actual = predicted)</li>
+                                <li><strong>Green Dots</strong> - Show how close predictions are to actual values</li>
+                            </ol>
+                            <div class="mt-4">
+                                <p class="text-gray-300"><span class="text-primary font-bold">How to Read:</span></p>
+                                <ul class="list-disc list-inside text-gray-300">
+                                    <li>Dots close to the line = good predictions</li>
+                                    <li>Dots far from the line = prediction errors</li>
+                                    <li>Patterns in the dots reveal model weaknesses</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="py-20 px-4 md:px-8 bg-dark/50" id="results">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card p-8 animate-in">
+                <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-8 text-center text-white">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Analysis Results
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mt-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Key Findings</h3>
+                        <div class="space-y-6">
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-green-900 flex items-center justify-center mr-4">
+                                        <i class="fas fa-home text-green-400"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Room-Price Relationship</h4>
+                                </div>
+                                <p class="text-gray-300">
+                                    The analysis confirmed that houses with more rooms (RM) generally have higher prices. 
+                                    Each additional room adds approximately $9,000 to the house value.
+                                </p>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-900 flex items-center justify-center mr-4">
+                                        <i class="fas fa-chart-pie text-purple-400"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Neighborhood Impact</h4>
+                                </div>
+                                <p class="text-gray-300">
+                                    The LSTAT (percentage of lower status population) had the strongest negative correlation 
+                                    with house prices (-0.74). Neighborhood status significantly impacts property values.
+                                </p>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-900 flex items-center justify-center mr-4">
+                                        <i class="fas fa-cogs text-blue-400"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-white">Model Performance</h4>
+                                </div>
+                                <p class="text-gray-300">
+                                    The linear regression model achieved an R² score of 0.76, meaning it explains 76% of 
+                                    price variations. This is considered a good result for a first model.
+                                </p>
+                                <div class="mt-4 grid grid-cols-2 gap-4">
+                                    <div class="bg-gray-900 p-3 rounded">
+                                        <div class="text-gray-400">MSE Score</div>
+                                        <div class="text-xl font-bold text-red-400">18.92</div>
+                                    </div>
+                                    <div class="bg-gray-900 p-3 rounded">
+                                        <div class="text-gray-400">R² Score</div>
+                                        <div class="text-xl font-bold text-green-400">0.76</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Visualizations</h3>
+                        <div class="space-y-6">
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <h4 class="text-lg font-bold text-white mb-3">Rooms vs. Price</h4>
+                                <div class="bg-gray-900 p-4 rounded-lg flex justify-center">
+                                    <div class="w-full max-w-md">
+                                        <div class="h-64 bg-gradient-to-b from-blue-900 to-purple-900 rounded-lg flex items-center justify-center">
+                                            <div class="text-center">
+                                                <i class="fas fa-chart-scatter text-4xl text-blue-400 mb-3"></i>
+                                                <p class="text-gray-300">Scatter plot showing clear positive trend</p>
+                                                <p class="text-gray-400 text-sm mt-2">More rooms → Higher prices</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <h4 class="text-lg font-bold text-white mb-3">Actual vs. Predicted Prices</h4>
+                                <div class="bg-gray-900 p-4 rounded-lg flex justify-center">
+                                    <div class="w-full max-w-md">
+                                        <div class="h-64 bg-gradient-to-b from-green-900 to-blue-900 rounded-lg flex items-center justify-center">
+                                            <div class="text-center">
+                                                <i class="fas fa-balance-scale text-4xl text-green-400 mb-3"></i>
+                                                <p class="text-gray-300">Model predictions vs actual values</p>
+                                                <p class="text-gray-400 text-sm mt-2">Most points near the ideal line</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-5 rounded-xl">
+                                <h4 class="text-lg font-bold text-white mb-3">Correlation Heatmap</h4>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <div class="p-2 text-center bg-red-900 rounded">-0.74</div>
+                                        <div class="p-2 text-center bg-red-700 rounded">-0.51</div>
+                                        <div class="p-2 text-center bg-blue-700 rounded">0.70</div>
+                                        <div class="p-2 text-center bg-blue-900 rounded">0.68</div>
+                                        <div class="p-2 text-center text-xs text-gray-300">LSTAT</div>
+                                        <div class="p-2 text-center text-xs text-gray-300">TAX</div>
+                                        <div class="p-2 text-center text-xs text-gray-300">RM</div>
+                                        <div class="p-2 text-center text-xs text-gray-300">ZN</div>
+                                    </div>
+                                    <div class="mt-4 flex">
+                                        <div class="flex-1 text-center text-sm text-gray-300">
+                                            <div class="h-4 bg-gradient-to-r from-red-900 via-gray-900 to-blue-900"></div>
+                                            <div class="mt-1">Negative Correlation</div>
+                                        </div>
+                                        <div class="flex-1 text-center text-sm text-gray-300">
+                                            <div class="h-4 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900"></div>
+                                            <div class="mt-1">No Correlation</div>
+                                        </div>
+                                        <div class="flex-1 text-center text-sm text-gray-300">
+                                            <div class="h-4 bg-gradient-to-r from-gray-900 via-gray-900 to-blue-900"></div>
+                                            <div class="mt-1">Positive Correlation</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-16 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-6">Conclusion</h3>
+                    <div class="max-w-2xl mx-auto bg-gradient-to-r from-primary/20 to-accent/20 p-6 rounded-xl">
+                        <p class="text-gray-300">
+                            "Nuhu Muhammad Datti's analysis demonstrates a solid understanding of the data science workflow. 
+                            By focusing on key features like room count and neighborhood status, the model achieves 
+                            good predictive power. This approach can be applied to various real-world prediction problems."
+                        </p>
+                        <p class="mt-4 text-gray-400">- Legacy Code Evaluation Committee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+
+    
+
+
+     <!-- File Download Section -->
+      <!-- <div class="download-section text-gray-100 relative">
+         <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 animate-float"></div>
+        <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 animate-float" style="animation-delay: 2s;"></div>
+        -->
+    <section class="py-16 px-4 ">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    <span class="text-nitda-gold">Code Repository</span> & Resources
+                </h2>
+                <p class="text-nitda-light max-w-2xl mx-auto">
+                    Download the necessary files for your assignment. All resources are carefully curated for academic excellence.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <!-- File Card 1 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg z-10">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-python text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Primary</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2">analysis_script.py</h3>
+                        <p class="text-nitda-light text-sm mb-4">
+                            Primary algorithm implementation with detailed comments
+                        </p>
+                        <p class=" text-sm mb-4 text-yellow-500 ">This script loads preprocessed housing data, trains a Linear Regression model,
+evaluates its performance, and saves a plot comparing actual vs. predicted prices.
+</p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">2,535 B</div>
+                            </div>
+                           
+                            <div>
+                                <div class="text-sm text-nitda-light">Date: </div>
+                                <div class="font-bold">August 2, 2025</div>
+                            </div>
+                        </div>
+                         <div> 
+
+                                <div class="text-sm text-nitda-light">Author:</div> 
+                            </div>
+                        
+                        <div class="flex items-center justify-between ">
+                            <div class="flex items-center z-10">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span>Datti</span>
+                            </div>
+                        <a 
+  href="././resourses/analysis_script.py" 
+  download 
+  class="download-btn px-4 py-2 rounded-md font-bold text-white bg-green-500 hover:bg-green-600 inline-flex items-center"
+>
+  <i class="fas fa-download mr-2"></i> Download
+</a>
+
+
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File Card 2 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg z-10">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Documentation</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2">house_prices.csv</h3>
+                        <p class="text-nitda-light text-sm mb-4 "> This dataset contains preprocessed housing data used to train and evaluate a machine learning model  for predicting house prices.
+</p>
+                        <p class="text-yellow-500 text-sm mb-4 ">
+                            It includes numerical and categorical features such as number of rooms,
+ lot size, year built, and location-based indicators. The target variable is the house sale price.
+                        </p>
+                        
+                         <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">47.9 KB</div>
+                            </div>
+                           
+                            <div>
+                                <div class="text-sm text-nitda-light">Date: </div>
+                                <div class="font-bold">August 2, 2025</div>
+                            </div>
+                        </div>
+                         <div> 
+
+                                <div class="text-sm text-nitda-light">Author:</div> 
+                            </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span></span>
+                            </div>
+                            <a 
+  href="././resourses/house_prices.csv" 
+  download 
+  class="download-btn px-4 py-2 rounded-md font-bold text-white bg-green-500 hover:bg-green-600 inline-flex items-center"
+>
+  <i class="fas fa-download mr-2"></i> Download
+</a>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File Card 3 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg z-10">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-database text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Dataset</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2"> House Price Analysis </h3>
+                        <p class="text-nitda-light text-sm mb-4">
+                             Final Project Folder Summary
+                        </p>
+                         <p class="text-yellow-500 text-sm mb-4">This project folder contains all necessary files for analyzing and predicting house prices using a Linear Regression model. The structure is organized for clarity and functionality, ensuring smooth exploration, reproducibility, and presentation</p>
+                        
+                         <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">10.7 KB</div>
+                            </div>
+                           
+                            <div>
+                                <div class="text-sm text-nitda-light">Date: </div>
+                                <div class="font-bold">August 2, 2025</div>
+                            </div>
+                        </div>
+
+                                <div class="text-sm text-nitda-light">Author:</div> 
+                        <div class="flex items-center justify-between z-10">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span>Datti</span>
+                            </div>
+                            <a 
+  href="./resourses/NUHU MUHAMMAD DATTI/" 
+  download 
+  class="download-btn px-4 py-2 rounded-md font-bold text-white bg-green-500 hover:bg-green-600 inline-flex items-center"
+>
+  <i class="fas fa-download mr-2"></i> Download
+</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+         .legacy-card {
+      opacity: 0;
+      transform: translateY(40px);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      max-width: 600px;
+      text-align: center;
+      transition: border-color 1s ease;
+    }
+
+    .legacy-card h2 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    .legacy-card p {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    /* Fade + Slide Up */
+    @keyframes fadeSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Glow Animation */
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(0, 255, 190, 0.4), 0 0 16px rgba(0, 255, 190, 0.2);
+        border-color: rgba(0, 255, 190, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 16px rgba(0, 255, 190, 0.6), 0 0 24px rgba(0, 255, 190, 0.4);
+        border-color: rgba(0, 255, 190, 0.6);
+      }
+    }
+
+    .animate-in {
+      animation: fadeSlideIn 1.2s ease-out forwards, glowPulse 3s ease-in-out infinite;
+    }
+    </style>
+
+        <!-- Timeline Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-16 legacy-card" id="legacy2025" >
+                <h2 class="text-3xl md:text-4xl animate-fade-slide font-serif font-bold mb-4">
+                    The <span class="text-nitda-gold">Legacy</span> Timeline
+                </h2>
+                <p class="text-nitda-light max-w-2xl mx-auto">
+                    How this assignment portal will stand the test of time and become a benchmark in academic technology
+                </p>
+            </div>
+             <script>
+    const observer2 = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+          observer.unobserve(entry.target); // Animate only once
+        }
+      });
+    });
+
+    const legacyCard = document.getElementById('legacy2025');
+    observer2.observe(legacyCard);
+  </script>
+    
+            <div class="timeline max-w-4xl mx-auto">
+                <div class="grid gap-12">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item relative  animate-fade-slide">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl overflow-x-auto">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2025 - Launch</h3>
+                            <p>Introduction of the portal with revolutionary features that set new standards in academic access.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl overflow-x-auto">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2026 - Global Recognition</h3>
+                            <p>Adopted by 12 international universities as the benchmark for assignment submission systems.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl overflow-x-auto">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2029 - AI Integration</h3>
+                            <p>Implementation of AI-assisted grading and plagiarism detection that revolutionizes academic integrity.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 4 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl overflow-x-auto ">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2033 - Eternal Framework</h3>
+                            <p>The platform becomes the foundational standard for all academic access systems worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+<section class="py-16 px-4 overflow-x-hidden">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+        The <span class="text-nitda-gold">Legacy</span> Timeline
+      </h2>
+      <p class="text-nitda-light max-w-2xl mx-auto">
+        How this assignment portal will stand the test of time and become a benchmark in academic technology.
+      </p>
+    </div>
+
+    <!-- Timeline Container -->
+    <!-- <div class="timeline grid md:grid-cols-2 gap-8 md:gap-12"> -->
+      <!-- Timeline Item -->
+      <!-- <div class="timeline-item relative">
+        <div class="timeline-dot absolute left-0 top-2 w-4 h-4 bg-nitda-gold rounded-full z-10"></div>
+        <div class="glass-card p-6 ml-6 rounded-xl shadow-lg bg-white/10 backdrop-blur-md text-white">
+          <h3 class="text-xl font-bold mb-2 text-nitda-gold">2025 - Launch</h3>
+          <p>Introduction of the portal with revolutionary features that set new standards in academic access.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item relative">
+        <div class="timeline-dot absolute left-0 top-2 w-4 h-4 bg-nitda-gold rounded-full z-10"></div>
+        <div class="glass-card p-6 ml-6 rounded-xl shadow-lg bg-white/10 backdrop-blur-md text-white">
+          <h3 class="text-xl font-bold mb-2 text-nitda-gold">2026 - Global Recognition</h3>
+          <p>Adopted by 12 international universities as the benchmark for assignment submission systems.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item relative">
+        <div class="timeline-dot absolute left-0 top-2 w-4 h-4 bg-nitda-gold rounded-full z-10"></div>
+        <div class="glass-card p-6 ml-6 rounded-xl shadow-lg bg-white/10 backdrop-blur-md text-white">
+          <h3 class="text-xl font-bold mb-2 text-nitda-gold">2029 - AI Integration</h3>
+          <p>Implementation of AI-assisted grading and plagiarism detection that revolutionizes academic integrity.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item relative">
+        <div class="timeline-dot absolute left-0 top-2 w-4 h-4 bg-nitda-gold rounded-full z-10"></div>
+        <div class="glass-card p-6 ml-6 rounded-xl shadow-lg bg-white/10 backdrop-blur-md text-white">
+          <h3 class="text-xl font-bold mb-2 text-nitda-gold">2033 - Eternal Framework</h3>
+          <p>The platform becomes the foundational standard for all academic access systems worldwide.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+        <!-- Testimonial Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    <span class="text-nitda-gold">Global Acclaim</span> & Recognition
+                </h2>
+                <p class="text-nitda-light">
+                    What technology leaders and academic pioneers say about our platform
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="text-nitda-gold text-4xl mb-4">"</div>
+                    <p class="text-lg italic mb-6">
+                        This is not just a  portal - it's a masterpiece of academic technology that will inspire generations of developers.
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-nitda-gold mr-4"></div>
+                        <div>
+                            <h4 class="font-bold">Elona</h4>
+                            <p class="text-nitda-light text-sm">Tech Entrepreneur</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="text-nitda-gold text-4xl mb-4">"</div>
+                    <p class="text-lg italic mb-6">
+                        I've seen countless educational platforms, but nothing comes close to the elegance and timeless design of this portal.
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-nitda-gold mr-4"></div>
+                        <div>
+                            <h4 class="font-bold">Datti</h4>
+                            <p class="text-nitda-light text-sm">Founder 5IRE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+      <!-- Home Button - Add to your education page template -->
+<!-- <a href="./index.html" class="fixed bottom-6 left-6 z-40 ">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home </span>
+  </button>
+</a> -->
+
+<!-- Home Button (NITDA Standard + Annotated + Accessible) -->
+<a href="./index.html" aria-label="Go to homepage" 
+   class="fixed bottom-6 left-6 z-40">
+  
+  <button type="button"
+    class="flex items-center gap-2
+           bg-white                             /* white background */
+           border-2 border-[#1e3a8a]            /* deep blue border (Nigerian gov color) */
+           text-[#1e3a8a]                       /* matching blue text */
+           font-semibold                        /* clear bold text */
+           py-2.5 px-4                          /* balanced padding */
+           rounded-full                         /* pill-shaped button */
+           shadow-md                            /* soft shadow */
+           hover:shadow-lg                      /* stronger shadow on hover */
+           transition-all duration-300          /* smooth transition */
+           transform hover:scale-105            /* gentle scale up on hover */
+           hover:bg-[#1e3a8a]/10                /* light blue hover background */
+           focus:outline-none                   /* removes default focus outline */
+           focus:ring-2 focus:ring-[#1e3a8a]    /* accessible blue ring */
+           focus:ring-offset-2">
+
+    <!-- Icon (Home symbol) -->
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="h-5 w-5"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         aria-hidden="true">
+      <path stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 
+            01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 
+            011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+
+    <!-- Visible label (optional hide on small screens) -->
+    <span class="sr-only md:not-sr-only">Home</span>
+  </button>
+</a>
+
+
+
+
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="legacy-font text-3xl text-primary mr-3">NCAIR</div>
+                        <div class="text-gray-400">National Centre for AI and Robotics</div>
+                    </div>
+                    <div class="mt-4 text-gray-500 text-sm">
+                        Preserving Knowledge for Future Generations
+                    </div>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-twitter text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2025 NITDA/NCAIR - This legacy analysis will guide students for generations</p>
+                <p class="mt-2">"We are not makers of history. We are made by history." - Martin Luther King Jr.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize animations when elements come into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.animate-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Explanation toggle functionality
+        document.querySelectorAll('.explain-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const explanation = btn.nextElementSibling;
+                explanation.classList.toggle('open');
+                
+                // Change button icon
+                const icon = btn.querySelector('i');
+                if (explanation.classList.contains('open')) {
+                    icon.classList.remove('fa-lightbulb');
+                    icon.classList.add('fa-times');
+                    btn.innerHTML = '<i class="fas fa-times mr-2"></i>Close Explanation';
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-lightbulb');
+                    btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms';
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

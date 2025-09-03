@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Plot Customization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        dark: '#0f172a',
+                        light: '#f1f5f9',
+                        custom1: '#6366f1',
+                        custom2: '#8b5cf6',
+                        custom3: '#ec4899'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            scroll-behavior: smooth;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .keyword { color: #f472b6; }
+        .function { color: #38bdf8; }
+        .string { color: #34d399; }
+        .comment { color: #94a3b8; }
+        .variable { color: #fbbf24; }
+        .module { color: #c084fc; }
+        .parameter { color: #fda4af; }
+        
+        .section-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            border-radius: 3px;
+        }
+        
+        .explanation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .explanation-content.show {
+            max-height: 1000px;
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .concept-pill {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid #8b5cf6;
+        }
+        
+        .module-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            transform: rotate(5deg);
+        }
+        
+        .customization-card {
+            transition: all 0.3s ease;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+        
+        .customization-card:hover {
+            transform: scale(1.03);
+            border-color: #ec4899;
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.2);
+        }
+        
+        .palette-display {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .style-card {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 150px;
+            position: relative;
+        }
+        
+        .style-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .style-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .annotation-example {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0c4a6e 100%);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .annotation-line {
+            position: absolute;
+            background: white;
+            height: 2px;
+        }
+        
+        .annotation-text {
+            position: absolute;
+            background: rgba(255,255,255,0.9);
+            color: #1e293b;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .theme-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-custom1 to-custom3 text-white py-6 px-4 sm:px-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <h1 class="text-3xl font-bold flex items-center justify-center md:justify-start">
+                    <i class="fas fa-paint-brush mr-3"></i>
+                    NITDA/NCAIR ULA - Data Science Cohort 27
+                </h1>
+                <p class="mt-2 text-blue-100">Module 3: Data Visualization - Professional Plot Customization</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                    <p class="text-sm">Module Progress</p>
+                    <div class="flex items-center mt-1">
+                        <span class="text-xs mr-2">60%</span>
+                        <div class="progress-bar w-32">
+                            <div class="progress-fill w-3/5"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hidden md:block">
+                    <p class="text-sm flex items-center">
+                        <i class="far fa-user mr-2"></i>
+                        DATTI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Navigation Sidebar -->
+            <nav class="lg:w-1/4 bg-slate-800/50 rounded-xl p-6 h-fit sticky top-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open mr-2"></i>
+                    Module 3: Data Visualization
+                </h2>
+                <p class="text-slate-300 mb-6">Professional Plot Customization</p>
+                
+                <ul class="space-y-2">
+                    <li>
+                        <a href="./Matplotlib Fundamentals.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">1</div>
+                                Matplotlib Fundamentals
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Seaborn for Statistical Visualization.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-purple-500 text-white mr-3">2</div>
+                                Seaborn Visualization
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Customizing Plots Themes.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50 active">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-pink-500 text-white mr-3">3</div>
+                                Customizing Plots & Themes
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Interactive Visualizations with Plotly.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-indigo-500 text-white mr-3">4</div>
+                                Interactive Visualizations
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Nigerian Health Data.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-emerald-500 text-white mr-3">5</div>
+                                Nigerian Health Project
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        Customization Resources
+                    </h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-palette text-purple-400 mr-3"></i>
+                            Color Palette Tools
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-font text-blue-400 mr-3"></i>
+                            Font Pairing Guide
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-theater-masks text-pink-400 mr-3"></i>
+                            Style Gallery
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Customization Header -->
+                <div class="bg-gradient-to-r from-indigo-900/80 to-pink-900/80 rounded-2xl p-8 mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2670&auto=format&fit=crop')] bg-cover opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="module-badge bg-yellow-400 text-slate-900 font-bold py-1 px-4 rounded-full text-sm">
+                            Professional Design
+                        </div>
+                        <h1 class="text-4xl font-bold mb-4">Mastering Plot Customization</h1>
+                        <p class="text-lg text-blue-100 max-w-3xl">
+                            Transform your visualizations from functional to exceptional. Learn professional styling techniques, 
+                            color theory, and customization methods to create publication-quality graphics.
+                        </p>
+                        <div class="flex flex-wrap gap-3 mt-6">
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Color Theory</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Typography</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Style Sheets</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Annotation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Introduction -->
+                <section class="section-card p-6 mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="step-indicator bg-pink-500 text-white mr-4">3</div>
+                        <h2 class="text-2xl font-bold">Customizing Plots & Themes</h2>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Professional data visualization requires more than just creating plots - it demands thoughtful customization 
+                            to enhance clarity, emphasize key insights, and create visually appealing graphics. This module covers 
+                            everything from basic styling to advanced customization techniques.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            <div class="customization-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-pink-500 text-4xl mb-3">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Color & Palettes</h3>
+                                <p class="text-sm text-slate-300">Master color theory and select perfect palettes</p>
+                            </div>
+                            
+                            <div class="customization-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-indigo-500 text-4xl mb-3">
+                                    <i class="fas fa-text-height"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Typography</h3>
+                                <p class="text-sm text-slate-300">Choose fonts and text styles for readability</p>
+                            </div>
+                            
+                            <div class="customization-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-yellow-500 text-4xl mb-3">
+                                    <i class="fas fa-brush"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Style & Themes</h3>
+                                <p class="text-sm text-slate-300">Apply professional themes and styles</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Color Theory -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-palette mr-3 text-pink-500"></i>
+                        Color Theory & Palettes
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Color is one of the most powerful tools in data visualization. It can highlight patterns, encode information, 
+                            and guide the viewer's attention. Understanding color theory is essential for creating effective visualizations.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-pink-400">
+                                    <i class="fas fa-circle mr-2"></i>
+                                    Color Palette Types
+                                </h3>
+                                
+                                <div class="mb-4">
+                                    <h4 class="font-semibold">Sequential Palettes</h4>
+                                    <p class="text-sm text-slate-300 mb-2">For ordered data from low to high</p>
+                                    <div class="palette-display">
+                                        <div class="w-1/5 bg-#fde2e4"></div>
+                                        <div class="w-1/5 bg-#fad2e1"></div>
+                                        <div class="w-1/5 bg-#c5dedd"></div>
+                                        <div class="w-1/5 bg-#dbe7e4"></div>
+                                        <div class="w-1/5 bg-#f0efeb"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h4 class="font-semibold">Diverging Palettes</h4>
+                                    <p class="text-sm text-slate-300 mb-2">For data with critical midpoint</p>
+                                    <div class="palette-display">
+                                        <div class="w-1/5 bg-#ff595e"></div>
+                                        <div class="w-1/5 bg="#ffca3a"></div>
+                                        <div class="w-1/5 bg="#8ac926"></div>
+                                        <div class="w-1/5 bg="#1982c4"></div>
+                                        <div class="w-1/5 bg="#6a4c93"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold">Qualitative Palettes</h4>
+                                    <p class="text-sm text-slate-300 mb-2">For categorical data with distinct groups</p>
+                                    <div class="palette-display">
+                                        <div class="w-1/5 bg="#ff595e"></div>
+                                        <div class="w-1/5 bg="#ffca3a"></div>
+                                        <div class="w-1/5 bg="#8ac926"></div>
+                                        <div class="w-1/5 bg="#1982c4"></div>
+                                        <div class="w-1/5 bg="#6a4c93"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-pink-400">
+                                    <i class="fas fa-sliders-h mr-2"></i>
+                                    Applying Palettes in Code
+                                </h3>
+                                
+                                <div class="code-block mb-4">
+                                    <div class="code-header">
+                                        <span>Matplotlib Color Customization</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="keyword">import</span> <span class="module">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="module">plt</span>
+<span class="keyword">import</span> <span class="module">numpy</span> <span class="keyword">as</span> <span class="module">np</span>
+
+<span class="comment"># Custom color cycle</span>
+plt.rcParams[<span class="string">'axes.prop_cycle'</span>] = plt.cycler(
+    color=[<span class="string">'#1f77b4'</span>, <span class="string">'#ff7f0e'</span>, <span class="string">'#2ca02c'</span>, 
+           <span class="string">'#d62728'</span>, <span class="string">'#9467bd'</span>]
+)
+
+<span class="comment"># Create plot with custom colors</span>
+fig, ax = plt.subplots()
+x = np.linspace(0, 10, 100)
+<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):
+    ax.plot(x, np.sin(x + i * <span class="number">0.5</span>), 
+            linewidth=<span class="number">2</span>)
+    
+plt.show()</code></pre>
+                                </div>
+                                
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span>Seaborn Palette Configuration</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="keyword">import</span> <span class="module">seaborn</span> <span class="keyword">as</span> <span class="module">sns</span>
+
+<span class="comment"># Set custom palette</span>
+custom_palette = [<span class="string">'#003f5c'</span>, <span class="string">'#58508d'</span>, 
+                 <span class="string">'#bc5090'</span>, <span class="string">'#ff6361'</span>, <span class="string">'#ffa600'</span>]
+sns.set_palette(custom_palette)
+
+<span class="comment"># Create plot with custom palette</span>
+tips = sns.load_dataset(<span class="string">"tips"</span>)
+sns.boxplot(x=<span class="string">"day"</span>, y=<span class="string">"total_bill"</span>, 
+            hue=<span class="string">"sex"</span>, data=tips)</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Theme Customization -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-magic mr-3 text-indigo-500"></i>
+                        Theme & Style Customization
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Professional visualizations require consistent styling. Both Matplotlib and Seaborn provide powerful 
+                            theming systems to control the overall appearance of your plots.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-indigo-400">
+                                    <i class="fab fa-python mr-2"></i>
+                                    Matplotlib Style Sheets
+                                </h3>
+                                <p class="text-sm text-slate-300 mb-4">
+                                    Matplotlib comes with several built-in style sheets that emulate popular visualization styles:
+                                </p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="font-semibold">ggplot</h4>
+                                        <div class="style-card bg-gradient-to-r from-#3f7cac to-#95afba"></div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-semibold">Solarize_Light2</h4>
+                                        <div class="style-card bg-gradient-to-r from-#fdf6e3 to-#eee8d5"></div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-semibold">Dark Background</h4>
+                                        <div class="style-card bg-gradient-to-r from-#2d2d2d to-#1a1a1a"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="code-block mt-4">
+                                    <div class="code-header">
+                                        <span>Using Matplotlib Styles</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="comment"># List available styles</span>
+<span class="keyword">print</span>(plt.style.available)
+
+<span class="comment"># Apply a style</span>
+plt.style.use(<span class="string">'ggplot'</span>)
+
+<span class="comment"># Apply multiple styles (later styles override earlier)</span>
+plt.style.use([<span class="string">'dark_background'</span>, <span class="string">'ggplot'</span>])
+
+<span class="comment"># Use context manager for temporary style</span>
+<span class="keyword">with</span> plt.style.context(<span class="string">'seaborn-whitegrid'</span>):
+    fig, ax = plt.subplots()
+    ax.plot(x, y)</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-indigo-400">
+                                    <i class="fas fa-chart-line mr-2"></i>
+                                    Seaborn Themes & Context
+                                </h3>
+                                <p class="text-sm text-slate-300 mb-4">
+                                    Seaborn provides high-level control over plot aesthetics through its theming system:
+                                </p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="font-semibold">set_theme()</h4>
+                                        <p class="text-sm text-slate-300">Set aesthetic parameters in one step (style, palette, context)</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-semibold">set_style()</h4>
+                                        <p class="text-sm text-slate-300">Control plot background and grid styles (darkgrid, whitegrid, etc.)</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-semibold">set_context()</h4>
+                                        <p class="text-sm text-slate-300">Scale plot elements appropriately for different contexts (paper, talk, poster)</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="code-block mt-4">
+                                    <div class="code-header">
+                                        <span>Seaborn Theme Configuration</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="comment"># Set overall theme</span>
+sns.set_theme(style=<span class="string">"whitegrid"</span>, 
+              palette=<span class="string">"pastel"</span>,
+              context=<span class="string">"paper"</span>)
+
+<span class="comment"># Override specific parameters</span>
+sns.set_style(<span class="string">"ticks"</span>, {<span class="string">"axes.facecolor"</span>: <span class="string">"#f0f8ff"</span>})
+sns.set_context(<span class="string">"talk"</span>, font_scale=<span class="number">1.2</span>, 
+                rc={<span class="string">"lines.linewidth"</span>: <span class="number">2.5</span>})
+
+<span class="comment"># Reset to defaults</span>
+sns.reset_orig()</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Advanced Customization -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-tools mr-3 text-yellow-500"></i>
+                        Advanced Customization Techniques
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Truly professional visualizations require going beyond basic theming. These advanced techniques 
+                            will help you create publication-quality graphics.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-yellow-400">
+                                    <i class="fas fa-font mr-2"></i>
+                                    Typography & Text Styling
+                                </h3>
+                                
+                                <div class="code-block mb-4">
+                                    <div class="code-header">
+                                        <span>Text Customization</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="comment"># Global font settings</span>
+plt.rcParams[<span class="string">'font.family'</span>] = <span class="string">'sans-serif'</span>
+plt.rcParams[<span class="string">'font.sans-serif'</span>] = [<span class="string">'Segoe UI'</span>, <span class="string">'Tahoma'</span>, <span class="string">'Arial'</span>]
+plt.rcParams[<span class="string">'font.size'</span>] = <span class="number">12</span>
+
+<span class="comment"># Individual text elements</span>
+ax.set_title(<span class="string">'Nigeria Health Facilities'</span>, 
+            fontsize=<span class="number">16</span>, 
+            fontweight=<span class="string">'bold'</span>,
+            fontfamily=<span class="string">'Georgia'</span>)
+
+ax.set_xlabel(<span class="string">'Year'</span>, 
+             fontsize=<span class="number">14</span>,
+             style=<span class="string">'italic'</span>)
+
+<span class="comment"># Text annotations</span>
+ax.annotate(<span class="string">'Policy Change'</span>, 
+           xy=(<span class="number">2018</span>, <span class="number">4500</span>), 
+           xytext=(<span class="number">2016</span>, <span class="number">5000</span>),
+           arrowprops={<span class="string">'arrowstyle'</span>: <span class="string">'->'</span>, <span class="string">'color'</span>: <span class="string">'red'</span>},
+           bbox={<span class="string">'boxstyle'</span>: <span class="string">'round'</span>, <span class="string">'facecolor'</span>: <span class="string">'wheat'</span>, <span class="string">'alpha'</span>: <span class="number">0.8</span>})</code></pre>
+                                </div>
+                                
+                                <h4 class="font-semibold mt-4 mb-2">Font Pairing Principles</h4>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Use sans-serif for labels and numbers
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Use serif for titles and annotations
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Maintain consistent font sizes
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Ensure adequate contrast
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-yellow-400">
+                                    <i class="fas fa-drafting-compass mr-2"></i>
+                                    Advanced Annotation & Styling
+                                </h3>
+                                
+                                <div class="annotation-example">
+                                    <div class="annotation-line" style="width: 150px; top: 50px; left: 50px;"></div>
+                                    <div class="annotation-text" style="top: 30px; left: 210px;">Significant Increase</div>
+                                    
+                                    <div class="annotation-line" style="width: 80px; top: 120px; left: 250px; transform: rotate(90deg);"></div>
+                                    <div class="annotation-text" style="top: 130px; left: 260px;">Peak Value</div>
+                                    
+                                    <div class="annotation-line" style="width: 100px; top: 160px; left: 100px; transform: rotate(-45deg);"></div>
+                                    <div class="annotation-text" style="top: 170px; left: 10px;">Policy Change Effect</div>
+                                </div>
+                                
+                                <div class="code-block mt-4">
+                                    <div class="code-header">
+                                        <span>Custom Grid & Spines</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="comment"># Custom grid</span>
+ax.grid(<span class="keyword">True</span>, linestyle=<span class="string">'--'</span>, 
+       linewidth=<span class="number">0.5</span>, alpha=<span class="number">0.7</span>,
+       color=<span class="string">'#4a4a4a'</span>)
+
+<span class="comment"># Spine customization</span>
+ax.spines[<span class="string">'top'</span>].set_visible(<span class="keyword">False</span>)
+ax.spines[<span class="string">'right'</span>].set_visible(<span class="keyword">False</span>)
+ax.spines[<span class="string">'left'</span>].set_position((<span class="string">'outward'</span>, <span class="number">10</span>))
+ax.spines[<span class="string">'bottom'</span>].set_position((<span class="string">'outward'</span>, <span class="number">5</span>))
+
+<span class="comment"># Secondary axis</span>
+ax2 = ax.twinx()
+ax2.spines[<span class="string">'right'</span>].set_position((<span class="string">'outward'</span>, <span class="number">40</span>))</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Practical Example -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-3 text-red-400"></i>
+                        Practical Application: Nigerian Health Data
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Let's apply these customization techniques to create a publication-quality visualization of Nigerian 
+                            health facility data.
+                        </p>
+                        
+                        <div class="code-block mb-6">
+                            <div class="code-header">
+                                <span>Customized Health Data Visualization</span>
+                                <div>
+                                    <button class="text-slate-300 hover:text-white mr-3">
+                                        <i class="far fa-copy"></i> Copy
+                                    </button>
+                                    <button class="text-slate-300 hover:text-white explain-btn" data-target="explain-custom">
+                                        <i class="far fa-question-circle"></i> Explain
+                                    </button>
+                                </div>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="module">plt</span>
+<span class="keyword">import</span> <span class="module">seaborn</span> <span class="keyword">as</span> <span class="module">sns</span>
+<span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+<span class="keyword">import</span> <span class="module">numpy</span> <span class="keyword">as</span> <span class="module">np</span>
+
+<span class="comment"># Load and prepare data</span>
+url = <span class="string">"https://raw.githubusercontent.com/datasets/nigeria-health-facilities/main/data/health-facilities.csv"</span>
+df = pd.read_csv(url)
+df = df.dropna(subset=[<span class="string">'latitude'</span>, <span class="string">'longitude'</span>])
+df = df[df[<span class="string">'state'</span>].isin(df[<span class="string">'state'</span>].value_counts().nlargest(<span class="number">5</span>).index)]
+
+<span class="comment"># Set up custom style</span>
+plt.style.use(<span class="string">'seaborn-whitegrid'</span>)
+custom_style = {
+    <span class="string">'axes.edgecolor'</span>: <span class="string">'#4a4a4a'</span>,
+    <span class="string">'axes.labelcolor'</span>: <span class="string">'#2d2d2d'</span>,
+    <span class="string">'text.color'</span>: <span class="string">'#2d2d2d'</span>,
+    <span class="string">'xtick.color'</span>: <span class="string">'#4a4a4a'</span>,
+    <span class="string">'ytick.color'</span>: <span class="string">'#4a4a4a'</span>,
+    <span class="string">'font.family'</span>: [<span class="string">'Segoe UI'</span>, <span class="string">'Tahoma'</span>, <span class="string">'sans-serif'</span>],
+    <span class="string">'axes.grid'</span>: <span class="keyword">True</span>,
+    <span class="string">'grid.linestyle'</span>: <span class="string">'--'</span>,
+    <span class="string">'grid.alpha'</span>: <span class="number">0.3</span>
+}
+plt.rcParams.update(custom_style)
+
+<span class="comment"># Create figure with constrained layout</span>
+fig, ax = plt.subplots(figsize=(<span class="number">12</span>, <span class="number">8</span>), constrained_layout=<span class="keyword">True</span>)
+
+<span class="comment"># Custom palette</span>
+palette = [<span class="string">'#1f77b4'</span>, <span class="string">'#ff7f0e'</span>, <span class="string">'#2ca02c'</span>, <span class="string">'#d62728'</span>, <span class="string">'#9467bd'</span>]
+
+<span class="comment"># Create custom plot</span>
+splot = sns.countplot(
+    y=<span class="string">'state'</span>,
+    data=df,
+    order=df[<span class="string">'state'</span>].value_counts().index,
+    palette=palette,
+    saturation=<span class="number">0.9</span>,
+    ax=ax
+)
+
+<span class="comment"># Add count labels</span>
+<span class="keyword">for</span> p <span class="keyword">in</span> splot.patches:
+    width = p.get_width()
+    ax.text(
+        width + <span class="number">20</span>,
+        p.get_y() + p.get_height()/<span class="number">2</span>,
+        <span class="string">'{:.0f}'</span>.format(width),
+        va=<span class="string">'center'</span>,
+        fontsize=<span class="number">10</span>,
+        fontweight=<span class="string">'bold'</span>,
+        color=<span class="string">'#4a4a4a'</span>
+    )
+
+<span class="comment"># Customize spines</span>
+ax.spines[<span class="string">'top'</span>].set_visible(<span class="keyword">False</span>)
+ax.spines[<span class="string">'right'</span>].set_visible(<span class="keyword">False</span>)
+ax.spines[<span class="string">'left'</span>].set_position((<span class="string">'outward'</span>, <span class="number">10</span>))
+ax.spines[<span class="string">'bottom'</span>].set_position((<span class="string">'outward'</span>, <span class="number">5</span>))
+
+<span class="comment"># Titles and labels</span>
+ax.set_title(
+    <span class="string">'Health Facility Distribution in Top 5 Nigerian States'</span>,
+    fontsize=<span class="number">16</span>,
+    fontweight=<span class="string">'bold'</span>,
+    pad=<span class="number">20</span>
+)
+ax.set_xlabel(<span class="string">'Number of Facilities'</span>, fontsize=<span class="number">12</span>, labelpad=<span class="number">10</span>)
+ax.set_ylabel(<span class="string">'State'</span>, fontsize=<span class="number">12</span>, labelpad=<span class="number">10</span>)
+
+<span class="comment"># Add annotation</span>
+ax.annotate(
+    <span class="string">'Lagos has the highest concentration\nof healthcare facilities'</span>,
+    xy=(<span class="number">900</span>, <span class="number">0.1</span>),
+    xytext=(<span class="number">600</span>, -<span class="number">1.0</span>),
+    arrowprops={<span class="string">'arrowstyle'</span>: <span class="string">'->'</span>, <span class="string">'color'</span>: <span class="string">'#d62728'</span>},
+    fontsize=<span class="number">10</span>,
+    bbox={<span class="string">'boxstyle'</span>: <span class="string">'round'</span>, <span class="string">'facecolor'</span>: <span class="string">'#f0f0f0'</span>, <span class="string">'alpha'</span>: <span class="number">0.9</span>}
+)
+
+<span class="comment"># Add footnote</span>
+plt.figtext(
+    <span class="number">0.5</span>, -<span class="number">0.05</span>,
+    <span class="string">'Source: Nigerian Health Facilities Dataset | Visualization: NITDA/NCAIR Cohort 27'</span>,
+    ha=<span class="string">'center'</span>,
+    fontsize=<span class="number">9</span>,
+    color=<span class="string">'#6a6a6a'</span>
+)
+
+plt.show()</code></pre>
+                        </div>
+                        
+                        <div id="explain-custom" class="explanation-content bg-slate-800/80 rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3">Professional Customization Techniques:</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-swatchbook text-purple-400 mr-2"></i>
+                                        Custom Style Configuration
+                                    </h4>
+                                    <p class="text-sm">We defined a custom style dictionary to override default Matplotlib parameters for a cohesive look.</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-tint text-blue-400 mr-2"></i>
+                                        Color Palette Selection
+                                    </h4>
+                                    <p class="text-sm">Used a custom qualitative palette that provides good distinction between categories.</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-draw-polygon text-yellow-400 mr-2"></i>
+                                        Advanced Annotation
+                                    </h4>
+                                    <p class="text-sm">Added a callout annotation to highlight a key insight with a visual arrow.</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-book text-green-400 mr-2"></i>
+                                        Source Attribution
+                                    </h4>
+                                    <p class="text-sm">Included a professional footnote with data source and attribution.</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-bezier-curve text-pink-400 mr-2"></i>
+                                        Spine Customization
+                                    </h4>
+                                    <p class="text-sm">Refined the plot spines by removing unnecessary elements and adjusting positions.</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-text-height text-indigo-400 mr-2"></i>
+                                        Typography Hierarchy
+                                    </h4>
+                                    <p class="text-sm">Established a clear visual hierarchy through font sizes and weights.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Next Steps -->
+                <div class="section-card p-6 mt-6">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Continue Your Learning Journey</h2>
+                    <div class="flex flex-wrap justify-center gap-4 mt-6">
+                        <a href="./Seaborn for Statistical Visualization.html" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-arrow-left mr-2"></i> Previous: Seaborn
+                        </a>
+                        <a href="./Interactive Visualizations with Plotly.html" class="bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            Next: Interactive Visualizations <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="./Nigerian Health Data.html" class="bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-700 hover:to-pink-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-project-diagram mr-2"></i> Go to Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+     <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    
+    <!-- Footer -->
+    <footer class="bg-slate-900/80 border-t border-slate-700 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-atom text-blue-400 mr-2"></i>
+                        NITDA/NCAIR ULA
+                    </h3>
+                    <p class="text-slate-400 mt-2">Universal Learning Archive - Transforming Nigeria through digital education</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-linkedin text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-youtube text-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm">
+                <p>© 2025 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR)</p>
+                <p class="mt-2">Cohort 27 - Data Science Specialization | Module 3: Data Visualization</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle explanation sections
+        document.querySelectorAll('.explain-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                targetElement.classList.toggle('show');
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (targetElement.classList.contains('show')) {
+                    icon.classList.remove('fa-question-circle');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-question-circle');
+                }
+            });
+        });
+        
+        // Update active navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Simulate progress as user scrolls
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollPosition / documentHeight) * 100;
+            document.querySelector('.progress-fill').style.width = Math.min(progress, 100) + '%';
+        });
+        
+        // Copy code functionality
+        document.querySelectorAll('.fa-copy').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-header').nextElementSibling;
+                const codeText = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const original = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-times';
+                    this.classList.remove(original);
+                    this.classList.add('fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.remove('fa-check');
+                        this.classList.add(original);
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

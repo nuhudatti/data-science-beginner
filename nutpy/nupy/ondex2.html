@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Fundamentals - Master Numerical Computing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+            --numpy-orange: #4d77cf;
+            --python-blue: #306998;
+            --array-green: #4ade80;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--numpy-orange), var(--array-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(77, 119, 207, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--numpy-orange), #4ade80);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .path-btn {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(20, 30, 80, 0.6);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            transition: all 0.3s ease;
+            text-align: left;
+            min-height: 100px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .path-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--array-green);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        
+        .path-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 0%, 
+                rgba(255,255,255,0) 100%);
+            z-index: 0;
+        }
+        
+        .path-icon {
+            font-size: 32px;
+            margin-right: 20px;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+        
+        .path-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin-right: 15px;
+            z-index: 1;
+            color: var(--star-yellow);
+        }
+        
+        .path-content {
+            z-index: 1;
+        }
+        
+        .path-title {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .path-description {
+            opacity: 0.8;
+            font-size: 15px;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .home-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .home-icon:hover {
+            transform: scale(1.1);
+            background: rgba(74, 30, 109, 0.7);
+            border-color: var(--array-green);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .feature-card {
+            padding: 25px;
+            border-radius: 12px;
+            background: rgba(20, 30, 80, 0.4);
+            border: 1px solid rgba(96, 130, 182, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--numpy-orange);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--array-green);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--numpy-orange), var(--array-green));
+            transition: width 0.5s ease;
+        }
+        
+        .array-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .array-cell {
+            background: rgba(77, 119, 207, 0.3);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 4px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .section-content {
+            display: none;
+        }
+        
+        .active-section {
+            display: block;
+        }
+        
+        .back-btn {
+            background: rgba(20, 30, 80, 0.6);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .back-btn:hover {
+            background: rgba(74, 30, 109, 0.7);
+            border-color: var(--array-green);
+        }
+        
+        .qa-item {
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(20, 30, 80, 0.4);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .qa-item:hover {
+            transform: translateX(5px);
+            border-color: var(--numpy-orange);
+        }
+        
+        .content-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .content-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content-container::-webkit-scrollbar-track {
+            background: rgba(10, 15, 46, 0.3);
+            border-radius: 10px;
+        }
+        
+        .content-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--numpy-orange), var(--array-green));
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body x-data="app()" x-init="init()">
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <!-- Home Button -->
+    <div class="home-icon" @click="currentSection = 'home'">
+        <i class="fas fa-home text-xl text-blue-300"></i>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl relative z-10">
+        <!-- Home Section -->
+        <template x-if="currentSection === 'home'">
+            <div>
+                <!-- Header -->
+                <header class="text-center mb-12 mt-6">
+                    <div class="floating">
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                            <i class="fas fa-calculator mr-3"></i>NumPy Fundamentals
+                        </h1>
+                    </div>
+                    <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                        Master numerical computing for efficient data processing
+                    </p>
+                </header>
+                
+                <!-- Stats and Progress -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Learning Concepts</h3>
+                        <p>5 comprehensive sections</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" :style="`width: ${progress}%`"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Your Progress</h3>
+                        <p x-text="`${completedSections}/5 sections completed`"></p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" :style="`width: ${progress}%`"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Estimated Time</h3>
+                        <p>8-10 hours to complete</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" :style="`width: ${progress}%`"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learning Path -->
+                <div class="card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 section-title">
+                        <i class="fas fa-road mr-3"></i>Learning Path
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Path 1 -->
+                        <div class="path-btn" @click="showSection(0)">
+                            <div class="path-number">1</div>
+                            <div class="path-icon text-orange-400">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">NumPy Arrays vs Python Lists</div>
+                                <div class="path-description">
+                                    Understand performance differences and when to use each
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Path 2 -->
+                        <div class="path-btn" @click="showSection(1)">
+                            <div class="path-number">2</div>
+                            <div class="path-icon text-blue-400">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">Array Creation & Manipulation</div>
+                                <div class="path-description">
+                                    Create, reshape, and transform arrays efficiently
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Path 3 -->
+                        <div class="path-btn" @click="showSection(2)">
+                            <div class="path-number">3</div>
+                            <div class="path-icon text-yellow-400">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">Vectorized Operations & Broadcasting</div>
+                                <div class="path-description">
+                                    Perform fast computations without explicit loops
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Path 4 -->
+                        <div class="path-btn" @click="showSection(3)">
+                            <div class="path-number">4</div>
+                            <div class="path-icon text-purple-400">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">Statistical Operations on Arrays</div>
+                                <div class="path-description">
+                                    Calculate means, medians, correlations and more
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Path 5 -->
+                        <div class="path-btn" @click="showSection(4)">
+                            <div class="path-number">5</div>
+                            <div class="path-icon text-green-400">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">Real Application: Agricultural Yield Analysis</div>
+                                <div class="path-description">
+                                    Apply NumPy to real-world agricultural datasets
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Q&A Section -->
+                        <div class="path-btn" @click="showSection(5)">
+                            <div class="path-number">6</div>
+                            <div class="path-icon text-pink-400">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="path-content">
+                                <div class="path-title">Q&A Section</div>
+                                <div class="path-description">
+                                    Get answers to your NumPy questions
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features and Benefits -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="card p-6">
+                        <h2 class="text-2xl font-bold mb-4 section-title">
+                            <i class="fas fa-star mr-3"></i>Why Learn NumPy?
+                        </h2>
+                        
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-bolt text-green-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h3 class="font-bold">Speed & Performance</h3>
+                                    <p class="opacity-80">NumPy operations are 10-100x faster than Python lists</p>
+                                </div>
+                            </li>
+                            
+                            <li class="flex items-start">
+                                <i class="fas fa-memory text-green-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h3 class="font-bold">Memory Efficiency</h3>
+                                    <p class="opacity-80">Arrays consume significantly less memory than lists</p>
+                                </div>
+                            </li>
+                            
+                            <li class="flex items-start">
+                                <i class="fas fa-calculator text-green-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h3 class="font-bold">Mathematical Power</h3>
+                                    <p class="opacity-80">Advanced mathematical functions and operations</p>
+                                </div>
+                            </li>
+                            
+                            <li class="flex items-start">
+                                <i class="fas fa-project-diagram text-green-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h3 class="font-bold">Foundation for Data Science</h3>
+                                    <p class="opacity-80">Essential for Pandas, SciPy, Scikit-learn, and ML frameworks</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h2 class="text-2xl font-bold mb-4 section-title">
+                            <i class="fas fa-laptop-code mr-3"></i>Array Visualization
+                        </h2>
+                        
+                        <div class="flex justify-center mb-4">
+                            <div class="array-grid">
+                                <div class="array-cell">1.2</div>
+                                <div class="array-cell">2.8</div>
+                                <div class="array-cell">3.4</div>
+                                <div class="array-cell">4.1</div>
+                                <div class="array-cell">5.9</div>
+                                <div class="array-cell">6.7</div>
+                                <div class="array-cell">7.0</div>
+                                <div class="array-cell">8.3</div>
+                                <div class="array-cell">9.5</div>
+                                <div class="array-cell">10.2</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="opacity-80 mb-4">NumPy arrays store data in contiguous memory blocks for efficient access</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Start Learning CTA -->
+                <div class="text-center mb-16">
+                    <button class="btn px-10 py-5 text-xl" @click="showSection(0)">
+                        <i class="fas fa-rocket mr-3"></i>Start Learning Now
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Section Content -->
+        <template x-if="currentSection !== 'home'">
+            <div>
+                <!-- Back Button -->
+                <button class="back-btn" @click="currentSection = 'home'">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Learning Path
+                </button>
+                
+                <!-- Section 1: NumPy Arrays vs Python Lists -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section0'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-orange-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">NumPy Arrays vs Python Lists</h2>
+                            <p class="text-xl text-blue-200">Understand performance differences and when to use each</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-check-circle mr-2"></i>Key Differences</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-bolt text-yellow-400 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-bold">Performance</h4>
+                                            <p class="opacity-80">NumPy arrays are 10-100x faster for numerical operations</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-memory text-yellow-400 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-bold">Memory Usage</h4>
+                                            <p class="opacity-80">Arrays consume less memory than lists for large datasets</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-cube text-yellow-400 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-bold">Functionality</h4>
+                                            <p class="opacity-80">Arrays support vectorized operations and broadcasting</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-cogs text-yellow-400 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-bold">Data Types</h4>
+                                            <p class="opacity-80">Arrays require homogeneous data, lists can be heterogeneous</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-flask mr-2"></i>Performance Test</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+import time
+import numpy as np
+
+# With Python lists
+start = time.time()
+result = [x**2 for x in range(1000000)]
+end = time.time()
+print(f"List time: {end - start:.4f} seconds")
+
+# With NumPy arrays
+start = time.time()
+arr = np.arange(1000000)
+result = arr**2
+end = time.time()
+print(f"NumPy time: {end - start:.4f} seconds")</pre>
+                                </div>
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold mb-2">Typical Results:</h4>
+                                    <p>List time: 0.15-0.25 seconds</p>
+                                    <p>NumPy time: 0.002-0.005 seconds</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-lightbulb mr-2"></i>When to Use Each</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card p-4 bg-blue-900/30">
+                                    <h4 class="font-bold text-lg mb-2 text-orange-300">Use Python Lists When:</h4>
+                                    <ul class="space-y-2">
+                                        <li>Dealing with heterogeneous data types</li>
+                                        <li>Working with small datasets</li>
+                                        <li>Need dynamic resizing</li>
+                                        <li>Require built-in methods like append(), pop()</li>
+                                    </ul>
+                                </div>
+                                <div class="card p-4 bg-green-900/30">
+                                    <h4 class="font-bold text-lg mb-2 text-green-300">Use NumPy Arrays When:</h4>
+                                    <ul class="space-y-2">
+                                        <li>Working with large numerical datasets</li>
+                                        <li>Performing mathematical operations</li>
+                                        <li>Needing memory efficiency</li>
+                                        <li>Using libraries like Pandas, SciPy, Scikit-learn</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 2: Array Creation & Manipulation -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section1'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-blue-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">Array Creation & Manipulation</h2>
+                            <p class="text-xl text-blue-200">Create, reshape, and transform arrays efficiently</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-blue-300"><i class="fas fa-plus-circle mr-2"></i>Array Creation</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+import numpy as np
+
+# From Python list
+arr1 = np.array([1, 2, 3, 4, 5])
+
+# Array of zeros
+arr2 = np.zeros((3, 3))
+
+# Array of ones
+arr3 = np.ones((2, 4))
+
+# Identity matrix
+arr4 = np.eye(4)
+
+# Evenly spaced values
+arr5 = np.arange(0, 10, 2)  # [0, 2, 4, 6, 8]
+
+# Random values
+arr6 = np.random.rand(3, 2)</pre>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-blue-300"><i class="fas fa-crop-alt mr-2"></i>Array Manipulation</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+# Reshaping arrays
+arr = np.arange(1, 10)  # [1,2,3,4,5,6,7,8,9]
+matrix = arr.reshape(3, 3)
+
+# Transposing
+transposed = matrix.T
+
+# Flattening
+flattened = matrix.flatten()
+
+# Concatenation
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+c = np.concatenate((a, b))  # [1,2,3,4,5,6]
+
+# Splitting
+arr = np.arange(9)
+split_arr = np.split(arr, 3)</pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 text-blue-300"><i class="fas fa-shapes mr-2"></i>Array Shape Operations</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card p-4 bg-blue-900/30">
+                                    <h4 class="font-bold text-lg mb-2">Reshaping</h4>
+                                    <p>Change the shape of an array without changing its data</p>
+                                    <div class="mt-4 flex justify-center">
+                                        <div class="array-grid">
+                                            <div class="array-cell">1</div>
+                                            <div class="array-cell">2</div>
+                                            <div class="array-cell">3</div>
+                                            <div class="array-cell">4</div>
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">6</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">→</div>
+                                    <div class="mt-2 flex justify-center">
+                                        <div class="array-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                            <div class="array-cell">1</div>
+                                            <div class="array-cell">2</div>
+                                            <div class="array-cell">3</div>
+                                            <div class="array-cell">4</div>
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">6</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card p-4 bg-blue-900/30">
+                                    <h4 class="font-bold text-lg mb-2">Transposing</h4>
+                                    <p>Swap array dimensions (rows become columns)</p>
+                                    <div class="mt-4 flex justify-center">
+                                        <div class="array-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                            <div class="array-cell">1</div>
+                                            <div class="array-cell">2</div>
+                                            <div class="array-cell">3</div>
+                                            <div class="array-cell">4</div>
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">6</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">→</div>
+                                    <div class="mt-2 flex justify-center">
+                                        <div class="array-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                            <div class="array-cell">1</div>
+                                            <div class="array-cell">4</div>
+                                            <div class="array-cell">2</div>
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">3</div>
+                                            <div class="array-cell">6</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 3: Vectorized Operations & Broadcasting -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section2'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-yellow-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">Vectorized Operations & Broadcasting</h2>
+                            <p class="text-xl text-blue-200">Perform fast computations without explicit loops</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-yellow-300"><i class="fas fa-vector-square mr-2"></i>Vectorized Operations</h3>
+                                <p class="mb-4">Vectorization allows you to express operations as occurring on entire arrays rather than individual elements.</p>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+import numpy as np
+
+# Without vectorization (slow)
+arr = np.arange(1000000)
+result = np.zeros(1000000)
+for i in range(len(arr)):
+    result[i] = arr[i] * 2 + 5
+
+# With vectorization (fast)
+result = arr * 2 + 5</pre>
+                                </div>
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold mb-2">Benefits:</h4>
+                                    <ul class="space-y-2">
+                                        <li>Concise and readable code</li>
+                                        <li>Faster execution (uses optimized C code)</li>
+                                        <li>Easier to parallelize operations</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-yellow-300"><i class="fas fa-satellite-dish mr-2"></i>Broadcasting</h3>
+                                <p class="mb-4">Broadcasting allows NumPy to work with arrays of different shapes during arithmetic operations.</p>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+# Adding scalar to array
+arr = np.array([1, 2, 3])
+result = arr + 5  # [6, 7, 8]
+
+# Adding arrays of different shapes
+matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+row = np.array([10, 20, 30])
+result = matrix + row
+
+# Output:
+# [[11, 22, 33],
+#  [14, 25, 36],
+#  [17, 28, 39]]</pre>
+                                </div>
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold mb-2">Rules:</h4>
+                                    <ul class="space-y-2">
+                                        <li>Dimensions are compared from right to left</li>
+                                        <li>Dimensions must be equal or one must be 1</li>
+                                        <li>Arrays with fewer dimensions are padded with 1s</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 text-yellow-300"><i class="fas fa-chart-line mr-2"></i>Performance Comparison</h3>
+                            <div class="bg-gray-800/30 p-4 rounded-lg">
+                                <div class="flex justify-between mb-4">
+                                    <div class="text-center">
+                                        <div class="text-lg font-bold">Vectorized Operations</div>
+                                        <div class="text-green-400 font-bold">0.002s</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-lg font-bold">Python Loops</div>
+                                        <div class="text-red-400 font-bold">0.35s</div>
+                                    </div>
+                                </div>
+                                <div class="h-48 flex items-end justify-center space-x-2">
+                                    <div class="w-16 bg-green-500 rounded-t-lg" style="height: 180px;"></div>
+                                    <div class="w-16 bg-red-500 rounded-t-lg" style="height: 10px;"></div>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <p>Execution time for 1,000,000 element array multiplication</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 4: Statistical Operations on Arrays -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section3'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-purple-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">Statistical Operations on Arrays</h2>
+                            <p class="text-xl text-blue-200">Calculate means, medians, correlations and more</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-purple-300"><i class="fas fa-calculator mr-2"></i>Basic Statistics</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+import numpy as np
+
+data = np.array([2.5, 3.8, 4.2, 1.9, 5.6, 3.1])
+
+# Mean (average)
+mean = np.mean(data)
+
+# Median
+median = np.median(data)
+
+# Standard deviation
+std_dev = np.std(data)
+
+# Variance
+variance = np.var(data)
+
+# Min and max
+min_val = np.min(data)
+max_val = np.max(data)
+
+# Percentiles
+q1 = np.percentile(data, 25)  # 1st quartile
+q3 = np.percentile(data, 75)  # 3rd quartile</pre>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-purple-300"><i class="fas fa-project-diagram mr-2"></i>Advanced Statistics</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+# Correlation
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([2, 4, 5, 4, 5])
+corr = np.corrcoef(x, y)[0, 1]
+
+# Histogram
+data = np.random.randn(1000)  # Normal distribution
+hist, bins = np.histogram(data, bins=10)
+
+# Cumulative sum
+arr = np.array([1, 2, 3, 4, 5])
+cumsum = np.cumsum(arr)  # [1, 3, 6, 10, 15]
+
+# Moving average
+def moving_average(arr, window_size=3):
+    return np.convolve(arr, np.ones(window_size)/window_size, 'valid')</pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 text-purple-300"><i class="fas fa-chart-pie mr-2"></i>Data Distribution Analysis</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card p-4 bg-purple-900/30">
+                                    <h4 class="font-bold text-lg mb-2">Normal Distribution</h4>
+                                    <div class="h-48 flex items-end justify-center space-x-1">
+                                        <template x-for="i in 15">
+                                            <div class="w-4 bg-green-500 rounded-t" :style="`height: ${Math.random() * 100 + 30}px`"></div>
+                                        </template>
+                                    </div>
+                                    <div class="mt-4 text-center">
+                                        <p>Mean: 0, Std Dev: 1</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="card p-4 bg-purple-900/30">
+                                    <h4 class="font-bold text-lg mb-2">Exponential Distribution</h4>
+                                    <div class="h-48 flex items-end justify-center space-x-1">
+                                        <template x-for="i in 15">
+                                            <div class="w-4 bg-blue-500 rounded-t" :style="`height: ${Math.random() * 80 + 10}px`"></div>
+                                        </template>
+                                    </div>
+                                    <div class="mt-4 text-center">
+                                        <p>Lambda: 1.5</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 5: Real Application -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section4'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-green-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">Agricultural Yield Analysis</h2>
+                            <p class="text-xl text-blue-200">Apply NumPy to real-world agricultural datasets</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-tractor mr-2"></i>Problem Statement</h3>
+                                <p class="mb-4">A farming cooperative has collected data on crop yields across different regions. They want to analyze:</p>
+                                <ul class="space-y-2 mb-4">
+                                    <li>Average yield per crop type</li>
+                                    <li>Yield correlation with rainfall</li>
+                                    <li>Optimal fertilizer usage</li>
+                                    <li>Regional performance comparisons</li>
+                                </ul>
+                                <div class="bg-gray-800/30 p-4 rounded-lg">
+                                    <h4 class="font-bold mb-2">Sample Dataset</h4>
+                                    <pre class="text-sm overflow-x-auto">
+Region   | Crop      | Yield (ton/ha) | Rainfall (mm) | Fertilizer (kg/ha)
+-----------------------------------------------------------------
+North    | Wheat     | 3.2            | 450           | 120
+South    | Corn      | 5.8            | 600           | 180
+East     | Rice      | 4.5            | 800           | 150
+West     | Soybeans  | 2.9            | 500           | 130
+North    | Corn      | 6.1            | 550           | 190
+South    | Wheat     | 3.5            | 480           | 125
+...</pre>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-laptop-code mr-2"></i>NumPy Analysis</h3>
+                                <div class="bg-gray-800/30 p-4 rounded-lg mb-4">
+                                    <pre class="text-sm overflow-x-auto">
+import numpy as np
+
+# Load data
+yields = np.array([3.2, 5.8, 4.5, 2.9, 6.1, 3.5])
+rainfall = np.array([450, 600, 800, 500, 550, 480])
+fertilizer = np.array([120, 180, 150, 130, 190, 125])
+
+# Average yield
+avg_yield = np.mean(yields)
+
+# Yield per mm of rain
+yield_per_rain = np.mean(yields / rainfall)
+
+# Correlation between fertilizer and yield
+corr = np.corrcoef(fertilizer, yields)[0, 1]
+
+# Optimal fertilizer (quadratic regression)
+# X = [fertilizer, fertilizer**2]
+X = np.vstack([fertilizer, fertilizer**2]).T
+coefficients = np.linalg.lstsq(X, yields, rcond=None)[0]
+optimal_fertilizer = -coefficients[0] / (2 * coefficients[1])</pre>
+                                </div>
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold mb-2">Results:</h4>
+                                    <ul>
+                                        <li>Average yield: 4.33 ton/ha</li>
+                                        <li>Yield per mm rain: 0.0076 ton/mm</li>
+                                        <li>Fertilizer-yield correlation: 0.92</li>
+                                        <li>Optimal fertilizer: 162 kg/ha</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 text-green-300"><i class="fas fa-chart-bar mr-2"></i>Visualization</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card p-4 bg-green-900/30">
+                                    <h4 class="font-bold text-lg mb-2 text-center">Yield by Region</h4>
+                                    <div class="h-48 flex items-end justify-center space-x-4">
+                                        <div class="w-12 bg-orange-500 rounded-t-lg" style="height: 120px;"></div>
+                                        <div class="w-12 bg-green-500 rounded-t-lg" style="height: 180px;"></div>
+                                        <div class="w-12 bg-blue-500 rounded-t-lg" style="height: 140px;"></div>
+                                        <div class="w-12 bg-purple-500 rounded-t-lg" style="height: 100px;"></div>
+                                    </div>
+                                    <div class="flex justify-center space-x-4 mt-2">
+                                        <span>North</span>
+                                        <span>South</span>
+                                        <span>East</span>
+                                        <span>West</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="card p-4 bg-green-900/30">
+                                    <h4 class="font-bold text-lg mb-2 text-center">Fertilizer vs Yield</h4>
+                                    <div class="h-48 relative">
+                                        <div class="absolute bottom-0 left-0 w-full h-px bg-gray-500"></div>
+                                        <div class="absolute bottom-0 left-0 w-px h-full bg-gray-500"></div>
+                                        <div class="absolute" style="bottom: 30px; left: 50px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute" style="bottom: 80px; left: 80px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute" style="bottom: 60px; left: 70px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute" style="bottom: 100px; left: 100px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute" style="bottom: 120px; left: 120px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute" style="bottom: 140px; left: 150px; width: 12px; height: 12px; background: orange;"></div>
+                                        <div class="absolute bottom-0 left-0 w-full" style="height: 2px; background: green; transform: rotate(30deg); transform-origin: bottom left;"></div>
+                                    </div>
+                                    <div class="flex justify-between mt-2">
+                                        <span>Low</span>
+                                        <span>Fertilizer</span>
+                                        <span>High</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Q&A Section -->
+                <div class="section-content" :class="{'active-section': currentSection === 'section5'}">
+                    <div class="card p-6 mb-8">
+                        <div class="text-center mb-8">
+                            <div class="path-icon text-pink-400 inline-block text-5xl mb-4">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 section-title">Q&A Section</h2>
+                            <p class="text-xl text-blue-200">Get answers to your NumPy questions</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-pink-300"><i class="fas fa-comments mr-2"></i>Frequently Asked Questions</h3>
+                                
+                                <div class="content-container">
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-question"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-lg">What is the main advantage of NumPy arrays over Python lists?</h4>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div>
+                                                <p>NumPy arrays are significantly faster and more memory efficient than Python lists for numerical operations. They enable vectorized operations that can process entire arrays without explicit loops.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-question"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-lg">How do I create a 2D array in NumPy?</h4>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div>
+                                                <p>You can create a 2D array by passing a list of lists to np.array() or using functions like np.zeros(), np.ones(), or np.random.rand() with a tuple specifying the dimensions.</p>
+                                                <pre class="text-sm mt-2 bg-gray-800/30 p-2 rounded">
+# From list of lists
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+
+# 3x4 array of zeros
+zeros = np.zeros((3, 4))
+
+# 2x2 array of random values
+random = np.random.rand(2, 2)</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-question"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-lg">What is broadcasting in NumPy?</h4>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div>
+                                                <p>Broadcasting is NumPy's ability to perform operations on arrays of different shapes. It automatically expands smaller arrays to match the shape of larger arrays during arithmetic operations.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-question"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-lg">How can I calculate the mean of each column in a 2D array?</h4>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div>
+                                                <p>Use np.mean() with axis=0 to calculate column means:</p>
+                                                <pre class="text-sm mt-2 bg-gray-800/30 p-2 rounded">
+arr = np.array([[1, 2, 3], 
+                [4, 5, 6], 
+                [7, 8, 9]])
+                
+col_means = np.mean(arr, axis=0)
+# Result: [4.0, 5.0, 6.0]</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold mb-4 text-pink-300"><i class="fas fa-paper-plane mr-2"></i>Ask a Question</h3>
+                                
+                                <form class="space-y-4">
+                                    <div>
+                                        <label class="block mb-2">Your Name</label>
+                                        <input type="text" class="w-full bg-blue-900/30 border border-blue-700/30 rounded-lg p-3 focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block mb-2">Your Question</label>
+                                        <textarea class="w-full bg-blue-900/30 border border-blue-700/30 rounded-lg p-3 focus:outline-none focus:border-blue-500" rows="4" placeholder="Type your question here..."></textarea>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block mb-2">Related Topic</label>
+                                        <select class="w-full bg-blue-900/30 border border-blue-700/30 rounded-lg p-3 focus:outline-none focus:border-blue-500">
+                                            <option>Array Creation</option>
+                                            <option>Vectorization</option>
+                                            <option>Statistics</option>
+                                            <option>Performance</option>
+                                            <option>Real Applications</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="btn w-full">
+                                            <i class="fas fa-paper-plane mr-2"></i>Submit Question
+                                        </button>
+                                    </div>
+                                </form>
+                                
+                                <div class="mt-8">
+                                    <h3 class="text-xl font-bold mb-4 text-pink-300"><i class="fas fa-users mr-2"></i>Community Answers</h3>
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-purple-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">How to save and load NumPy arrays?</h4>
+                                                <p class="text-sm opacity-80">Asked by Samuel, 2 days ago</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start mt-2">
+                                            <div class="bg-yellow-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold mb-1">Amina replied:</p>
+                                                <p>Use np.save() and np.load() for binary format, or np.savetxt() and np.loadtxt() for text files.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="qa-item">
+                                        <div class="flex items-start mb-3">
+                                            <div class="bg-purple-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">What's the difference between np.array and np.asarray?</h4>
+                                                <p class="text-sm opacity-80">Asked by Chinedu, 1 day ago</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start mt-2">
+                                            <div class="bg-yellow-500 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold mb-1">Fatima replied:</p>
+                                                <p>np.array always creates a copy, while np.asarray doesn't copy if the input is already an array.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(77, 119, 207, 0.4); --color2: rgba(77, 119, 207, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(74, 222, 128, 0.4); --color2: rgba(74, 222, 128, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+    
+    <script>
+        function app() {
+            return {
+                currentSection: 'home',
+                completedSections: 1,
+                progress: 20,
+                
+                init() {
+                    this.createCosmicBackground();
+                },
+                
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                },
+                
+                showSection(index) {
+                    this.currentSection = 'section' + index;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>

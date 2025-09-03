@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Legacy | Eternal Tribute to NITDA/NCAIR</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    colors: {
+                        cosmic: {
+                            100: '#e0f7ff',
+                            200: '#b3e6ff',
+                            300: '#66c2ff',
+                            400: '#3399ff',
+                            500: '#0066cc',
+                            600: '#004d99',
+                            700: '#003366',
+                            800: '#001a33',
+                            900: '#000d1a',
+                        },
+                        nigeria: {
+                            green: '#008751',
+                            white: '#FFFFFF',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                        'hologram': 'hologram 3s ease-in-out infinite alternate',
+                        'pulse-glow': 'pulse-glow 4s infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        hologram: {
+                            '0%': { opacity: 0.3, filter: 'hue-rotate(0deg) brightness(1.2)' },
+                            '100%': { opacity: 0.7, filter: 'hue-rotate(60deg) brightness(1.5)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(0, 195, 255, 0.7)' },
+                            '70%': { boxShadow: '0 0 0 20px rgba(0, 195, 255, 0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Raleway:wght@300;400;700;800&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(125deg, #000d1a 0%, #001a33 30%, #003366 70%, #000d1a 100%);
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            cursor: default;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 800;
+        }
+        
+        /* Canvas Container for Three.js */
+        #cosmicCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Holographic Elements */
+        .hologram {
+            position: relative;
+            background: rgba(0, 195, 255, 0.1);
+            border: 1px solid rgba(0, 195, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 195, 255, 0.3);
+            border-radius: 15px;
+            animation: hologram 3s ease-in-out infinite alternate;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* DNA Timeline */
+        .dna-strand {
+            position: relative;
+            height: 600px;
+            width: 100%;
+            margin: 100px 0;
+        }
+        
+        .dna-node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c3ff, #0066cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(0, 195, 255, 0.7);
+        }
+        
+        .dna-connector {
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, #00c3ff, #0066cc);
+            transform-origin: top center;
+        }
+        
+        /* Nebula Effects */
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        /* Module Cards */
+        .module-card {
+            background: rgba(0, 26, 51, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(66, 153, 225, 0.3);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0, 195, 255, 0.25);
+            border-color: rgba(0, 195, 255, 0.5);
+        }
+        
+        .module-icon {
+            transition: all 0.5s ease;
+        }
+        
+        .module-card:hover .module-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.7));
+        }
+        
+        /* Nigerian Pattern */
+        .nigerian-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h50v50H0V0zm50 50h50v50H50V50z' fill='%23008751' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.2;
+        }
+        
+        /* Animated Elements */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .pulse-slow {
+            animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .spin-slow {
+            animation: spin 20s linear infinite;
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 4s infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Button Glow Effect */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-glow:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 195, 255, 0.4), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        
+        .btn-glow:hover:before {
+            left: 100%;
+        }
+        
+        /* Cosmic Header */
+        .cosmic-header {
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, rgba(0, 40, 85, 0.7) 0%, rgba(0, 13, 26, 0.9) 70%);
+        }
+        
+        /* Module Highlights */
+        .highlight {
+            position: relative;
+        }
+        
+        .highlight:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00c3ff, transparent);
+        }
+        
+        /* Blockchain Badge */
+        .blockchain-badge {
+            position: relative;
+            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+            border: 1px solid rgba(0, 195, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 195, 255, 0.3);
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Particle Followers */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        /* AR/VR Badge */
+        .arvr-badge {
+            background: linear-gradient(45deg, #4A00E0, #8E2DE2);
+            border: 1px solid rgba(142, 45, 226, 0.5);
+            box-shadow: 0 0 15px rgba(142, 45, 226, 0.3);
+        }
+
+          /* home icons */
+         .home-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .home-icon:hover {
+            transform: scale(1.1);
+            background: rgba(74, 30, 109, 0.7);
+            border-color: var(--array-green);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+      
+    </style>
+</head>
+<body class="relative">
+     <!-- Home Button -->
+    <a href="../page_education/course.html" class="home-icon" @click="goHome">
+        <i class="fas fa-home text-xl text-blue-300"></i>
+    </a>
+    <!-- Three.js Cosmic Background -->
+    <div id="cosmicCanvas"></div>
+    
+    <!-- Particle Followers -->
+    <div id="particles"></div>
+    
+    <!-- Nebula Effects -->
+    <div class="nebula w-96 h-96 bg-purple-600 top-1/4 -left-40"></div>
+    <div class="nebula w-80 h-80 bg-blue-500 bottom-1/3 -right-40"></div>
+    <div class="nebula w-64 h-64 bg-teal-400 top-1/3 left-1/4"></div>
+    
+    <!-- Nigerian Pattern Overlay -->
+    <div class="nigerian-pattern absolute inset-0 pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="cosmic-header py-24 px-4 md:px-8 text-center relative">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10">
+            <div class="floating absolute text-9xl opacity-5 top-20 left-20">✦</div>
+            <div class="floating absolute text-8xl opacity-5 top-1/3 right-40">✧</div>
+            <div class="floating absolute text-7xl opacity-5 bottom-40 left-1/3">✶</div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="flex justify-center mb-6">
+                <div class="relative">
+                    <div class="absolute -inset-4 bg-blue-500 rounded-full opacity-20 blur-xl pulse-glow"></div>
+                    <div class="relative bg-gradient-to-r from-blue-500 to-cyan-400 text-white w-24 h-24 rounded-full flex items-center justify-center text-4xl">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-cyan-200">
+                 COSMIC LEGACY: An Eternal Tribute
+            </h1>
+            
+            <div class="max-w-3xl mx-auto">
+                <p class="text-xl md:text-2xl mb-8 leading-relaxed">
+                    A<span class="highlight font-bold"> groundbreaking tribute to</span>
+                    <span class="text-nigeria-green font-bold">NITDA/NCAIR/ONDI</span> and Nigeria's technological journey, 
+                    designed to <span class="text-cyan-300">designed to endure, inspire, and evolve across generations.</span>
+                </p>
+                <p class="text-lg text-gray-400 italic">
+    Crafted by <span class="font-bold text-nigeria-green highlight"> Nuhu Muhammad Datti</span>
+</p>
+            </div>
+            
+            <div class="mt-12 flex flex-wrap justify-center gap-4">
+                <button class="btn-glow px-8 py-3 rounded-full bg-gradient-to-r z-40 from-blue-600 to-cyan-500 text-white font-bold text-lg hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 pulse-glow">
+                     Begin the Journey
+                </button>
+                <button class="px-8 py-3 rounded-full bg-transparent border-2 border-blue-500 text-blue-300 font-bold text-lg hover:bg-blue-500/20 transition-all duration-300">
+                   Explore the Legacy Vault
+                </button>
+            </div>
+            
+            <!-- Blockchain Verification -->
+            <div class="mt-16">
+                <div class="blockchain-badge inline-flex items-center">
+                    <i class="fas fa-link mr-2 text-green-400"></i>
+                    <span>Blockchain-Verified Legacy | Immutable Preservation</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+     <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cosmic: {
+                            100: '#e0f7ff',
+                            200: '#b3e6ff',
+                            300: '#66c2ff',
+                            400: '#3399ff',
+                            500: '#0066cc',
+                            600: '#004d99',
+                            700: '#003366',
+                            800: '#001a33',
+                            900: '#000d1a',
+                        },
+                        nigeria: {
+                            green: '#008751',
+                            white: '#FFFFFF',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                        'hologram': 'hologram 3s ease-in-out infinite alternate',
+                        'pulse-glow': 'pulse-glow 4s infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        hologram: {
+                            '0%': { opacity: 0.3, filter: 'hue-rotate(0deg) brightness(1.2)' },
+                            '100%': { opacity: 0.7, filter: 'hue-rotate(60deg) brightness(1.5)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(0, 195, 255, 0.7)' },
+                            '70%': { boxShadow: '0 0 0 20px rgba(0, 195, 255, 0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Raleway:wght@300;400;700;800&display=swap');
+        
+        /* Cosmic Background */
+        /* .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #000d1a 0%, #001a33 70%);
+            overflow: hidden;
+        } */
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Nebula Effects */
+        /* .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: -1;
+        } */
+        
+        /* Nigerian Pattern */
+        .nigerian-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h50v50H0V0zm50 50h50v50H50V50z' fill='%23008751' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.2;
+        }
+        
+        /* Animated Elements */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .spin-slow {
+            animation: spin 20s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Attribution Section */
+        .attribution {
+            background: rgba(0, 26, 51, 0.85);
+            border: 1px solid rgba(0, 195, 255, 0.3);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 20;
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 0 50px rgba(0, 195, 255, 0.2);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .attribution-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .attribution-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #00c3ff, #008751, #00c3ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(0, 195, 255, 0.5);
+        }
+        
+        .signature-container {
+            position: relative;
+            margin: 2rem 0;
+            display: inline-block;
+        }
+        
+        .signature {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #00c3ff, #66c2ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+        
+        .signature::before,
+        .signature::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #00c3ff);
+        }
+        
+        .signature::before {
+            right: 100%;
+        }
+        
+        .signature::after {
+            left: 100%;
+            background: linear-gradient(to left, transparent, #00c3ff);
+        }
+        
+        .details {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #b3e6ff;
+            margin-bottom: 2rem;
+        }
+        
+        .university, .intern {
+            display: block;
+            margin: 0.8rem 0;
+        }
+        
+        .university {
+            color: #66c2ff;
+        }
+        
+        .intern {
+            color: #00c3ff;
+        }
+        
+        .partners {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .partner-badge {
+            background: rgba(0, 40, 85, 0.7);
+            border: 1px solid rgba(0, 195, 255, 0.4);
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+        
+        .partner-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 195, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .partner-badge:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 195, 255, 0.3);
+        }
+        
+        .partner-badge:hover::before {
+            left: 100%;
+        }
+        
+        .powered-by {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #008751;
+            margin-top: 2rem;
+            display: block;
+            letter-spacing: 1px;
+        }
+        
+        .copyright {
+            font-size: 1.1rem;
+            color: #66c2ff;
+            margin-top: 0.5rem;
+        }
+        
+        /* Cosmic Elements Inside Attribution */
+        .cosmic-element {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.3;
+            font-size: 10rem;
+        }
+        
+        .element-1 {
+            top: -50px;
+            left: -50px;
+            animation: spin-slow 30s linear infinite;
+            color: #00c3ff;
+        }
+        
+        .element-2 {
+            bottom: -60px;
+            right: -40px;
+            animation: spin-slow 40s linear infinite reverse;
+            color: #008751;
+        }
+        
+        .element-3 {
+            top: 40%;
+            right: 10%;
+            animation: float 8s ease-in-out infinite;
+            color: #3399ff;
+            font-size: 5rem;
+        }
+        
+        .hologram-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00c3ff, #008751, #00c3ff, transparent);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        
+        .line-1 {
+            top: 20%;
+            left: 5%;
+            right: 5%;
+        }
+        
+        .line-2 {
+            bottom: 25%;
+            left: 10%;
+            right: 10%;
+        }
+        
+        .glowing-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00c3ff;
+            box-shadow: 0 0 20px 5px #00c3ff;
+            animation: pulse-glow 3s infinite;
+        }
+        
+        .dot-1 { top: 15%; left: 15%; }
+        .dot-2 { bottom: 20%; right: 20%; }
+        .dot-3 { top: 30%; right: 25%; }
+        .dot-4 { bottom: 35%; left: 30%; }
+    </style>
+   <section class="max-w-7xl mx-auto px-4 py-16 relative z-10">
+    <section class="relative">
+    <!-- Cosmic Background -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <!-- Nebula Effects -->
+    <div class="nebula w-96 h-96 bg-purple-600 top-1/4 -left-40"></div>
+    <div class="nebula w-80 h-80 bg-blue-500 bottom-1/3 -right-40"></div>
+    <div class="nebula w-64 h-64 bg-teal-400 top-1/3 left-1/4"></div>
+    
+    <!-- Nigerian Pattern Overlay -->
+    <div class="nigerian-pattern absolute inset-0 pointer-events-none"></div>
+
+   
+    </section>
+    </section>
+
+
+    <!-- Legacy Features -->
+    <section class="max-w-7xl mx-auto px-4 py-16 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                A Legacy That Will <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Outshine Nations</span>
+            </h2>
+            <p class="text-lg max-w-2xl mx-auto">
+               Crafted to impress — even world tech giants will take notice. - an eternal tribute to innovation
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="hologram p-6">
+                <div class="text-cyan-400 text-4xl mb-4">
+                    <i class="fas fa-atom"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Cosmic Visual Design</h3>
+                <p>Three.js space background with animated stars, galaxies, and celestial phenomena</p>
+            </div>
+            
+            <div class="hologram p-6">
+                <div class="text-cyan-400 text-4xl mb-4">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Living Timeline</h3>
+                <p>A dynamic, DNA-helix-inspired timeline featuring blockchain-verified milestones.</p>
+            </div>
+            
+            <div class="hologram p-6">
+                <div class="text-cyan-400 text-4xl mb-4">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Blockchain Integration</h3>
+                <p>Legacy Vault with blockchain verification for eternal preservation</p>
+            </div>
+            
+            <div class="hologram p-6">
+                <div class="text-cyan-400 text-4xl mb-4">
+                    <i class="fas fa-vr-cardboard"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">AR/VR Ready</h3>
+                <p>Future-proof design compatible with emerging technologies</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- DNA Timeline -->
+    <section class="max-w-6xl mx-auto px-4 py-16 relative">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                The <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Living Legacy</span> Timeline
+            </h2>
+            <p class="text-lg max-w-2xl mx-auto">
+                Our DNA-inspired timeline connects past achievements to future innovations
+            </p>
+        </div>
+        
+        <div class="dna-strand">
+            <!-- DNA Nodes will be dynamically positioned with JavaScript -->
+        </div>
+    </section>
+    
+    <!-- Legacy Modules -->
+    <section class="max-w-7xl mx-auto px-4 py-16 relative z-10" id="foundations">
+        <div class="text-center mb-16">
+             <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">CLICK</span> Empires
+            </h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Cosmic Learning</span> Empires
+            </h2>
+            <p class="text-lg max-w-2xl mx-auto">
+                Three specialized knowledge realms - designed to nurture timeless learning and digital mastery.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Module 1 -->
+             <a href="./nutpy/index.html" >
+            <div class="module-card group" id="numpy">
+                <div class="p-6">
+                    <div class="flex justify-center mb-6">
+                        <div class="module-icon bg-gradient-to-br from-purple-600 to-blue-500 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl text-white">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-4 text-center text-cyan-300">NumPy Fundamentals</h3>
+                    <p class="text-center mb-6 text-blue-200">Master numerical computing for efficient data processing</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>NumPy arrays vs Python lists</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Array creation and manipulation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Vectorized operations & broadcasting</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="bg-cosmic-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-cyan-300 mb-2">Real Application:</h4>
+                        <p>Analyze agricultural yield data with speed and precision.</p>
+                    </div>
+                </div>
+            </div>
+            </a>
+            
+            <!-- Module 2 -->
+             <a href="./pandas/index.html" >
+            <div class="module-card group" id="pandas">
+                <div class="p-6">
+                    <div class="flex justify-center mb-6">
+                        <div class="module-icon bg-gradient-to-br from-green-600 to-teal-500 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl text-white">
+                            <i class="fas fa-table"></i>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-4 text-center text-cyan-300">pandas Mastery</h3>
+                    <p class="text-center mb-6 text-blue-200">Data manipulation and analysis for real-world datasets</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Series and DataFrame structures</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Data cleaning and preprocessing</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Filtering, grouping, and aggregation</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="bg-cosmic-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-cyan-300 mb-2">Real Application:</h4>
+                        <p>Uncover insights from Nigerian economic indicators.</p>
+                    </div>
+                </div>
+            </div>
+            </a>
+            
+            <a href="./data Visual/index.html">
+            <!-- Module 3 -->
+            <div class="module-card group" id="visual">
+                <div class="p-6">
+                    <div class="flex justify-center mb-6">
+                        <div class="module-icon bg-gradient-to-br from-amber-600 to-orange-500 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl text-white">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-4 text-center text-cyan-300">Data Visualization</h3>
+                    <p class="text-center mb-6 text-blue-200">Communicate insights with powerful visualizations</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Matplotlib fundamentals</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Seaborn for statistical visualization</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+                            <span>Interactive visualizations with Plotly</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="bg-cosmic-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-cyan-300 mb-2">Real Application:</h4>
+                        <p>Visualize Nigerian healthcare trends with clarity.</p>
+                    </div>
+                </div>
+            </div>
+            </a>
+
+            <!-- Data Science Foundations Module -->
+<a href="./Ds Foundation/index.html">
+  <div class="module-card group" id="foundation">
+    <div class="p-6">
+      <!-- Icon -->
+      <div class="flex justify-center mb-6">
+        <div class="module-icon bg-gradient-to-br from-cyan-500 to-green-500 
+                    w-20 h-20 rounded-2xl flex items-center justify-center 
+                    text-3xl text-white">
+          <i class="fas fa-database"></i>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h3 class="text-2xl font-bold mb-4 text-center text-cyan-300">
+        Data Science Foundations
+      </h3>
+
+      <!-- Description -->
+      <p class="text-center mb-6 text-blue-200">
+        Beginner-friendly assignment using the classic 
+        <span class="text-cyan-300">Iris dataset</span>.  
+        Learn <span class="text-cyan-400">Python</span> & 
+        <span class="text-green-400">R</span> through 
+        data exploration & visualization.
+      </p>
+
+      <!-- Highlights -->
+      <ul class="space-y-3 mb-8">
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>Python: Pandas, Matplotlib, Seaborn</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>R: Built-in dataset, ggplot2 or base plots</span>
+        </li>
+        <!-- <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>Visualize with scatter, histogram & boxplots</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>Deliverables: .ipynb / .py + .R script</span>
+        </li> -->
+      </ul>
+
+      <!-- Impact Box -->
+      <div class="bg-cosmic-700/50 p-4 rounded-lg">
+        <h4 class="font-bold text-cyan-300 mb-2">Real Learning:</h4>
+        <p>
+          Build your first full data science workflow, 
+          compare Python vs R, and gain confidence 
+          for advanced projects.
+        </p>
+      </div>
+    </div>
+  </div>
+</a>
+
+
+            <!-- MindScreen Analytics Module -->
+<a href="./MindScreen/index.html">
+  <div class="module-card group" id="mind">
+    <div class="p-6">
+      <div class="flex justify-center mb-6">
+        <div class="module-icon bg-gradient-to-br from-cyan-600 to-blue-500 
+                    w-20 h-20 rounded-2xl flex items-center justify-center 
+                    text-3xl text-white">
+          <i class="fas fa-brain"></i>
+        </div>
+      </div>
+
+      <h3 class="text-2xl font-bold mb-4 text-center text-cyan-300">
+        MindScreen Analytics
+      </h3>
+      <p class="text-center mb-6 text-blue-200">
+        Exploring screen time & mental well-being across Nigerian demographics
+      </p>
+
+      <ul class="space-y-3 mb-8">
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>74% Correlation Findings</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>Interactive Dynamic Simulator</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-arrow-right text-cyan-400 mt-1 mr-3"></i>
+          <span>Policy & Research Applications</span>
+        </li>
+      </ul>
+
+      <div class="bg-cosmic-700/50 p-4 rounded-lg">
+        <h4 class="font-bold text-cyan-300 mb-2">Real Impact:</h4>
+        <p>
+          Inform digital policies and promote healthier screen habits nationwide.
+        </p>
+      </div>
+    </div>
+  </div>
+</a>
+
+        </div>
+    </section>
+    
+    <!-- Eternal Preservation -->
+    <section class="max-w-6xl mx-auto px-4 py-16 relative">
+        <div class="hologram p-8 md:p-12 rounded-2xl relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-cyan-500 rounded-full opacity-10 blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500 rounded-full opacity-10 blur-3xl"></div>
+            
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        Eternal <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Digital Preservation</span>
+                    </h2>
+                    <p class="text-lg mb-6">
+                        Our platform ensures multi-generational accessibility through immutable blockchain records and future-proof AR/VR integration.
+                    </p>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i>
+                            <span> 🔹 Ethereum-powered Legacy Vault</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i>
+                            <span> 🔹 Blockchain-verified milestones</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i>
+                            <span> 🔹 AR/VR-ready experiences</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i>
+                            <span> 🔹 Digital artifacts — preserved for eternity</span>
+                        </li>
+                    </ul> 
+ 
+                 <div class="flex flex-wrap gap-3">
+                        <div class="blockchain-badge">
+                            <i class="fab fa-ethereum mr-2"></i>
+                            <span>Ethereum Blockchain</span>
+                        </div>
+                        <div class="blockchain-badge arvr-badge">
+                            <i class="fas fa-vr-cardboard mr-2"></i>
+                            <span>AR/VR Ready</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div class="absolute -inset-6 bg-cyan-500 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                        <div class="relative bg-gradient-to-br from-blue-700 to-cyan-600 rounded-2xl p-1 w-64 h-64 flex items-center justify-center">
+                            <div class="bg-gray-900 rounded-xl w-full h-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-5xl mb-3">
+                                        <i class="fas fa-infinity text-cyan-400"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold">Legacy Vault</h3>
+                                    <p class="text-sm opacity-80">Immutable Preservation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <section class="max-w-6xl mx-auto px-4 py-16 relative">
+     <!-- Attribution Section -->
+    <div class="attribution">
+        <!-- Cosmic Elements -->
+        <div class="cosmic-element element-1">✧</div>
+        <div class="cosmic-element element-2">✦</div>
+        <div class="cosmic-element element-3">❂</div>
+        
+        <div class="hologram-line line-1"></div>
+        <div class="hologram-line line-2"></div>
+        
+        <div class="glowing-dot dot-1"></div>
+        <div class="glowing-dot dot-2"></div>
+        <div class="glowing-dot dot-3"></div>
+        <div class="glowing-dot dot-4"></div>
+        
+        <div class="attribution-content">
+            <h2 class="attribution-title">A Tribute to NITDA/NCAIR</h2>
+            
+            <div class="signature-container">
+                <div class="signature">Nuhu Muhammad Datti</div>
+            </div>
+            
+            <div class="details">
+                <span class="university">Computer Science Student, IBB University Lapai</span>
+                <span class="intern">Intern, NITDA/NCAIR Cohort 27</span>
+            </div>
+            
+            <div class="partners">
+                <div class="partner-badge">5IRE</div>
+                <div class="partner-badge">NMDATTI BESPOKE TECH</div>
+                <div class="partner-badge">BALDOM INTERNATIONAL SCHOOL</div>
+            </div>
+            
+            <div>
+                <span class="powered-by">Powered by NMDATTI</span>
+                <span class="copyright">© 2025 Cosmic Legacy Learning A Legacy That Will Never Grow Old Nor Fade</span>
+            </div>
+        </div>
+    </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="mt-16 py-12 border-t border-cosmic-600 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-2xl font-bold mb-2">🌌 Honoring the Past, Empowering the Future</h2>
+                    <h3 class="text-1xl font-bold mb-2">A Tribute to NITDA/NCAIR</h3>
+                    <p class="text-blue-300">  
+Developed by Nuhu Muhammad Datti  
+Computer Science Student, IBB University Lapai  
+Intern, NITDA/NCAIR Cohort 27  
+</p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="w-12 h-12 rounded-full bg-cosmic-700 flex items-center justify-center hover:bg-cyan-500 transition-all">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 rounded-full bg-cosmic-700 flex items-center justify-center hover:bg-cyan-500 transition-all">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 rounded-full bg-cosmic-700 flex items-center justify-center hover:bg-cyan-500 transition-all">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-cosmic-700 text-center text-blue-300">
+                <p>© 2025 Cosmic Legacy Learning. Honoring NITDA/NCAIR -Created by Nuhu Muhammad Datti (Intern, NITDA/NCAIR Cohort 27).</p>
+                <p class="mt-2">Designed with <i class="fas fa-heart text-cyan-400"></i> in Nigeria</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Three.js cosmic background
+        function initCosmicBackground() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('cosmicCanvas').appendChild(renderer.domElement);
+            
+            // Create stars
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.1,
+            });
+            
+            const starsVertices = [];
+            for (let i = 0; i < 5000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = (Math.random() - 0.5) * 2000;
+                const z = (Math.random() - 0.5) * 2000;
+                starsVertices.push(x, y, z);
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+            
+            // Create a galaxy
+            const galaxyGeometry = new THREE.SphereGeometry(120, 32, 32);
+            const galaxyMaterial = new THREE.MeshBasicMaterial({
+                color: 0x3366ff,
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true
+            });
+            const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+            scene.add(galaxy);
+            
+            // Position camera
+            camera.position.z = 500;
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                stars.rotation.x += 0.0001;
+                stars.rotation.y += 0.0002;
+                
+                galaxy.rotation.x += 0.0005;
+                galaxy.rotation.y += 0.0008;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Create DNA timeline
+        function createDNATimeline() {
+            const dnaStrand = document.querySelector('.dna-strand');
+            const nodes = 8;
+            const radius = 200;
+            const height = 500;
+            
+            for (let i = 0; i < nodes; i++) {
+                const angle = (i / nodes) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const y = (i / nodes) * height - height / 2;
+                
+                // Create node
+                const node = document.createElement('div');
+                node.className = 'dna-node';
+                node.style.left = `calc(50% + ${x}px)`;
+                node.style.top = `calc(50% + ${y}px)`;
+                node.innerHTML = '<i class="fas fa-link"></i>';
+                dnaStrand.appendChild(node);
+                
+                // Create connector to next node
+                if (i < nodes - 1) {
+                    const nextAngle = ((i + 1) / nodes) * Math.PI * 2;
+                    const nextX = Math.cos(nextAngle) * radius;
+                    const nextY = ((i + 1) / nodes) * height - height / 2;
+                    
+                    const distance = Math.sqrt(Math.pow(nextX - x, 2) + Math.pow(nextY - y, 2));
+                    const angleRad = Math.atan2(nextY - y, nextX - x);
+                    
+                    const connector = document.createElement('div');
+                    connector.className = 'dna-connector';
+                    connector.style.width = '4px';
+                    connector.style.height = `${distance}px`;
+                    connector.style.left = `calc(50% + ${x}px)`;
+                    connector.style.top = `calc(50% + ${y}px)`;
+                    connector.style.transform = `rotate(${angleRad}rad)`;
+                    
+                    dnaStrand.appendChild(connector);
+                }
+            }
+        }
+        
+        // Create particle followers
+        function createParticleFollowers() {
+            const particlesContainer = document.getElementById('particles');
+            const particlesCount = 30;
+            const particles = [];
+            
+            for (let i = 0; i < particlesCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.opacity = 0;
+                particlesContainer.appendChild(particle);
+                particles.push({
+                    element: particle,
+                    x: 0,
+                    y: 0,
+                    delay: i * 20,
+                    size: Math.random() * 3 + 1
+                });
+            }
+            
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            function updateParticles() {
+                particles.forEach((p, i) => {
+                    const delayFactor = i / particles.length;
+                    const targetX = mouseX;
+                    const targetY = mouseY;
+                    
+                    p.x += (targetX - p.x) * (0.1 + delayFactor * 0.05);
+                    p.y += (targetY - p.y) * (0.1 + delayFactor * 0.05);
+                    
+                    p.element.style.left = `${p.x}px`;
+                    p.element.style.top = `${p.y}px`;
+                    p.element.style.opacity = 0.7 - (i / particlesCount) * 0.6;
+                    p.element.style.transform = `scale(${1 - (i / particlesCount) * 0.8})`;
+                    p.element.style.width = `${p.size}px`;
+                    p.element.style.height = `${p.size}px`;
+                });
+                
+                requestAnimationFrame(updateParticles);
+            }
+            
+            updateParticles();
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initCosmicBackground();
+            createDNATimeline();
+            createParticleFollowers();
+            
+            // Add hover effect to module cards
+            const cards = document.querySelectorAll('.module-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-15px) scale(1.03)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

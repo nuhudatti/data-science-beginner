@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Arrays vs Python Lists Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: #00c9ff;
+            background: rgba(0, 201, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 201, 255, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #00c9ff;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        .question-counter {
+            background: rgba(0, 201, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body x-data="quizApp()" x-init="init()">
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-atom mr-3"></i>NumPy Arrays vs Python Lists
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                50 cosmic questions comparing NumPy arrays and Python lists
+            </p>
+        </header>
+        
+        <!-- Progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-medium">Your Progress</span>
+                <span class="text-blue-300" x-text="`${answeredCount}/${totalQuestions} (${Math.round((answeredCount/totalQuestions)*100)}%)`">0/50 (0%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(answeredCount/totalQuestions)*100}%`"></div>
+            </div>
+        </div>
+        
+        <!-- Quiz Content -->
+        <template x-if="!showResults">
+            <div>
+                <div class="space-y-6">
+                    <template x-for="(question, qIndex) in questions" :key="qIndex">
+                        <div class="question-card p-6">
+                            <div class="question-counter">
+                                <span x-text="`Question ${qIndex + 1} of ${totalQuestions}`"></span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                                <span x-text="question.question"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[qIndex] === oIndex && userAnswers[qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers">
+                                <p class="font-semibold text-blue-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="getAnswerStatus(qIndex)"></span>
+                                </p>
+                                <p x-text="question.explanation"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <button class="submit-btn" @click="submitQuiz">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Answers
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Results Panel -->
+        <template x-if="showResults">
+            <div class="results-container">
+                <h2 class="section-title text-3xl text-center mb-8">Quiz Results</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="text-center p-6 rounded-xl bg-blue-900/30">
+                        <div class="text-3xl font-bold mb-2" x-text="`${score}/${totalQuestions}`"></div>
+                        <div class="opacity-70">Correct Answers</div>
+                    </div>
+                    
+                    <div class="text-center p-6 rounded-xl bg-purple-900/30">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((score/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Overall Score</div>
+                    </div>
+                    
+                    <div class="text-center p-6 rounded-xl bg-pink-900/30">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Completion</div>
+                    </div>
+                </div>
+                
+                <div class="motivation-message mb-10">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-comment-dots text-yellow-400 mr-2"></i>
+                        Feedback
+                    </h3>
+                    <p class="text-lg" x-text="getMotivationMessage()"></p>
+                </div>
+                
+                <div class="text-center">
+                    <button class="submit-btn" @click="resetQuiz">
+                        <i class="fas fa-redo mr-2"></i>Restart Quiz
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(255, 42, 109, 0.4); --color2: rgba(255, 42, 109, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(0, 201, 255, 0.4); --color2: rgba(0, 201, 255, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+    
+    <script>
+        // Quiz data
+        const quizData = {
+            questions: [
+                {
+                    question: "What is a key advantage of NumPy arrays over Python lists?",
+                    options: [
+                        "Automatic garbage collection",
+                        "Built-in methods for string manipulation",
+                        "Memory efficiency and faster operations",
+                        "Dynamic resizing without performance cost"
+                    ],
+                    answer: 2,
+                    explanation: "NumPy arrays store homogeneous data contiguously in memory, enabling vectorized operations and significant performance gains."
+                },
+                {
+                    question: "When is a Python list preferable to a NumPy array?",
+                    options: [
+                        "Storing mixed data types (e.g., integers and strings)",
+                        "Performing matrix multiplication",
+                        "Handling large datasets",
+                        "Calculating statistical metrics"
+                    ],
+                    answer: 0,
+                    explanation: "Python lists support heterogeneous data types, while NumPy arrays require homogeneous data."
+                },
+                {
+                    question: "How does memory usage compare between a list and an array of 10,000 integers?",
+                    options: [
+                        "The array uses ~10× less memory",
+                        "The list uses ~2× less memory",
+                        "Memory usage is identical",
+                        "Arrays use more memory due to metadata"
+                    ],
+                    answer: 0,
+                    explanation: "NumPy arrays avoid per-element type metadata, reducing memory overhead."
+                },
+                {
+                    question: "What happens when you multiply a NumPy array by 2?",
+                    options: [
+                        "Each element is doubled",
+                        "Array length doubles",
+                        "A type error occurs",
+                        "Only integer elements are doubled"
+                    ],
+                    answer: 0,
+                    explanation: "NumPy supports vectorized operations, applying arithmetic element-wise without loops."
+                },
+                {
+                    question: "Which operation is slower in Python lists vs. NumPy arrays?",
+                    options: [
+                        "Appending elements",
+                        "Element-wise addition",
+                        "Iterating with for loops",
+                        "Slicing"
+                    ],
+                    answer: 1,
+                    explanation: "List element-wise operations require slow Python loops, while NumPy uses optimized C code."
+                },
+                {
+                    question: "How do Python lists store their elements in memory?",
+                    options: [
+                        "Contiguously like arrays",
+                        "As references to objects scattered in memory",
+                        "In a compressed format",
+                        "In a single memory block"
+                    ],
+                    answer: 1,
+                    explanation: "Python lists store references to objects, which may be scattered in memory, while arrays store data contiguously."
+                },
+                {
+                    question: "What is the main reason NumPy arrays are faster than Python lists?",
+                    options: [
+                        "They use less memory",
+                        "They are implemented in C",
+                        "They support vectorized operations",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "NumPy arrays are faster due to a combination of contiguous memory, C implementation, and vectorized operations."
+                },
+                {
+                    question: "Which data structure is better for numerical computations?",
+                    options: [
+                        "Python list",
+                        "NumPy array",
+                        "Python tuple",
+                        "Python set"
+                    ],
+                    answer: 1,
+                    explanation: "NumPy arrays are optimized for numerical computations with efficient storage and vectorized operations."
+                },
+                {
+                    question: "What does homogeneous data mean in the context of NumPy arrays?",
+                    options: [
+                        "All elements have the same data type",
+                        "All elements have the same value",
+                        "The array is one-dimensional",
+                        "The array contains only numbers"
+                    ],
+                    answer: 0,
+                    explanation: "Homogeneous means all elements in the array are of the same data type, which allows for efficient storage."
+                },
+                {
+                    question: "How do you create a NumPy array from a Python list?",
+                    options: [
+                        "np.array(list)",
+                        "np.create(list)",
+                        "np.from_list(list)",
+                        "np.new_array(list)"
+                    ],
+                    answer: 0,
+                    explanation: "The np.array() function is used to create an array from a Python list or other sequence-like objects."
+                },
+                {
+                    question: "What is vectorization in NumPy?",
+                    options: [
+                        "Converting arrays to vectors",
+                        "Applying operations to entire arrays without explicit loops",
+                        "Creating vector graphics from arrays",
+                        "Storing arrays in vector format"
+                    ],
+                    answer: 1,
+                    explanation: "Vectorization allows operations to be performed on entire arrays at once, without the need for explicit loops."
+                },
+                {
+                    question: "Which statement about Python lists is true?",
+                    options: [
+                        "They are optimized for numerical operations",
+                        "They store elements in contiguous memory",
+                        "They can contain elements of different data types",
+                        "They are faster than NumPy arrays for matrix operations"
+                    ],
+                    answer: 2,
+                    explanation: "Python lists can contain elements of different data types, unlike NumPy arrays which require homogeneous data."
+                },
+                {
+                    question: "What is the purpose of the np.ndarray dtype attribute?",
+                    options: [
+                        "To describe the shape of the array",
+                        "To specify the data type of the array elements",
+                        "To define the number of dimensions",
+                        "To store documentation about the array"
+                    ],
+                    answer: 1,
+                    explanation: "The dtype attribute describes the data type of the elements in the array."
+                },
+                {
+                    question: "Which operation would show the biggest performance difference between lists and arrays?",
+                    options: [
+                        "Accessing a single element",
+                        "Iterating through all elements",
+                        "Appending a new element",
+                        "Performing element-wise multiplication"
+                    ],
+                    answer: 3,
+                    explanation: "Element-wise operations show the biggest performance difference due to NumPy's vectorization capabilities."
+                },
+                {
+                    question: "How does NumPy handle broadcasting?",
+                    options: [
+                        "By converting arrays to the same shape",
+                        "By transmitting data over networks",
+                        "By automatically expanding smaller arrays to match larger ones",
+                        "By compressing arrays to save memory"
+                    ],
+                    answer: 2,
+                    explanation: "Broadcasting allows NumPy to perform operations on arrays of different shapes by expanding smaller arrays."
+                },
+                {
+                    question: "What is the primary reason for NumPy's memory efficiency?",
+                    options: [
+                        "Using compression algorithms",
+                        "Storing only primitive data types",
+                        "Avoiding per-element type metadata",
+                        "Using disk storage instead of RAM"
+                    ],
+                    answer: 2,
+                    explanation: "NumPy avoids per-element type metadata, storing only the raw data in contiguous memory blocks."
+                },
+                {
+                    question: "Which of these is NOT a NumPy array attribute?",
+                    options: [
+                        "shape",
+                        "dtype",
+                        "size",
+                        "length"
+                    ],
+                    answer: 3,
+                    explanation: "NumPy arrays have shape, dtype, and size attributes, but not 'length' (use size or len() instead)."
+                },
+                {
+                    question: "What happens when you add a scalar to a Python list?",
+                    options: [
+                        "The scalar is added to each element",
+                        "The scalar is appended to the list",
+                        "A TypeError occurs",
+                        "Only numeric lists are modified"
+                    ],
+                    answer: 2,
+                    explanation: "Python doesn't support vectorized operations on lists, so adding a scalar to a list raises a TypeError."
+                },
+                {
+                    question: "How do you get the dimensions of a NumPy array?",
+                    options: [
+                        "array.dim",
+                        "array.shape",
+                        "array.size",
+                        "array.ndim"
+                    ],
+                    answer: 1,
+                    explanation: "The shape attribute returns a tuple representing the dimensions of the array."
+                },
+                {
+                    question: "Which data structure is more suitable for data science tasks?",
+                    options: [
+                        "Python list",
+                        "NumPy array",
+                        "Python dictionary",
+                        "Python tuple"
+                    ],
+                    answer: 1,
+                    explanation: "NumPy arrays are the foundation of the Python data science ecosystem due to their efficiency and functionality."
+                },
+                {
+                    question: "What is the main advantage of Python lists?",
+                    options: [
+                        "Better performance for numerical operations",
+                        "More memory efficient for large datasets",
+                        "Flexibility in storing different data types",
+                        "Built-in linear algebra operations"
+                    ],
+                    answer: 2,
+                    explanation: "Python lists excel at storing heterogeneous data types, which is not possible with NumPy arrays."
+                },
+                {
+                    question: "How do you perform element-wise multiplication of two arrays?",
+                    options: [
+                        "array1 * array2",
+                        "np.multiply(array1, array2)",
+                        "array1.multiply(array2)",
+                        "Both 1 and 2"
+                    ],
+                    answer: 3,
+                    explanation: "Both the * operator and np.multiply() function perform element-wise multiplication in NumPy."
+                },
+                {
+                    question: "What is the output of np.array([1, 2, 3]) + np.array([4, 5, 6])?",
+                    options: [
+                        "[5, 7, 9]",
+                        "[1, 2, 3, 4, 5, 6]",
+                        "[1, 2, 3] + [4, 5, 6]",
+                        "An error"
+                    ],
+                    answer: 0,
+                    explanation: "NumPy performs element-wise addition for arrays of the same shape."
+                },
+                {
+                    question: "Which statement about array reshaping is true?",
+                    options: [
+                        "Reshaping always creates a copy",
+                        "Reshaping changes the data in the array",
+                        "Reshaping can be done without copying data",
+                        "Arrays can only be reshaped to 2D"
+                    ],
+                    answer: 2,
+                    explanation: "Reshaping often creates a view rather than a copy, allowing efficient manipulation without data duplication."
+                },
+                {
+                    question: "What is the purpose of the np.asarray() function?",
+                    options: [
+                        "Convert input to an array, but don't copy if already an array",
+                        "Always create a new copy of the input",
+                        "Convert arrays to Python lists",
+                        "Create arrays from sequences"
+                    ],
+                    answer: 0,
+                    explanation: "np.asarray() converts input to an array but avoids copying if the input is already an array."
+                },
+                {
+                    question: "Which operation is NOT vectorized in NumPy?",
+                    options: [
+                        "Trigonometric functions (sin, cos)",
+                        "Exponential functions (exp, log)",
+                        "Statistical operations (mean, std)",
+                        "Python for loops"
+                    ],
+                    answer: 3,
+                    explanation: "Python for loops are not vectorized - they operate element by element and are much slower."
+                },
+                {
+                    question: "What is the time complexity of accessing an element in a NumPy array?",
+                    options: [
+                        "O(1)",
+                        "O(n)",
+                        "O(log n)",
+                        "O(n²)"
+                    ],
+                    answer: 0,
+                    explanation: "Accessing elements in a NumPy array is constant time O(1) due to direct memory addressing."
+                },
+                {
+                    question: "How do you calculate the dot product of two arrays?",
+                    options: [
+                        "array1.dot(array2)",
+                        "np.dot(array1, array2)",
+                        "array1 @ array2",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "NumPy provides multiple ways to compute dot products: dot method, np.dot function, and @ operator."
+                },
+                {
+                    question: "Which is NOT a valid way to create a NumPy array?",
+                    options: [
+                        "np.array([1, 2, 3])",
+                        "np.zeros(5)",
+                        "np.linspace(0, 1, 5)",
+                        "np.create(5)"
+                    ],
+                    answer: 3,
+                    explanation: "There is no np.create() function - the correct ways include np.array(), np.zeros(), np.ones(), etc."
+                },
+                {
+                    question: "What does the ndim attribute of a NumPy array return?",
+                    options: [
+                        "Number of elements",
+                        "Data type",
+                        "Number of dimensions",
+                        "Memory size"
+                    ],
+                    answer: 2,
+                    explanation: "The ndim attribute returns the number of array dimensions (axes)."
+                },
+                {
+                    question: "Which of these operations creates a view rather than a copy?",
+                    options: [
+                        "array.copy()",
+                        "array.reshape()",
+                        "array[1:3] (slicing)",
+                        "Both 2 and 3"
+                    ],
+                    answer: 3,
+                    explanation: "Slicing and reshaping typically create views that reference the original data, not copies."
+                },
+                {
+                    question: "What is the primary purpose of the np.may_share_memory() function?",
+                    options: [
+                        "Check if arrays are identical",
+                        "Determine if arrays share memory",
+                        "Allocate shared memory",
+                        "Compare array contents"
+                    ],
+                    answer: 1,
+                    explanation: "np.may_share_memory() checks if two arrays might share memory, which is useful for understanding view behavior."
+                },
+                {
+                    question: "Which statement about array copies is true?",
+                    options: [
+                        "Slicing always creates a copy",
+                        "The copy() method creates a deep copy",
+                        "Views and copies have the same performance",
+                        "Assigning an array creates a copy"
+                    ],
+                    answer: 1,
+                    explanation: "The copy() method creates a deep copy with its own data, independent of the original."
+                },
+                {
+                    question: "How do you convert a NumPy array to a Python list?",
+                    options: [
+                        "array.to_list()",
+                        "list(array)",
+                        "array.tolist()",
+                        "Both 2 and 3"
+                    ],
+                    answer: 3,
+                    explanation: "Both list(array) and array.tolist() can convert a NumPy array to a Python list."
+                },
+                {
+                    question: "What is the main advantage of using array views?",
+                    options: [
+                        "They consume more memory",
+                        "They allow modification of the original data",
+                        "They are read-only",
+                        "They are faster to create"
+                    ],
+                    answer: 3,
+                    explanation: "Views are faster to create than copies because they don't duplicate data, just provide a different perspective."
+                },
+                {
+                    question: "Which function creates an uninitialized array?",
+                    options: [
+                        "np.zeros()",
+                        "np.ones()",
+                        "np.empty()",
+                        "np.array()"
+                    ],
+                    answer: 2,
+                    explanation: "np.empty() creates an array without initializing its values, which is faster but contains garbage data."
+                },
+                {
+                    question: "What is the output of np.arange(5)?",
+                    options: [
+                        "[0, 1, 2, 3, 4]",
+                        "[1, 2, 3, 4, 5]",
+                        "[0, 1, 2, 3, 4, 5]",
+                        "[5]"
+                    ],
+                    answer: 0,
+                    explanation: "np.arange(5) generates values from 0 to 4 (5 elements) similar to range(5) in Python."
+                },
+                {
+                    question: "How do you create a 2D array of ones with 3 rows and 4 columns?",
+                    options: [
+                        "np.ones(3, 4)",
+                        "np.ones((3, 4))",
+                        "np.ones([3, 4])",
+                        "Both 2 and 3"
+                    ],
+                    answer: 3,
+                    explanation: "The shape should be passed as a tuple (3, 4) or list [3, 4] to create a 2D array."
+                },
+                {
+                    question: "What is the purpose of the np.eye() function?",
+                    options: [
+                        "Create a 1D array",
+                        "Create an identity matrix",
+                        "Create an array with eye-shaped values",
+                        "Visualize arrays"
+                    ],
+                    answer: 1,
+                    explanation: "np.eye(N) creates an N x N identity matrix (2D array with 1s on diagonal and 0s elsewhere)."
+                },
+                {
+                    question: "Which method flattens a multi-dimensional array to 1D?",
+                    options: [
+                        "array.flatten()",
+                        "array.ravel()",
+                        "array.reshape(-1)",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "All these methods flatten an array, though flatten() returns a copy while ravel() and reshape() may return views."
+                },
+                {
+                    question: "How do you transpose a 2D array?",
+                    options: [
+                        "array.T",
+                        "array.transpose()",
+                        "np.transpose(array)",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "NumPy provides multiple ways to transpose arrays, all of which are equivalent."
+                },
+                {
+                    question: "What is the difference between np.concatenate and np.stack?",
+                    options: [
+                        "concatenate joins arrays along existing axis, stack creates new axis",
+                        "stack joins arrays along existing axis, concatenate creates new axis",
+                        "They are identical",
+                        "concatenate only works for 1D arrays"
+                    ],
+                    answer: 0,
+                    explanation: "concatenate joins arrays along an existing dimension, while stack creates a new dimension."
+                },
+                {
+                    question: "Which is NOT a benefit of vectorized operations?",
+                    options: [
+                        "Concise code",
+                        "Better performance",
+                        "Automatic parallelization",
+                        "Easier debugging"
+                    ],
+                    answer: 3,
+                    explanation: "Vectorized operations can sometimes be harder to debug since they operate on entire arrays at once."
+                },
+                {
+                    question: "What does the @ operator do for NumPy arrays?",
+                    options: [
+                        "Element-wise multiplication",
+                        "Matrix multiplication",
+                        "Array concatenation",
+                        "Dot product for 1D arrays"
+                    ],
+                    answer: 1,
+                    explanation: "The @ operator performs matrix multiplication for 2D arrays."
+                },
+                {
+                    question: "How do you compute the sum of all elements in an array?",
+                    options: [
+                        "array.sum()",
+                        "np.sum(array)",
+                        "sum(array)",
+                        "Both 1 and 2"
+                    ],
+                    answer: 3,
+                    explanation: "Both the array method sum() and the function np.sum() compute the sum of array elements."
+                },
+                {
+                    question: "Which function creates an array with values spaced on a log scale?",
+                    options: [
+                        "np.logspace()",
+                        "np.linspace()",
+                        "np.geomspace()",
+                        "Both 1 and 3"
+                    ],
+                    answer: 3,
+                    explanation: "Both np.logspace() and np.geomspace() create logarithmically spaced values."
+                },
+                {
+                    question: "What is the purpose of the np.where() function?",
+                    options: [
+                        "Conditional element selection",
+                        "Find array indices",
+                        "Apply conditions to arrays",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "np.where() has multiple uses including conditional selection and finding indices where condition is true."
+                },
+                {
+                    question: "How do you save a NumPy array to disk?",
+                    options: [
+                        "np.save()",
+                        "np.savetxt()",
+                        "np.savez()",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "NumPy provides multiple functions for saving arrays in different formats."
+                },
+                {
+                    question: "What is the primary purpose of the np.random module?",
+                    options: [
+                        "Generate random numbers",
+                        "Shuffle arrays",
+                        "Create random arrays",
+                        "All of the above"
+                    ],
+                    answer: 3,
+                    explanation: "The np.random module contains functions for generating random numbers and arrays."
+                },
+                {
+                    question: "Which method is used to sort an array?",
+                    options: [
+                        "array.sort()",
+                        "np.sort(array)",
+                        "array.argsort()",
+                        "Both 1 and 2"
+                    ],
+                    answer: 3,
+                    explanation: "Both array.sort() (in-place) and np.sort(array) (returns sorted copy) can be used to sort arrays."
+                },
+                {
+                    question: "What does the axis parameter control in NumPy functions?",
+                    options: [
+                        "The direction of operation",
+                        "The dimension along which to operate",
+                        "The coordinate system",
+                        "The memory alignment"
+                    ],
+                    answer: 1,
+                    explanation: "The axis parameter specifies the dimension along which an operation should be performed."
+                }
+            ]
+        };
+
+        // Quiz app functionality
+        function quizApp() {
+            return {
+                // Quiz state
+                showAnswers: false,
+                showResults: false,
+                score: 0,
+                answeredCount: 0,
+                userAnswers: Array(quizData.questions.length).fill(undefined),
+                
+                // Get total questions
+                get totalQuestions() {
+                    return quizData.questions.length;
+                },
+                
+                // Get questions
+                get questions() {
+                    return quizData.questions;
+                },
+                
+                // Get answer status text
+                getAnswerStatus(qIndex) {
+                    const userAnswer = this.userAnswers[qIndex];
+                    const question = this.questions[qIndex];
+                    
+                    if (userAnswer === undefined) {
+                        return "Not answered. The correct answer is highlighted below.";
+                    } else if (userAnswer === question.answer) {
+                        return "Correct!";
+                    } else {
+                        return "Incorrect. The correct answer is highlighted below.";
+                    }
+                },
+                
+                // Select answer
+                selectAnswer(qIndex, optionIndex) {
+                    if (this.showAnswers) return; // Prevent changing after submission
+                    
+                    // Save answer
+                    this.userAnswers[qIndex] = optionIndex;
+                    
+                    // Update answered count
+                    this.calculateAnsweredCount();
+                },
+                
+                // Calculate how many questions have been answered
+                calculateAnsweredCount() {
+                    let count = 0;
+                    for (const answer of this.userAnswers) {
+                        if (answer !== undefined) count++;
+                    }
+                    this.answeredCount = count;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    
+                    // Calculate score
+                    this.score = 0;
+                    quizData.questions.forEach((question, qIndex) => {
+                        if (this.userAnswers[qIndex] === question.answer) {
+                            this.score++;
+                        }
+                    });
+                    
+                    // Show results after a delay
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1000);
+                },
+                
+                // Reset quiz
+                resetQuiz() {
+                    this.userAnswers = Array(quizData.questions.length).fill(undefined);
+                    this.showAnswers = false;
+                    this.showResults = false;
+                    this.score = 0;
+                    this.answeredCount = 0;
+                },
+                
+                // Get motivation message based on score
+                getMotivationMessage() {
+                    const percentage = this.score / this.totalQuestions;
+                    
+                    if (percentage >= 0.9) {
+                        return "Cosmic mastery achieved! Your understanding of NumPy arrays vs Python lists is stellar.";
+                    } else if (percentage >= 0.7) {
+                        return "Impressive knowledge! You've shown great understanding of the differences between arrays and lists.";
+                    } else if (percentage >= 0.5) {
+                        return "Solid progress! You've grasped the fundamentals. Keep exploring to master the details.";
+                    } else {
+                        return "Beginning your journey! Review the explanations and try again - the universe of NumPy awaits your discovery!";
+                    }
+                },
+                
+                // Create cosmic background
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                },
+                
+                // Initialize the quiz
+                init() {
+                    this.createCosmicBackground();
+                    this.calculateAnsweredCount();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

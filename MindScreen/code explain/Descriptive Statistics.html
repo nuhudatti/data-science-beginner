@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Exploration Code Explanation: Descriptive Statistics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6dd5ed;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(109, 213, 237, 0.4);
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .explain-btn {
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+        }
+        
+        .explain-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .explain-btn:active {
+            transform: translateY(0);
+        }
+        
+        .explain-btn i {
+            margin-right: 10px;
+        }
+        
+        .explanation-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+        }
+        
+        .explanation-panel.active {
+            max-height: 4000px;
+        }
+        
+        .explanation-content {
+            padding: 10px;
+        }
+        
+        .section-title {
+            color: #6dd5ed;
+            margin: 15px 0 10px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #6dd5ed;
+            padding-bottom: 5px;
+        }
+        
+        .code-line {
+            display: flex;
+            margin: 8px 0;
+            align-items: flex-start;
+        }
+        
+        .line-number-sm {
+            width: 30px;
+            color: #6a6a6a;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .line-explanation {
+            flex-grow: 1;
+        }
+        
+        .highlight {
+            background: rgba(109, 213, 237, 0.2);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .note-box {
+            background: rgba(253, 151, 31, 0.1);
+            border-left: 4px solid #fd971f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .concept-box {
+            background: rgba(166, 226, 46, 0.1);
+            border-left: 4px solid #a6e22e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .question-box {
+            background: rgba(102, 217, 239, 0.1);
+            border-left: 4px solid #66d9ef;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .breakdown-box {
+            background: rgba(174, 129, 255, 0.1);
+            border-left: 4px solid #ae81ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .code-breakdown {
+            font-family: monospace;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        .breakdown-step {
+            margin: 5px 0;
+            padding-left: 10px;
+            border-left: 2px solid #6dd5ed;
+        }
+        
+        .output-sample {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .code-block {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .line-number {
+                width: 30px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Descriptive Statistics Code Explanation</h1>
+        
+        <div class="code-block">
+            <div><span class="line-number">1</span>print(<span class="code-string">"\n--- Dataset Preview ---"</span>)</div>
+            <div><span class="line-number">2</span>print(df.head())</div>
+            <div><span class="line-number">3</span>print(<span class="code-string">"\n--- Dataset Info ---"</span>)</div>
+            <div><span class="line-number">4</span>print(df.info())</div>
+            <div><span class="line-number">5</span>print(<span class="code-string">"\n--- Summary Statistics ---"</span>)</div>
+            <div><span class="line-number">6</span>print(df.describe())</div>
+            <div><span class="line-number">7</span><span class="code-comment"># Average daily screen time</span></div>
+            <div><span class="line-number">8</span>avg_screen_time = df[<span class="code-string">'daily_screen_time'</span>].mean()</div>
+            <div><span class="line-number">9</span>print(<span class="code-string">f"📊 Average daily screen time: {avg_screen_time:.2f} hours"</span>)</div>
+            <div><span class="line-number">10</span><span class="code-comment"># Average sleep duration</span></div>
+            <div><span class="line-number">11</span>avg_sleep = df[<span class="code-string">'sleep_duration'</span>].mean()</div>
+            <div><span class="line-number">12</span>print(<span class="code-string">f"💤 Average sleep duration: {avg_sleep:.2f} hours"</span>)</div>
+            <div><span class="line-number">13</span><span class="code-comment"># Most common gender</span></div>
+            <div><span class="line-number">14</span>top_gender = df[<span class="code-string">'gender'</span>].mode()[<span class="code-number">0</span>]</div>
+            <div><span class="line-number">15</span>print(<span class="code-string">f"🧍 Most common gender: {top_gender}"</span>)</div>
+            <div><span class="line-number">16</span><span class="code-comment"># Stress level counts</span></div>
+            <div><span class="line-number">17</span>stress_counts = df[<span class="code-string">'self_reported_stress'</span>].value_counts()</div>
+            <div><span class="line-number">18</span>print(<span class="code-string">"\n📌 Stress level distribution:\n"</span>, stress_counts)</div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="explain-btn" id="explain-btn">
+                <i class="fas fa-code"></i> Explain This Code
+            </button>
+        </div>
+        
+        <div class="explanation-panel" id="explanation-panel">
+            <div class="explanation-content">
+                <h2 class="section-title">Code Explanation</h2>
+                <p>This Python code performs exploratory data analysis on a dataset, displaying key information and statistics about the data.</p>
+                
+                <h3 class="section-title">Line-by-Line Breakdown</h3>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">1</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print("\n--- Dataset Preview ---")</span> - Prints a section header with a newline before it for better visual separation.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">2</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print(df.head())</span> - Displays the first 5 rows of the DataFrame. This provides a quick preview of the data structure and values.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How df.head() Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Returns the first n rows (default is 5)</div>
+                        <div class="breakdown-step">2. Shows column names and data types</div>
+                        <div class="breakdown-step">3. Helps quickly understand the DataFrame structure</div>
+                        <div class="breakdown-step">4. Useful for verifying data loaded correctly</div>
+                    </div>
+                    <div class="output-sample">
+--- Dataset Preview ---
+   user_id  daily_screen_time  sleep_duration gender  self_reported_stress
+0        1                5.2             7.5      M                   Low
+1        2                7.8             6.0      F                Medium
+2        3                3.5             8.2      M                   Low
+3        4                9.1             5.5      F                 High
+4        5                4.3             7.8      M                Medium
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">3-4</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print("\n--- Dataset Info ---")</span> and <span class="highlight">print(df.info())</span> - Prints a section header and then the DataFrame info, which includes:
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> What df.info() Provides</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Number of entries (rows)</div>
+                        <div class="breakdown-step">2. Column names and data types</div>
+                        <div class="breakdown-step">3. Number of non-null values in each column</div>
+                        <div class="breakdown-step">4. Memory usage information</div>
+                    </div>
+                    <div class="output-sample">
+--- Dataset Info ---
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 100 entries, 0 to 99
+Data columns (total 5 columns):
+ #   Column                 Non-Null Count  Dtype  
+---  ------                 --------------  -----  
+ 0   user_id                100 non-null    int64  
+ 1   daily_screen_time      100 non-null    float64
+ 2   sleep_duration         100 non-null    float64
+ 3   gender                 100 non-null    object 
+ 4   self_reported_stress   100 non-null    object 
+dtypes: float64(2), int64(1), object(2)
+memory usage: 4.0+ KB
+None
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">5-6</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print("\n--- Summary Statistics ---")</span> and <span class="highlight">print(df.describe())</span> - Prints a section header and then descriptive statistics for numerical columns.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> What df.describe() Provides</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Count: Number of non-null values</div>
+                        <div class="breakdown-step">2. Mean: Average value</div>
+                        <div class="breakdown-step">3. Std: Standard deviation (measure of spread)</div>
+                        <div class="breakdown-step">4. Min: Minimum value</div>
+                        <div class="breakdown-step">5. 25%: First quartile (25th percentile)</div>
+                        <div class="breakdown-step">6. 50%: Median (50th percentile)</div>
+                        <div class="breakdown-step">7. 75%: Third quartile (75th percentile)</div>
+                        <div class="breakdown-step">8. Max: Maximum value</div>
+                    </div>
+                    <div class="output-sample">
+--- Summary Statistics ---
+       user_id  daily_screen_time  sleep_duration
+count   100.00             100.00          100.00
+mean     50.50               5.23            7.02
+std      29.01               2.11            1.15
+min       1.00               1.50            4.50
+25%      25.75               3.80            6.20
+50%      50.50               5.10            7.00
+75%      75.25               6.70            7.80
+max     100.00               9.50            9.00
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">7-9</div>
+                    <div class="line-explanation">
+                        <span class="highlight"># Average daily screen time</span> - Comment explaining the purpose of the next line.<br>
+                        <span class="highlight">avg_screen_time = df['daily_screen_time'].mean()</span> - Calculates the mean of the 'daily_screen_time' column.<br>
+                        <span class="highlight">print(f"📊 Average daily screen time: {avg_screen_time:.2f} hours")</span> - Prints the result with an emoji and formats the number to 2 decimal places.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How .mean() Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Selects the 'daily_screen_time' column: df['daily_screen_time']</div>
+                        <div class="breakdown-step">2. Calculates the arithmetic mean: sum of all values ÷ number of values</div>
+                        <div class="breakdown-step">3. Returns a single numerical value representing the average</div>
+                    </div>
+                    <p><strong>Example:</strong> If values are [5.2, 7.8, 3.5, 9.1, 4.3], mean = (5.2+7.8+3.5+9.1+4.3)/5 = 6.0</p>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">10-12</div>
+                    <div class="line-explanation">
+                        <span class="highlight"># Average sleep duration</span> - Comment.<br>
+                        <span class="highlight">avg_sleep = df['sleep_duration'].mean()</span> - Calculates the mean of the 'sleep_duration' column.<br>
+                        <span class="highlight">print(f"💤 Average sleep duration: {avg_sleep:.2f} hours")</span> - Prints the result with a sleep emoji.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">13-15</div>
+                    <div class="line-explanation">
+                        <span class="highlight"># Most common gender</span> - Comment.<br>
+                        <span class="highlight">top_gender = df['gender'].mode()[0]</span> - Finds the mode (most frequent value) of the 'gender' column and selects the first one.<br>
+                        <span class="highlight">print(f"🧍 Most common gender: {top_gender}")</span> - Prints the result with a person emoji.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How .mode() Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Selects the 'gender' column: df['gender']</div>
+                        <div class="breakdown-step">2. Counts frequency of each unique value</div>
+                        <div class="breakdown-step">3. Returns the most frequently occurring value(s)</div>
+                        <div class="breakdown-step">4. [0] selects the first mode if multiple values have the same frequency</div>
+                    </div>
+                    <p><strong>Example:</strong> If values are ["M", "F", "M", "M", "F"], mode = "M" (appears 3 times)</p>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">16-18</div>
+                    <div class="line-explanation">
+                        <span class="highlight"># Stress level counts</span> - Comment.<br>
+                        <span class="highlight">stress_counts = df['self_reported_stress'].value_counts()</span> - Counts the occurrences of each unique value in the 'self_reported_stress' column.<br>
+                        <span class="highlight">print("\n📌 Stress level distribution:\n", stress_counts)</span> - Prints a header and the value counts.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How .value_counts() Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Selects the 'self_reported_stress' column</div>
+                        <div class="breakdown-step">2. Counts how many times each unique value appears</div>
+                        <div class="breakdown-step">3. Returns a Series with unique values as index and counts as values</div>
+                        <div class="breakdown-step">4. By default, sorts in descending order of count</div>
+                    </div>
+                    <div class="output-sample">
+📌 Stress level distribution:
+ Low       45
+Medium     35
+High       20
+Name: self_reported_stress, dtype: int64
+                    </div>
+                </div>
+                
+                <div class="concept-box">
+                    <h3><i class="fas fa-lightbulb"></i> Key Concepts</h3>
+                    <p><strong>Exploratory Data Analysis (EDA):</strong> The process of summarizing main characteristics of data often with visual methods. This code performs basic EDA.</p>
+                    <p><strong>Descriptive Statistics:</strong> Methods used to summarize and describe the main features of a dataset.</p>
+                    <p><strong>Central Tendency:</strong> Measures like mean that identify the center of a data distribution.</p>
+                    <p><strong>Frequency Distribution:</strong> Shows how often each value occurs in a dataset (value_counts()).</p>
+                </div>
+                
+                <div class="note-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> Important Notes</h3>
+                    <p>• The .head(), .info(), and .describe() methods are essential for initial data exploration</p>
+                    <p>• Using emojis in output makes it more readable and engaging</p>
+                    <p>• The .2f in f-strings formats numbers to 2 decimal places</p>
+                    <p>• value_counts() is particularly useful for categorical data</p>
+                    <p>• mode()[0] is used because .mode() can return multiple values if there are ties</p>
+                </div>
+                
+                <h3 class="section-title">Potential Questions & Answers</h3>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use df.head() instead of just printing the whole DataFrame?</strong></p>
+                    <p>A: For large datasets, printing the entire DataFrame would be overwhelming and slow. df.head() gives a quick preview without overwhelming the output.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What's the difference between df.info() and df.describe()?</strong></p>
+                    <p>A: df.info() provides metadata about the DataFrame (column names, data types, non-null counts), while df.describe() provides statistical summaries of numerical columns (mean, std, min, max, etc.).</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use [0] when getting the mode?</strong></p>
+                    <p>A: The mode() method returns a Series of mode values. If there are multiple values with the same frequency (a multimodal distribution), [0] selects the first one. This ensures we always get a single value even when there are ties.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: When would value_counts() be more useful than mode()?</strong></p>
+                    <p>A: value_counts() shows the distribution of all values, not just the most frequent one. This is useful when you want to see the frequency of all categories, not just the most common one.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why format numbers to 2 decimal places?</strong></p>
+                    <p>A: Formatting to 2 decimal places makes the output more readable and professionally presented. For screen time and sleep duration, 2 decimal places provides appropriate precision without being overly specific.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What if there are missing values in the data?</strong></p>
+                    <p>A: The .mean() method automatically excludes NaN (missing) values when calculating the average. However, .mode() and .value_counts() behave differently with missing data, so it's important to handle missing values before these operations.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: How could this analysis be extended?</strong></p>
+                    <p>A: This could be extended with visualizations (histograms, box plots), correlation analysis, grouping by categories, or more sophisticated statistical tests.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <style>
+       
+        /* Back Button Styles */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .back-btn i {
+            font-size: 24px;
+        }
+        
+        /* Example content styling */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    
+    <!-- Back Button -->
+    <button class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <script>
+        function goBack() {
+            // Check if there's a previous page in history
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // If no history, redirect to home or a default page
+                window.location.href = 'index.html'; // Change to your home page URL
+            }
+        }
+        
+        // Optional: Add keyboard shortcut (Esc key)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const explainBtn = document.getElementById('explain-btn');
+            const explanationPanel = document.getElementById('explanation-panel');
+            
+            explainBtn.addEventListener('click', function() {
+                explanationPanel.classList.toggle('active');
+                
+                if (explanationPanel.classList.contains('active')) {
+                    explainBtn.innerHTML = '<i class="fas fa-times"></i> Hide Explanation';
+                } else {
+                    explainBtn.innerHTML = '<i class="fas fa-code"></i> Explain This Code';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

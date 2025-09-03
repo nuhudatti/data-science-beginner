@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Explore data science fundamentals with the Iris dataset. Learn Python, R, data visualization, and machine learning through 5IRE's Universal Learning Archive." />
+  <meta name="keywords" content="5IRE, ULA, Data Science, Python, R, Iris Dataset, Machine Learning, Visualization, Nigeria, Cohort 27, Assignment, Beginner" />
+  <meta name="author" content="5IRE Universal Learning Archive" />
+
+  <!-- Open Graph (for Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:title" content="5IRE ULA - Data Science Assignment: Iris Dataset (Cohort 27)" />
+  <meta property="og:description" content="Beginner data science assignment using the Iris dataset. Learn data loading, cleaning, visualization, and Python vs R comparison in Cohort 27." />
+  <meta property="og:image" content="https://undraw.co/api/illustrations/data_trends.svg" />
+  <meta property="og:url" content="https://ula.5ire.org/assignments/cohort-27-iris" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="5IRE ULA - Data Science Assignment (Cohort 27)" />
+  <meta name="twitter:description" content="Hands-on Python & R data science practice with the Iris dataset. Visualization, analysis, and insights — all in one assignment." />
+  <meta name="twitter:image" content="https://undraw.co/api/illustrations/data_trends.svg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://5ire.org/assets/favicon.png" />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#006b3f" />
+
+    <title>5IRE ULA | Data Science Foundations | Cohort 27 Data Science Assignment - Iris Dataset</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@800&display=swap" rel="stylesheet">
+   <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce',
+                         nigeriaGreen: '#008751',
+                        nigeriaYellow: '#FCD116',
+                        nigeriaBlack: '#000000',
+                        primary: '#1a365d',
+                        secondary: '#2b6cb0'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            color: #1e293b;
+        }
+        
+        .code-block {
+            font-family: 'Fira Code', monospace;
+            background: #1e293b;
+            color: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .header-gradient {
+            background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%);
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .concept-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+        
+        .interactive-element {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .interactive-element:hover {
+            transform: scale(1.05);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* assignmentcard */
+         .assignment-card {
+            background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .nigerian-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23fcd116' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+ 
+     <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                     <div class="flex items-center space-x-4">
+                <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+            </div>
+                </div>
+            </div>
+           
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Python Fundamentals</p>
+            </div>
+        </div>
+    </header>
+    
+    
+
+
+    <!-- Progress Tracker -->
+    <!-- <section class="py-6 bg-white shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-2">
+                <div class="text-sm font-medium text-slate-700">Learning Progress</div>
+                <div class="text-sm font-medium text-sky-600">25% Complete</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%"></div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">Data Science Foundations</h1>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
+                Everything you need to know before starting your first data science project with the Iris dataset
+            </p>
+            <!-- <div class="flex flex-wrap justify-center gap-4">
+                <button class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center">
+                    <i class="fas fa-play-circle mr-2"></i> Start Learning
+                </button>
+                <button class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-lg font-medium transition flex items-center">
+                    <i class="fas fa-download mr-2"></i> Download Resources
+                </button>
+            </div> -->
+        </section>
+
+        <!-- Learning Path Overview -->
+        <!-- <section class="mb-16">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Your Learning Journey</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="card">
+                    <div class="p-6">
+                        <div class="bg-blue-100 text-blue-800 concept-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Python Fundamentals</h3>
+                        <p class="text-slate-600 mb-4">Master essential programming concepts needed for data science</p>
+                        <div class="flex items-center text-sm text-slate-500">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>2-3 hours</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6">
+                        <div class="bg-emerald-100 text-emerald-800 concept-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Data Science Libraries</h3>
+                        <p class="text-slate-600 mb-4">Learn pandas, NumPy, and visualization tools</p>
+                        <div class="flex items-center text-sm text-slate-500">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>3-4 hours</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6">
+                        <div class="bg-purple-100 text-purple-800 concept-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Mini Project</h3>
+                        <p class="text-slate-600 mb-4">Create and analyze your own dataset from scratch</p>
+                        <div class="flex items-center text-sm text-slate-500">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>2 hours</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6">
+                        <div class="bg-amber-100 text-amber-800 concept-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Iris Dataset</h3>
+                        <p class="text-slate-600 mb-4">Apply your skills to a real-world dataset</p>
+                        <div class="flex items-center text-sm text-slate-500">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>2 hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+            <!-- Assignment Section -->
+    <section id="assignment" class="py-16 nigerian-pattern mb-10">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold text-primary mb-4">Data Science Assignment</h2>
+                <div class="w-24 h-1 bg-nigeriaYellow mx-auto"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto assignment-card text-white rounded-2xl overflow-hidden">
+                <div class="p-8 md:p-12">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">Iris Dataset Analysis</h3>
+                            <p class="text-yellow-200">Cohort 27 - Beginner Assignment</p>
+                        </div>
+                        <div class="bg-black bg-opacity-30 rounded-full px-4 py-1">
+                            <i class="fas fa-clock mr-2"></i>~2 hours
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">Python Tasks</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Load Iris dataset from sklearn</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data exploration with pandas</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data analysis and filtering</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data visualization (scatter, histogram, boxplot)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">R Tasks</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Load built-in Iris dataset</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data exploration functions</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data analysis and aggregation</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data visualization (scatter, histogram, boxplot)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black bg-opacity-30 rounded-xl p-6 mb-6">
+                        <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">Deliverables</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-center">
+                                <i class="fab fa-python text-2xl mr-3"></i>
+                                <span>Python notebook or .py file</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fab fa-r-project text-2xl mr-3"></i>
+                                <span>R script (.R file)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-file-alt text-2xl mr-3"></i>
+                                <span>1-2 sentence comparison</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-5 text-white p-6 md:p-10 rounded-2xl mt-10 border border-white border-opacity-10">
+  <h4 class="text-2xl font-bold text-nigeriaYellow mb-4">📘 Beginner Data Science Task – Python & R</h4>
+  <p class="text-sm text-gray-200 mb-6">⏱️ <strong>Estimated Time:</strong> ~2 hours &nbsp;|&nbsp; <strong>Goal:</strong> Practice data exploration & visualization using the Iris dataset.</p>
+
+  <!-- Python Part -->
+  <div class="mb-8">
+    <h5 class="text-xl font-semibold text-nigeriaYellow mb-3">🐍 Part 1 – Python (1 Hour)</h5>
+    <ul class="list-disc list-inside text-gray-200 space-y-2">
+      <li><strong>Load & Prepare:</strong> Import from <code>sklearn.datasets</code>, convert to <code>pandas</code> DataFrame, and add species names.</li>
+      <li><strong>Explore:</strong> Use <code>df.head()</code>, <code>df.info()</code>, <code>df.describe()</code>, check for nulls, and count species.</li>
+      <li><strong>Analyze:</strong> Avg petal length per species, longest avg sepal length, filter where petal width > 1.5.</li>
+      <li><strong>Visualize:</strong> Scatter plot (sepal length vs width), histogram (petal length), boxplot (sepal width by species).</li>
+    </ul>
+  </div>
+
+  <!-- R Part -->
+  <div class="mb-8">
+    <h5 class="text-xl font-semibold text-nigeriaYellow mb-3">📊 Part 2 – R (1 Hour)</h5>
+    <ul class="list-disc list-inside text-gray-200 space-y-2">
+      <li><strong>Load & Explore:</strong> Use built-in <code>iris</code> dataset, check with <code>head()</code> and <code>str()</code>.</li>
+      <li><strong>Explore:</strong> Use <code>summary()</code>, check for NAs, count species, and aggregate petal/sepal stats.</li>
+      <li><strong>Analyze:</strong> Avg petal length by species, species with longest avg sepal length, filter petal width > 1.5.</li>
+      <li><strong>Visualize:</strong> Scatter plot (Sepal.Length vs Sepal.Width), histogram (Petal.Length), boxplot (Sepal.Width by Species).</li>
+    </ul>
+  </div>
+
+  <!-- Deliverables -->
+  <div class="bg-black bg-opacity-20 rounded-xl p-6 mb-6">
+    <h5 class="text-lg font-semibold text-nigeriaYellow mb-3">📤 What to Submit</h5>
+    <ul class="list-disc list-inside text-gray-100 space-y-2">
+      <li>✅ Python notebook (.ipynb) or script (.py)</li>
+      <li>✅ R script (.R)</li>
+      <li>✅ Short 1–2 sentence comparison between Python and R (your observations)</li>
+    </ul>
+  </div>
+
+  <!-- Tips -->
+  <div class="border-t border-white border-opacity-10 pt-4">
+    <h5 class="text-lg font-semibold text-nigeriaYellow mb-2">💡 Tips</h5>
+    <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm">
+      <li>Use <code>Seaborn</code> or <code>Matplotlib</code> for Python visualizations.</li>
+      <li>In R, use base plots or <code>ggplot2</code> if you're familiar.</li>
+      <li>Watch for case sensitivity in column names (e.g., <code>Sepal.Width</code> vs <code>sepal width</code>).</li>
+      <li>This is about data storytelling — look for patterns and outliers.</li>
+    </ul>
+  </div>
+</div>
+
+                    
+                    <!-- <div class="flex flex-wrap gap-4">
+                        <button class="bg-nigeriaYellow hover:bg-yellow-500 text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-download mr-2"></i>Download Resources
+                        </button>
+                        <button class="bg-white hover:bg-gray-100 text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-play-circle mr-2"></i>Start Assignment
+                        </button>
+                        <button class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-video mr-2"></i>Watch Tutorial
+                        </button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+        <!-- Core Concepts Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Essential Concepts Explained</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Python Fundamentals -->
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="step-number bg-blue-100 text-blue-800">1</div>
+                            <h3 class="text-2xl font-bold">Python Fundamentals</h3>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-file-import mr-2 text-blue-500"></i>
+                                Import Statements
+                            </h4>
+                            <p class="text-slate-700 mb-3">
+                                Import statements bring external functionality into your Python environment. This is essential for data science work.
+                            </p>
+                            <div class="code-block p-4 rounded-lg mb-3">
+                                <span class="text-cyan-400">import</span> pandas <span class="text-cyan-400">as</span> pd<br>
+                                <span class="text-cyan-400">from</span> sklearn.datasets <span class="text-cyan-400">import</span> load_iris
+                            </div>
+                            <p class="text-sm text-slate-600">
+                                <i class="fas fa-lightbulb text-amber-400 mr-1"></i> 
+                                Think of imports like tools in a toolbox - each library provides different capabilities
+                            </p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-cube mr-2 text-blue-500"></i>
+                                Data Structures
+                            </h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h5 class="font-medium mb-2">Variables</h5>
+                                    <p class="text-sm text-slate-700">Containers for storing data values</p>
+                                    <div class="code-block p-3 mt-2 text-sm">
+                                        age = 25<br>
+                                        name = "Alice"
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h5 class="font-medium mb-2">DataFrames</h5>
+                                    <p class="text-sm text-slate-700">2D tables with rows and columns</p>
+                                    <div class="code-block p-3 mt-2 text-sm">
+                                        data = {'Name': ['Alice', 'Bob'],<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Age': [25, 30]}<br>
+                                        df = pd.DataFrame(data)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Science Workflow -->
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="step-number bg-emerald-100 text-emerald-800">2</div>
+                            <h3 class="text-2xl font-bold">Data Science Workflow</h3>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-center mb-6">
+                                <div class="floating-element">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24'%3E%3Cpath fill='%230ea5e9' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m-1 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8l-8 8z'/%3E%3C/svg%3E" alt="Workflow" class="w-24 h-24">
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex">
+                                    <div class="bg-emerald-100 text-emerald-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        1
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Data Collection</h4>
+                                        <p class="text-slate-700">Gathering raw data from various sources</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="bg-emerald-100 text-emerald-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        2
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Data Cleaning</h4>
+                                        <p class="text-slate-700">Handling missing values and inconsistencies</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="bg-emerald-100 text-emerald-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        3
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Exploratory Analysis</h4>
+                                        <p class="text-slate-700">Understanding patterns and relationships</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="bg-emerald-100 text-emerald-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        4
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Visualization</h4>
+                                        <p class="text-slate-700">Creating charts to communicate insights</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+        <!-- Key Libraries Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Essential Data Science Libraries</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="card">
+                    <div class="p-6 text-center">
+                        <div class="bg-blue-100 text-blue-800 concept-icon mx-auto">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">pandas</h3>
+                        <p class="text-slate-600 mb-4">Data manipulation and analysis library</p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>DataFrames and Series</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Data cleaning tools</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Aggregation functions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6 text-center">
+                        <div class="bg-amber-100 text-amber-800 concept-icon mx-auto">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Matplotlib</h3>
+                        <p class="text-slate-600 mb-4">Foundation for data visualization</p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Basic charts and plots</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Customizable visuals</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Figure composition</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6 text-center">
+                        <div class="bg-purple-100 text-purple-800 concept-icon mx-auto">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Seaborn</h3>
+                        <p class="text-slate-600 mb-4">Statistical data visualization</p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>High-level interface</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Attractive default styles</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Complex visualizations</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="p-6 text-center">
+                        <div class="bg-rose-100 text-rose-800 concept-icon mx-auto">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">scikit-learn</h3>
+                        <p class="text-slate-600 mb-4">Machine learning library</p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Built-in datasets</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Data preprocessing</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Model training tools</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-8">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-4">Python vs R - Key Differences</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-slate-700">Feature</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-slate-700">Python</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-slate-700">R</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Primary Use</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">General-purpose programming</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">Statistical computing</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Data Frames</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">pandas DataFrame</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">Built-in data.frame</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Data Loading</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">from sklearn.datasets import load_iris</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">data(iris)</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Exploration</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">df.info(), df.describe()</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">str(iris), summary(iris)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Missing Values</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">df.isnull().sum()</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">colSums(is.na(iris))</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">Visualization</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">Matplotlib/Seaborn</td>
+                                    <td class="px-4 py-3 text-sm text-slate-700">ggplot2, base graphics</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mini Project Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Mini Project: Create Your First Dataset</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">
+                Before working with the Iris dataset, you'll create and analyze your own simple dataset. This helps you understand what happens behind the scenes.
+            </p>
+            
+            <div class="card mb-8">
+                <div class="p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number bg-purple-100 text-purple-800">3</div>
+                        <h3 class="text-2xl font-bold">Student Grades Dataset</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Step-by-Step Guide</h4>
+                            <div class="space-y-4">
+                                <div class="flex">
+                                    <div class="bg-purple-100 text-purple-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        1
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Create Data</h4>
+                                        <p class="text-slate-700">Define student names and their grades</p>
+                                        <div class="code-block p-3 mt-2 text-sm">
+                                            students = ['Alice', 'Bob', 'Charlie']<br>
+                                            math_grades = [85, 92, 78]<br>
+                                            science_grades = [90, 88, 85]
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="bg-purple-100 text-purple-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        2
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Build DataFrame</h4>
+                                        <p class="text-slate-700">Combine into a structured table</p>
+                                        <div class="code-block p-3 mt-2 text-sm">
+                                            import pandas as pd<br>
+                                            data = {'Student': students,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Math': math_grades,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Science': science_grades}<br>
+                                            df = pd.DataFrame(data)
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="bg-purple-100 text-purple-800 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">
+                                        3
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Analyze</h4>
+                                        <p class="text-slate-700">Calculate averages and explore data</p>
+                                        <div class="code-block p-3 mt-2 text-sm">
+                                            # Average grade per student<br>
+                                            df['Average'] = (df['Math'] + df['Science']) / 2<br><br>
+                                            
+                                            # Subject averages<br>
+                                            math_avg = df['Math'].mean()<br>
+                                            science_avg = df['Science'].mean()
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Visualize Results</h4>
+                            <div class="bg-slate-50 p-6 rounded-lg">
+                                <canvas id="gradesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- <div class="text-center">
+                <button class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
+                    <i class="fas fa-rocket mr-2"></i> Start Mini Project
+                </button>
+            </div> -->
+        </section>
+
+        <!-- Next Steps -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Ready for the Iris Dataset?</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">
+                Now that you've mastered the fundamentals, you're ready to tackle the Iris dataset assignment with confidence!
+            </p>
+            
+            <div class="card">
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="mb-6 md:mb-0 md:mr-8 flex-shrink-0">
+                            <div class="bg-amber-100 text-amber-800 concept-icon mx-auto">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4">Iris Dataset Assignment</h3>
+                            <p class="text-slate-700 mb-4">
+                                The Iris flower dataset contains measurements for 150 iris flowers from three species. You'll practice:
+                            </p>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Loading and converting data
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Exploratory analysis
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Summary statistics
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Data visualization
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Grouping and filtering
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    Python vs R comparison
+                                </li>
+                            </ul>
+                            <div class="flex flex-wrap gap-4">
+                                <a href="./Assignment.html" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-medium transition">
+                                    <i class="fas fa-book-open mr-2"></i> View Assignment Work Flow
+                                </a>
+                                <!-- <button class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-lg font-medium transition">
+                                    <i class="fas fa-download mr-2"></i> Download Dataset
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explore Modules Section -->
+<section id="learning-trail" class="py-16 bg-gradient-to-br from-green-50 via-white to-blue-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-heading font-bold text-primary mb-4">Explore Your 5 Learning Modules</h2>
+      <div class="w-24 h-1 bg-nigeriaYellow mx-auto"></div>
+    </div>
+
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+      <!-- Python Fundamentals -->
+      <div class="bg-nigeriaGreen text-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-bold mb-2"><i class="fab fa-python mr-2"></i>Python Fundamentals</h3>
+        <p class="text-sm mb-4">Start coding with ease — learn syntax, data structures, control flow, and how to automate everyday tasks.</p>
+        </div>
+
+      <!-- Data Analysis -->
+      <div class="bg-indigo-700 text-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-bold mb-2"><i class="fas fa-database mr-2"></i>Data Analysis</h3>
+        <p class="text-sm mb-4">Discover how to clean, transform, and summarize real Nigerian data using Pandas and NumPy.</p>
+        </div>
+
+      <!-- Data Visualization -->
+      <div class="bg-blue-700 text-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-bold mb-2"><i class="fas fa-chart-bar mr-2"></i>Data Visualization</h3>
+        <p class="text-sm mb-4">Turn numbers into stories using Matplotlib, Seaborn, Plotly, and interactive Nigerian geo-maps.</p>
+          </div>
+
+      <!-- Machine Learning -->
+      <div class="bg-emerald-700 text-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-bold mb-2"><i class="fas fa-brain mr-2"></i>Machine Learning</h3>
+        <p class="text-sm mb-4">Predict crop yields, detect fraud, and build smart systems with Nigerian datasets using Scikit-learn.</p>
+            </div>
+
+    <!-- Capstone Project: Nigerian Economic Analysis -->
+<div class="bg-yellow-600 text-white p-6 rounded-2xl shadow-lg">
+  <h3 class="text-xl font-bold mb-2"><i class="fas fa-chart-line mr-2"></i>Capstone Project</h3>
+  <p class="text-sm mb-4">Apply all your skills to analyze and predict Nigeria's economic trends. Integrate Python, analysis, visualization, ML, and SQL.</p>
+ </div>
+
+  <a href="./fundementals.html" class="bg-sky-600 hover:bg-sky-700 text-green-900 font-semibold  text-2xl px-6 py-3 rounded-lg font-medium transition flex items-center">
+      <div class="flex flex-wrap justify-center gap-4">
+               
+                    <i class="fas fa-play-circle text-2xl mr-2"></i> Start Learning
+                
+                <!-- <button class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-lg font-medium transition flex items-center">
+                    <i class="fas fa-download mr-2"></i> Download Resources
+                </button> -->
+            </div>
+             </a>
+    </div>
+   
+    
+  </div>
+</section>
+
+<a href="../index.html#foundation" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white border-2  font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home</span>
+  </button>
+</a>
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Universal Learning Archive</h3>
+                    <p class="text-slate-400">A 5IRE initiative to democratize data science education and create self-sufficient learners.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Learning Paths</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Data Science Fundamentals</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Machine Learning</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Data Visualization</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Big Data</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Code Examples</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Datasets</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white transition">Cheat Sheets</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-slate-400 hover:text-white transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-white transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-white transition">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-white transition">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                    <p class="text-slate-400">© 2025 5IRE ULA. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize chart
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        const gradesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Alice', 'Bob', 'Charlie'],
+                datasets: [
+                    {
+                        label: 'Math Grade',
+                        data: [85, 92, 78],
+                        backgroundColor: 'rgba(14, 165, 233, 0.7)',
+                        borderColor: 'rgba(14, 165, 233, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Science Grade',
+                        data: [90, 88, 85],
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Student Grades Visualization'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 70,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Grades'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Interactive elements
+        document.querySelectorAll('.interactive-element').forEach(element => {
+            element.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Capstone Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce',
+                        dspink: '#db2777',
+                        dsorange: '#ea580c',
+                        dsgreen: '#16a34a'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --progress: 100%;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .explanation-panel {
+            background: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            padding: 16px;
+        }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            width: var(--progress);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .highlight {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(56, 189, 248, 0.3);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+        
+        .update-ticker {
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .project-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .project-header {
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .project-content {
+            padding: 20px;
+        }
+        
+        .project-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 24px;
+        }
+        
+        .dataset-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .dataset-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insight-card {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+            border-radius: 0 8px 8px 0;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .visualization-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .visualization-placeholder i {
+            font-size: 48px;
+            color: #3b82f6;
+            opacity: 0.3;
+        }
+        
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .checkpoint:last-child {
+            border-bottom: none;
+        }
+        
+        .checkpoint-icon {
+            min-width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: #3b82f6;
+        }
+        
+        .certificate {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px dashed #3b82f6;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%233b82f6' fill-opacity='0.1' d='M28.1,76.1c-0.8-1-1.5-2-2.3-3c-1.6-2.1-3.1-4.3-4.5-6.6c-2.7-4.6-4.7-9.5-5.9-14.7c-1.2-5.2-1.6-10.5-1.2-15.9 c0.4-5.4,1.6-10.7,3.5-15.8c1.9-5.1,4.5-9.9,7.7-14.4c3.2-4.4,7.1-8.4,11.5-12c4.4-3.5,9.3-6.4,14.5-8.7c5.2-2.3,10.8-3.9,16.5-4.7 c5.7-0.8,11.5-0.9,17.3-0.3c5.8,0.6,11.5,2,17,4.1c5.5,2.1,10.8,4.9,15.7,8.3c4.9,3.4,9.4,7.4,13.4,11.9c4,4.5,7.4,9.5,10.1,14.9 c2.7,5.4,4.7,11.2,5.9,17.1c1.2,5.9,1.6,11.9,1.2,17.9c-0.4,6-1.6,11.9-3.5,17.6c-1.9,5.7-4.5,11.1-7.7,16.2 c-3.2,5.1-7.1,9.8-11.5,14c-4.4,4.2-9.3,7.9-14.5,11c-5.2,3.1-10.8,5.5-16.5,7.2c-5.7,1.7-11.5,2.7-17.3,3c-5.8,0.3-11.5-0.1-17-1.3 c-5.5-1.2-10.8-3.1-15.7-5.7c-4.9-2.6-9.4-5.8-13.4-9.6C35.3,85.2,31.3,80.8,28.1,76.1z'%3E%3C/path%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 120px;
+            font-weight: bold;
+            color: rgba(59, 130, 246, 0.1);
+            white-space: nowrap;
+        }
+
+          /* NAV */
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+    
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                    <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Capstone Project</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Latest updates ticker -->
+    <div class="update-ticker">
+        <div class="ticker-content">
+            <span class="px-4"><i class="fas fa-bullhorn mr-2"></i>New: Updated Nigerian economic datasets available</span>
+            <span class="px-4"><i class="fas fa-star mr-2"></i>Project submission deadline: December 15, 2025</span>
+            <span class="px-4"><i class="fas fa-award mr-2"></i>Certificates will be issued by 5IRE upon completion</span>
+        </div>
+    </div>
+            <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="./fundementals.html" class="nav-item text-nca-700 "><i class="fas fa-code mr-1"></i>Python</a>
+                <a href="./index2.html" class="nav-item hover:text-nca-700"><i class="fas fa-database mr-1"></i>Data</a>
+                <a href="./index3.html" class="nav-item hover:text-nca-700"><i class="fas fa-chart-line mr-1"></i>Plots</a>
+                <a href="./index4.html" class="nav-item hover:text-nca-700"><i class="fas fa-robot mr-1"></i>ML</a>
+                <a href="#" class="nav-item hover:text-nca-700 font-medium active-nav"><i class="fas fa-graduation-cap mr-1"></i>Project</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page header with progress -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Capstone Project: Nigerian Economic Analysis</h1>
+                <p class="text-gray-600 mb-4">Apply all your skills to analyze and predict Nigeria's economic trends</p>
+                
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-secondary mr-2"></i>
+                        <span>Estimated Time: 10-15 hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span>Integration of all learned skills</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium">Your Progress</span>
+                        <span id="progress-text" class="text-sm font-medium">100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>5IRE Curriculum Compliant
+            </div>
+        </div>
+
+        <!-- Mission statement -->
+        <div class="bg-gradient-to-r from-dsblue to-dspurple text-white rounded-xl shadow-md p-6 mb-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">Your Data Science Journey Culminates Here</h2>
+            <p class="text-lg mb-4">
+                "Apply all the skills you've learned to solve a real-world problem and demonstrate your mastery of data science."
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <span>Real Nigerian datasets</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>Comprehensive analysis</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <span>Actionable insights</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>NITDA Certification</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Introduction -->
+        <div class="project-section">
+            <div class="project-header" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                <div class="project-icon">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Project Overview</h2>
+            </div>
+            <div class="project-content">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Nigeria Economic Analysis Challenge</h3>
+                <p class="text-gray-700 mb-4">
+                    As a data scientist at the Nigerian National Economic Planning Commission, you've been tasked with analyzing 
+                    the country's economic performance over the last decade. Your analysis will inform national policy decisions 
+                    for the upcoming year.
+                </p>
+                
+                <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-bullseye mr-2"></i> Project Objectives
+                    </h4>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li>Analyze GDP growth trends across sectors and regions</li>
+                        <li>Identify key drivers of economic performance</li>
+                        <li>Predict next year's economic indicators</li>
+                        <li>Provide actionable recommendations for policymakers</li>
+                        <li>Create an interactive dashboard for ongoing analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="dataset-card bg-green-50 border-green-200">
+                        <h4 class="font-bold text-green-700 mb-2">
+                            <i class="fas fa-table mr-2"></i> GDP Data
+                        </h4>
+                        <p class="text-sm text-gray-700">Annual GDP by sector (2010-2023)</p>
+                        <p class="text-xs text-gray-500 mt-2">Source: National Bureau of Statistics</p>
+                    </div>
+                    
+                    <div class="dataset-card bg-yellow-50 border-yellow-200">
+                        <h4 class="font-bold text-yellow-700 mb-2">
+                            <i class="fas fa-table mr-2"></i> Demographic Data
+                        </h4>
+                        <p class="text-sm text-gray-700">Population, employment, education by state</p>
+                        <p class="text-xs text-gray-500 mt-2">Source: National Population Commission</p>
+                    </div>
+                    
+                    <div class="dataset-card bg-purple-50 border-purple-200">
+                        <h4 class="font-bold text-purple-700 mb-2">
+                            <i class="fas fa-table mr-2"></i> Trade Data
+                        </h4>
+                        <p class="text-sm text-gray-700">Imports, exports, and trade balance</p>
+                        <p class="text-xs text-gray-500 mt-2">Source: Central Bank of Nigeria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Steps -->
+        <div class="project-section">
+            <div class="project-header" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);">
+                <div class="project-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Project Execution Plan</h2>
+            </div>
+            <div class="project-content">
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 1: Data Acquisition</h3>
+                        <p class="text-gray-700">
+                            Download and load the provided datasets. Explore the data structure and documentation.
+                        </p>
+                        <div class="mt-2">
+                            <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-download mr-1"></i> Download Dataset Package
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 2: Data Cleaning & Preparation</h3>
+                        <p class="text-gray-700">
+                            Handle missing values, outliers, and inconsistencies. Merge datasets and create new features.
+                        </p>
+                        <div class="mt-2">
+                            <pre class="text-sm bg-gray-100 p-2 rounded inline-block">df = pd.merge(gdp_data, demographic_data, on='state')</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 3: Exploratory Data Analysis</h3>
+                        <p class="text-gray-700">
+                            Analyze trends, relationships, and patterns. Create visualizations to communicate findings.
+                        </p>
+                        <div class="visualization-placeholder">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 4: Predictive Modeling</h3>
+                        <p class="text-gray-700">
+                            Build machine learning models to predict future economic indicators.
+                        </p>
+                        <div class="mt-2">
+                            <pre class="text-sm bg-gray-100 p-2 rounded">model = RandomForestRegressor()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 5: Insights & Recommendations</h3>
+                        <p class="text-gray-700">
+                            Synthesize findings into actionable insights for policymakers.
+                        </p>
+                        <div class="insight-card mt-3">
+                            <p class="font-medium">Key Insight:</p>
+                            <p>States with higher education investment show 23% more GDP growth in technology sectors</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkpoint">
+                    <div class="checkpoint-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Step 6: Dashboard Creation</h3>
+                        <p class="text-gray-700">
+                            Build an interactive dashboard for ongoing economic monitoring.
+                        </p>
+                        <div class="mt-2">
+                            <div class="flex space-x-4">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Plotly Dash</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Streamlit</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Power BI</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Deliverables -->
+        <div class="project-section">
+            <div class="project-header" style="background: linear-gradient(135deg, #16a34a, #22c55e);">
+                <div class="project-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Project Deliverables</h2>
+            </div>
+            <div class="project-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Required Submissions</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-file-code text-blue-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-bold">Jupyter Notebook</h4>
+                                    <p class="text-sm text-gray-700">Complete analysis with code, visualizations, and documentation</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-chart-pie text-green-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-bold">Executive Summary</h4>
+                                    <p class="text-sm text-gray-700">PDF report with key findings and recommendations</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-desktop text-purple-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-bold">Interactive Dashboard</h4>
+                                    <p class="text-sm text-gray-700">Web-based dashboard for exploring the data</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-video text-red-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-bold">Presentation</h4>
+                                    <p class="text-sm text-gray-700">5-minute video walkthrough of your analysis</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Evaluation Criteria</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="font-medium">Data Cleaning & Preparation</span>
+                                    <span>20%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="font-medium">Analysis Depth & Quality</span>
+                                    <span>30%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="font-medium">Visualization Effectiveness</span>
+                                    <span>20%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="font-medium">Modeling & Prediction</span>
+                                    <span>15%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="font-medium">Actionable Recommendations</span>
+                                    <span>15%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-red-600 h-2 rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certification -->
+        <div class="project-section">
+            <div class="project-header" style="background: linear-gradient(135deg, #7e22ce, #a855f7);">
+                <div class="project-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Certification & Next Steps</h2>
+            </div>
+            <div class="project-content">
+                <div class="certificate mb-8">
+                    <div class="watermark">5IRE</div>
+                    <div class="relative">
+                        <h3 class="text-3xl font-bold mb-4">Certificate of Completion</h3>
+                        <p class="text-xl mb-2">Data Science Cohort 27</p>
+                        <p class="text-lg mb-8">5th Industrial Revelution Emperor</p>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 w-full max-w-md">
+                                <p class="text-sm text-gray-500">Awarded to:</p>
+                                <p class="text-2xl font-bold mb-6">[Your Name]</p>
+                                <p class="mb-4">For successful completion of the Data Science Program</p>
+                                <div class="flex justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Date</p>
+                                        <p>December 30, 2025</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Director General</p>
+                                        <p>Nuhu Muhammad Datti</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-700 mb-6">
+                            Upon successful project completion, you'll receive this official certificate from 5IRE 
+                            recognizing your mastery of data science fundamentals.
+                        </p>
+                    </div>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Continue Your Learning Journey</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-700 mb-2">
+                            <i class="fas fa-network-wired mr-2"></i> Advanced ML Specialization
+                        </h4>
+                        <p class="text-sm text-gray-700">Deep learning, NLP, and computer vision</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 class="font-bold text-green-700 mb-2">
+                            <i class="fas fa-cloud mr-2"></i> Cloud Data Engineering
+                        </h4>
+                        <p class="text-sm text-gray-700">AWS, Azure, and GCP data solutions</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                        <h4 class="font-bold text-purple-700 mb-2">
+                            <i class="fas fa-chart-line mr-2"></i> Business Intelligence
+                        </h4>
+                        <p class="text-sm text-gray-700">Tableau, Power BI, and advanced analytics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Submission -->
+        <div class="text-center py-12">
+            <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:from-nigeriagreen hover:to-nigeriagreen text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg transform transition hover:scale-105">
+                Submit Your Capstone Project
+            </button>
+            <p class="text-gray-600 mt-4">Submission Deadline: December 15, 2025</p>
+        </div>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home</span>
+  </button>
+</a>
+
+
+     <!-- Footer -->
+    <footer class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">5IRE ULA</h3>
+                    <p class="text-sm opacity-80">
+                        The Universal Learning Archive is a flagship project of the 5th Industrial Revelution, designed to democratize technology education across Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Cohort 27 Learning Trail</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">Python Fundamentals</a></li>
+                        <li><a href="#" class="hover:underline">Data Analysis with Pandas</a></li>
+                        <li><a href="#" class="hover:underline">Data Visualization</a></li>
+                        <li><a href="#" class="hover:underline">Machine Learning Essentials</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>5IRE Headquarters, Abuja</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white border-opacity-20 mt-8 pt-6 text-center text-sm opacity-80">
+                <p>© 2025 Universal Learning Archive. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Update progress
+        function updateProgress(percent) {
+            document.documentElement.style.setProperty('--progress', percent + '%');
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(100);
+            
+            // Simulate progress animation
+            setTimeout(() => {
+                const progressFill = document.querySelector('.progress-fill');
+                progressFill.style.transition = 'width 2s ease';
+                progressFill.style.width = '100%';
+            }, 500);
+        });
+    </script>
+</body>
+</html>

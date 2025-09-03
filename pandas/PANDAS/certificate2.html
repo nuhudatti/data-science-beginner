@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NITDA/NCAIR Certificate Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            nca: { primary: '#1d4ed8', secondary: '#0f172a', accent: '#0ea5e9' },
+            certificate: { gold: '#d4af37', accent: '#1a365d' }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .certificate {
+      position: relative;
+      background: #fff;
+      border: 8px solid #d4af37;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      max-width: 100%;
+    }
+
+    .gold-border {
+      position: absolute;
+      inset: 0;
+      border: 2px solid #d4af37;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .watermark {
+      position: absolute;
+      opacity: 0.03;
+      font-size: 180px;
+      transform: rotate(-30deg);
+      z-index: 0;
+    }
+
+    .seal {
+      border: 3px solid #d4af37;
+      background: radial-gradient(circle, #f8fafc 0%, #e2e8f0 100%);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .qr-code {
+      border: 1px solid #e2e8f0;
+      background: white;
+      padding: 5px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-3xl font-bold text-center mb-6">NITDA/NCAIR Certificate Generator</h1>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Form -->
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Certificate Details</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block font-medium">Full Name</label>
+            <input type="text" id="name" placeholder="e.g. John Doe" class="w-full px-4 py-2 border rounded focus:outline-none" />
+          </div>
+          <div>
+            <label class="block font-medium">Program</label>
+            <select id="course" class="w-full px-4 py-2 border rounded">
+              <option>Data Science Cohort 27</option>
+              <option>AI & Machine Learning</option>
+              <option>Cybersecurity Professional</option>
+              <option>Cloud Computing</option>
+              <option>Blockchain Technology</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium">Completion Date</label>
+            <input type="date" id="date" class="w-full px-4 py-2 border rounded" />
+          </div>
+          <div>
+            <label class="block font-medium">Certificate ID</label>
+            <div class="flex">
+              <input type="text" id="certId" readonly class="w-full px-4 py-2 border rounded-l"/>
+              <button id="generateId" class="bg-gray-200 px-4 rounded-r">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <button id="generateCert" class="bg-yellow-600 text-white w-full py-2 rounded font-semibold">
+              Generate Certificate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificate -->
+      <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Certificate Preview</h2>
+        <div class="flex justify-center">
+          <div id="certificate" class="certificate p-6">
+            <div class="gold-border"></div>
+            <div class="watermark top-20 left-10 font-serif">NITDA</div>
+            <div class="relative z-10 text-center h-full flex flex-col justify-center items-center">
+
+              <h2 class="text-3xl font-serif text-certificate-accent mb-2">CERTIFICATE OF COMPLETION</h2>
+              <p class="text-lg text-gray-600">This certifies that</p>
+              <h1 id="previewName" class="text-2xl font-bold text-certificate-gold my-3">[Your Name]</h1>
+              <p class="text-gray-600">has successfully completed the</p>
+              <div id="previewCourse" class="text-lg text-certificate-gold font-semibold my-2">[Course Name]</div>
+              <p class="text-gray-600">Awarded on</p>
+              <div id="previewDate" class="font-semibold text-gray-700 my-2">[Date]</div>
+
+              <div class="mt-6 text-sm text-gray-600">
+                Certificate ID: <span id="previewId">0000-0000</span>
+              </div>
+              <div id="qrCode" class="qr-code mt-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-4 mt-6">
+          <button id="downloadPdf" class="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50" disabled>
+            <i class="fas fa-file-pdf mr-2"></i> Download PDF
+          </button>
+          <button id="downloadPng" class="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50" disabled>
+            <i class="fas fa-image mr-2"></i> Download PNG
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('date');
+      dateInput.value = new Date().toISOString().split('T')[0];
+
+      generateCertificateId();
+
+      document.getElementById('generateId').addEventListener('click', generateCertificateId);
+      document.getElementById('generateCert').addEventListener('click', generateCertificate);
+      document.getElementById('downloadPdf').addEventListener('click', downloadPDF);
+      document.getElementById('downloadPng').addEventListener('click', downloadPNG);
+
+      function generateCertificateId() {
+        const id = 'NCA-' + Date.now().toString().slice(-6) + '-' + 
+                    Math.random().toString(36).substring(2, 6).toUpperCase();
+        document.getElementById('certId').value = id;
+      }
+
+      function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+      }
+
+      function generateCertificate() {
+        const name = document.getElementById('name').value || '[Your Name]';
+        const course = document.getElementById('course').value || '[Course Name]';
+        const date = document.getElementById('date').value ? formatDate(document.getElementById('date').value) : '[Date]';
+        const certId = document.getElementById('certId').value;
+
+        document.getElementById('previewName').textContent = name;
+        document.getElementById('previewCourse').textContent = course;
+        document.getElementById('previewDate').textContent = date;
+        document.getElementById('previewId').textContent = certId;
+
+        const qrElement = document.getElementById('qrCode');
+        qrElement.innerHTML = '';
+
+        const url = `https://ntida-ula.ng/verify?id=${certId}`;
+        setTimeout(() => {
+          new QRCode(qrElement, {
+            text: url,
+            width: 80,
+            height: 80,
+            colorDark: "#0f172a",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+
+          document.getElementById('downloadPdf').disabled = false;
+          document.getElementById('downloadPng').disabled = false;
+
+          // Auto scroll to download section
+          document.getElementById('downloadPdf').scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+
+      function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const certificate = document.getElementById('certificate');
+
+        html2canvas(certificate, { scale: 2, useCORS: true }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('landscape', 'mm', 'a4');
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.save('certificate.pdf');
+        });
+      }
+
+      function downloadPNG() {
+        const certificate = document.getElementById('certificate');
+
+        html2canvas(certificate, { scale: 2, useCORS: true }).then(canvas => {
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL('image/png');
+          link.download = 'certificate.png';
+          link.click();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

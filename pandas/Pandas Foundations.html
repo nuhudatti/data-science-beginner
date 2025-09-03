@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - pandas Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            primary: '#1d4ed8',
+                            secondary: '#0f172a',
+                            accent: '#0ea5e9',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            position: relative;
+        }
+        .explanation {
+            background: #f8fafc;
+            border-left: 4px solid #0ea5e9;
+        }
+        .hl-keyword { color: #c792ea; }
+        .hl-function { color: #82aaff; }
+        .hl-string { color: #c3e88d; }
+        .hl-comment { color: #546e7a; }
+        .hl-var { color: #f07178; }
+        .hl-param { color: #ffcb6b; }
+        .hl-operator { color: #89ddff; }
+        .hl-number { color: #f78c6c; }
+        .hl-builtin { color: #ff5370; }
+        .hl-tag { color: #ff5370; }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #0ea5e9;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .active-section {
+            border-left: 4px solid #0ea5e9;
+            background: #f0f9ff;
+        }
+        /* colo */
+        .code-block code {
+    color: #e5e7eb; /* light gray for visibility */
+}
+
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-nca-accent rounded-lg p-2">
+                    <i class="fas fa-database text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">NITDA/NCAIR Universal Learning Archive</h1>
+                    <p class="text-nca-accent text-sm">Data Science Cohort 27 - pandas Mastery</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- <div class="text-right">
+                    <p class="text-sm">Learning Progress</p>
+                    <div class="progress-bar w-48 mt-1">
+                        <div class="progress-fill w-1/4"></div>
+                    </div>
+                </div> -->
+                <button class="bg-nca-primary hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-user-graduate mr-2"></i> DATTI
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Module Header -->
+    <div class="bg-gradient-to-r from-nca-primary to-nca-accent text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block bg-white/10 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
+                <span>Module 2</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-4">pandas Mastery</h1>
+            <p class="text-xl max-w-3xl mx-auto mb-8">Data manipulation and analysis for real-world datasets</p>
+            
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="far fa-clock mr-2"></i> Estimated: 8-10 hours
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-medal mr-2"></i> Beginner to Intermediate
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-tasks mr-2"></i> 5 Sections, 24 Lessons
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="font-semibold">Data Structures</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-broom"></i></div>
+                    <h3 class="font-semibold">Data Cleaning</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-filter"></i></div>
+                    <h3 class="font-semibold">Filtering & Grouping</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-code-merge"></i></div>
+                    <h3 class="font-semibold">Merging Data</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="font-semibold">Real Analysis</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                <h2 class="text-xl font-bold mb-4 text-nca-secondary">Learning Trail</h2>
+                
+                <div class="space-y-2">
+                    <a href="#">
+                    <div class="section-card active-section p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-play-circle text-nca-accent mr-2"></i>
+                            Section 1: pandas Foundations
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Series & DataFrame structures</p>
+                    </div>
+                    </a>
+
+                    <a href="./Data Cleaning.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 2: Data Cleaning
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Preprocessing & handling missing data</p>
+                    </div>
+                    </a>
+                    <a href="./Filtering and Aggregation.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 3: Filtering & Aggregation
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Grouping, filtering and summarizing data</p>
+                    </div>
+                    </a>
+
+                    <a href="./Merging and Time Series.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 4: Merging & Time Series
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Combining datasets and time-based analysis</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Nigerian Economic Analysis.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 5: Nigerian Economic Analysis
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Real-world data application</p>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Learning Resources</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                            <span>pandas Cheat Sheet</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-video text-purple-500 mr-2"></i>
+                            <span>Data Cleaning Techniques</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-database text-blue-500 mr-2"></i>
+                            <span>Nigeria Economic Dataset</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-book text-green-500 mr-2"></i>
+                            <span>Time Series Handbook</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Achievements</h3>
+                    <div class="flex space-x-2">
+                        <div class="bg-gray-100 rounded-full p-2">
+                            <i class="fas fa-medal text-yellow-500"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-full p-2">
+                            <i class="fas fa-trophy text-gray-400"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-full p-2">
+                            <i class="fas fa-star text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="lg:w-3/4">
+            <!-- Section Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="text-nca-primary font-semibold">Section 1</span>
+                        <h2 class="text-2xl font-bold text-nca-secondary">pandas Foundations</h2>
+                    </div>
+                    <!-- <div class="flex items-center space-x-4">
+                        <button class="flex items-center text-nca-primary">
+                            <i class="fas fa-download mr-2"></i> Download Notebook
+                        </button>
+                        <button class="bg-nca-primary text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-rocket mr-2"></i> Start Practice Lab
+                        </button>
+                    </div> -->
+                </div>
+                <p class="text-gray-600">Learn the core pandas data structures - Series and DataFrames. Understand how to create, inspect, and manipulate these foundational structures.</p>
+                
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Key Concept</span>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Beginner Friendly</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Hands-on</span>
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">20 mins</span>
+                </div>
+            </div>
+            
+            <!-- Lesson Content -->
+            <div class="space-y-6">
+                <!-- Lesson 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-nca-secondary">1.1 Series: One-dimensional Data</h3>
+                                <p class="text-gray-600 mt-2">A Series is a one-dimensional labeled array capable of holding any data type. Think of it as a single column in a spreadsheet.</p>
+                            </div>
+                            <span class="bg-nca-accent text-white px-3 py-1 rounded-full text-sm">Essential</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-gray-300 font-mono text-sm">Python</div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-keyword">import</span> pandas <span class="hl-keyword">as</span> pd
+
+<span class="hl-comment"># Create a Series from a list</span>
+temperatures = pd.Series([<span class="hl-number">28.5</span>, <span class="hl-number">30.2</span>, <span class="hl-number">25.8</span>, <span class="hl-number">32.1</span>], 
+                      name=<span class="hl-string">"Temperature"</span>)
+
+<span class="hl-comment"># Create a Series with custom index</span>
+cities = pd.Series([<span class="hl-number">28.5</span>, <span class="hl-number">30.2</span>, <span class="hl-number">25.8</span>], 
+                name=<span class="hl-string">"Temperature"</span>,
+                index=[<span class="hl-string">"Lagos"</span>, <span class="hl-string">"Abuja"</span>, <span class="hl-string">"Kano"</span>])
+
+<span class="hl-comment"># Accessing data</span>
+print(cities[<span class="hl-string">"Lagos"</span>])  <span class="hl-comment"># Output: 28.5</span>
+print(cities.mean())   <span class="hl-comment"># Output: 28.166...</span></code></pre>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Code Explanation</h4>
+                            <button class="text-nca-accent">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-mono text-sm mb-1">import pandas as pd</p>
+                                <p class="text-gray-700">Imports the pandas library and gives it the alias 'pd' for easier reference throughout the code.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">temperatures = pd.Series([28.5, 30.2, 25.8, 32.1], name="Temperature")</p>
+                                <p class="text-gray-700">Creates a Series object - a one-dimensional array with data values. The 'name' parameter labels the entire series.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">cities = pd.Series([28.5, 30.2, 25.8], name="Temperature", index=["Lagos", "Abuja", "Kano"])</p>
+                                <p class="text-gray-700">Creates a Series with custom index labels. This allows accessing elements by label instead of position.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">print(cities["Lagos"])</p>
+                                <p class="text-gray-700">Accesses the value associated with the index label "Lagos" using dictionary-like syntax.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">print(cities.mean())</p>
+                                <p class="text-gray-700">Calculates and prints the average of all values in the Series using the mean() method.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-nca-secondary">1.2 DataFrames: Two-dimensional Data</h3>
+                                <p class="text-gray-600 mt-2">A DataFrame is a 2-dimensional labeled data structure with columns that can be of different types, similar to a spreadsheet or SQL table.</p>
+                            </div>
+                            <span class="bg-nca-accent text-white px-3 py-1 rounded-full text-sm">Core Concept</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-gray-300 font-mono text-sm">Python</div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Create DataFrame from dictionary</span>
+data = {
+    <span class="hl-string">"City"</span>: [<span class="hl-string">"Lagos"</span>, <span class="hl-string">"Abuja"</span>, <span class="hl-string">"Kano"</span>, <span class="hl-string">"Port Harcourt"</span>],
+    <span class="hl-string">"Population"</span>: [<span class="hl-number">21.0</span>, <span class="hl-number">3.8</span>, <span class="hl-number">4.3</span>, <span class="hl-number">1.8</span>],  <span class="hl-comment"># in millions</span>
+    <span class="hl-string">"GDP"</span>: [<span class="hl-number">102.3</span>, <span class="hl-number">68.4</span>, <span class="hl-number">28.7</span>, <span class="hl-number">32.1</span>]   <span class="hl-comment"># in billion USD</span>
+}
+
+df = pd.DataFrame(data)
+
+<span class="hl-comment"># Inspect the DataFrame</span>
+print(df.head())      <span class="hl-comment"># First 5 rows</span>
+print(df.info())      <span class="hl-comment"># Structure information</span>
+print(df.describe())  <span class="hl-comment"># Statistical summary</span>
+
+<span class="hl-comment"># Accessing columns</span>
+populations = df[<span class="hl-string">"Population"</span>]  <span class="hl-comment"># OR df.Population</span></code></pre>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Code Explanation</h4>
+                            <button class="text-nca-accent">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-mono text-sm mb-1">data = { ... }</p>
+                                <p class="text-gray-700">Creates a Python dictionary where keys become column names and values become column data.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">df = pd.DataFrame(data)</p>
+                                <p class="text-gray-700">Converts the dictionary into a pandas DataFrame - a 2D tabular data structure with labeled axes.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">print(df.head())</p>
+                                <p class="text-gray-700">Displays the first 5 rows of the DataFrame - essential for initial data inspection.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">print(df.info())</p>
+                                <p class="text-gray-700">Provides metadata about the DataFrame: column count, data types, and memory usage.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">print(df.describe())</p>
+                                <p class="text-gray-700">Generates descriptive statistics for numerical columns: count, mean, std, min, max, etc.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">populations = df["Population"]</p>
+                                <p class="text-gray-700">Selects a single column from the DataFrame, returning it as a Series object.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-nca-secondary">1.3 DataFrame Operations</h3>
+                                <p class="text-gray-600 mt-2">Learn how to select, filter, and perform operations on DataFrames to extract valuable insights from your data.</p>
+                            </div>
+                            <span class="bg-nca-primary text-white px-3 py-1 rounded-full text-sm">Practical</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-gray-300 font-mono text-sm">Python</div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Add a new calculated column</span>
+df[<span class="hl-string">"GDP_per_capita"</span>] = df[<span class="hl-string">"GDP"</span>] * <span class="hl-number">1000</span> / df[<span class="hl-string">"Population"</span>]
+
+<span class="hl-comment"># Filter rows based on condition</span>
+large_cities = df[df[<span class="hl-string">"Population"</span>] > <span class="hl-number">4</span>]  <span class="hl-comment"># Cities with >4M population</span>
+
+<span class="hl-comment"># Sorting data</span>
+df_sorted = df.sort_values(by=<span class="hl-string">"GDP"</span>, ascending=<span class="hl-keyword">False</span>)
+
+<span class="hl-comment"># Selecting specific columns</span>
+economic_data = df[[<span class="hl-string">"City"</span>, <span class="hl-string">"GDP"</span>, <span class="hl-string">"GDP_per_capita"</span>]]
+
+<span class="hl-comment"># Set City as index</span>
+df.set_index(<span class="hl-string">"City"</span>, inplace=<span class="hl-keyword">True</span>)</code></pre>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Code Explanation</h4>
+                            <button class="text-nca-accent">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-mono text-sm mb-1">df["GDP_per_capita"] = df["GDP"] * 1000 / df["Population"]</p>
+                                <p class="text-gray-700">Creates a new column by performing element-wise calculations on existing columns.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">large_cities = df[df["Population"] > 4]</p>
+                                <p class="text-gray-700">Filters rows using a boolean condition, selecting only cities with population >4 million.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">df_sorted = df.sort_values(by="GDP", ascending=False)</p>
+                                <p class="text-gray-700">Sorts the DataFrame based on GDP values in descending order (highest GDP first).</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">economic_data = df[["City", "GDP", "GDP_per_capita"]]</p>
+                                <p class="text-gray-700">Selects a subset of columns by passing a list of column names.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-mono text-sm mb-1">df.set_index("City", inplace=True)</p>
+                                <p class="text-gray-700">Sets the City column as the new index, making city names the primary access method.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="mt-8 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-100">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-arrow-right text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Ready for the Next Step?</h3>
+                        <p class="text-gray-600 mb-4">You've learned the foundational pandas structures. Next, we'll dive into data cleaning techniques to handle real-world messy datasets.</p>
+                        <a href="./Data Cleaning.html" class="bg-nca-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                            Continue 
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    /* Floating Home Button - NITDA/NCAIR Green Format */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #002864 0%, #00254d 100%); /* Dark green gradient */
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 40, 100, 0.4); /* Green shadow */
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(80, 50, 187, 0.6); /* Darker green hover shadow */
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    
+    <!-- Footer -->
+    <footer class="bg-nca-secondary text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h3>
+                    <p class="text-gray-400">Universal Learning Archive - Transforming digital education in Nigeria through accessible, world-class learning resources.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Data Science Track</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Python Fundamentals</li>
+                        <li>pandas Mastery</li>
+                        <li>Data Visualization</li>
+                        <li>Machine Learning</li>
+                        <li>Big Data Technologies</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Learning Materials</li>
+                        <li>Practice Labs</li>
+                        <li>Community Forum</li>
+                        <li>Career Pathways</li>
+                        <li>Industry Partnerships</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>nuhumuhammaddatti@gmail.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+234 808 844 0095</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Abuja, Nigeria</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 flex space-x-4">
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-linkedin-in"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-github"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2025 Created by Nuhu Muhammad Datti during Internship at the National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to toggle code explanations
+        document.querySelectorAll('.explanation button').forEach(button => {
+            button.addEventListener('click', () => {
+                const explanation = button.closest('.explanation');
+                const content = explanation.querySelector('div:last-child');
+                
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                } else {
+                    content.style.display = 'none';
+                    button.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                }
+            });
+        });
+
+        // Simulate progress update
+        setInterval(() => {
+            const progress = document.querySelector('.progress-fill');
+            const currentWidth = parseInt(progress.style.width) || 25;
+            if (currentWidth < 100) {
+                progress.style.width = (currentWidth + 5) + '%';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

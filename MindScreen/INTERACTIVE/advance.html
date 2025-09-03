@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Analytics Mastery | MindScreen Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(56, 189, 248, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            background: var(--dark);
+            background: linear-gradient(to right, #0c4a6e, #083344);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: translateX(-5px);
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            min-width: 100px;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            border-radius: 2px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Concept Navigation */
+        .concept-nav {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .concept-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+        
+        .concept-card.active {
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .concept-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+        
+        .concept-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #0e7490, #0891b2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(8, 145, 178, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .concept-card:hover .concept-icon {
+            transform: scale(1.1);
+        }
+        
+        .concept-card:nth-child(2) .concept-icon {
+            background: linear-gradient(135deg, #047857, #059669);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.3);
+        }
+        
+        .concept-card:nth-child(3) .concept-icon {
+            background: linear-gradient(135deg, #7e22ce, #8b5cf6);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        .concept-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .concept-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        
+        /* Concept Content */
+        .concept-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .concept-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .concept-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0e7490, #0891b2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(8, 145, 178, 0.3);
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .explanation {
+            padding-right: 20px;
+        }
+        
+        .explanation h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .explanation h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .explanation p {
+            margin-bottom: 20px;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+        
+        .key-points {
+            background: rgba(30, 41, 59, 0.5);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .key-points ul {
+            padding-left: 20px;
+        }
+        
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+            color: #cbd5e1;
+        }
+        
+        .key-points li::marker {
+            color: var(--secondary);
+            font-size: 1.2em;
+        }
+        
+        .visualization {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Interactive Tools */
+        .interactive-tool {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tool-header h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .tool-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent);
+        }
+        
+        .value-display {
+            min-width: 50px;
+            text-align: center;
+            background: rgba(56, 189, 248, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 10px 0;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .result-card:nth-child(1) .result-value {
+            color: #38bdf8;
+        }
+        
+        .result-card:nth-child(2) .result-value {
+            color: #10b981;
+        }
+        
+        .result-card:nth-child(3) .result-value {
+            color: #8b5cf6;
+        }
+        
+        .result-card:nth-child(4) .result-value {
+            color: #f59e0b;
+        }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+        }
+        
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+        }
+        
+        .btn-next:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+        }
+        
+        .btn-complete {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            display: none;
+        }
+        
+        .btn-complete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Completion Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            padding: 40px;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-content::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+            z-index: -1;
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .modal-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        .modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: white;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal p {
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .modal-btn {
+            padding: 12px 30px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .section-content,
+            .tool-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .concept-nav {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .progress-bar {
+                width: 150px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .progress-container {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .progress-bar {
+                flex: 1;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="logo-text">MindScreen Analytics</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-text">Progress: <span id="progress-value">0</span>%</div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header">
+            <h1>Advanced Analytics Mastery</h1>
+            <p>Master correlation techniques, regression analysis, and machine learning models with this comprehensive course</p>
+        </div>
+        
+        <!-- Concept Navigation -->
+        <div class="concept-nav">
+            <div class="concept-card active" data-section="correlation">
+                <div class="concept-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <h3>Correlation Techniques</h3>
+                <p>Measure relationships between variables</p>
+            </div>
+            <div class="concept-card" data-section="regression">
+                <div class="concept-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Regression Analysis</h3>
+                <p>Model relationships and make predictions</p>
+            </div>
+            <div class="concept-card" data-section="machine-learning">
+                <div class="concept-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>Machine Learning Models</h3>
+                <p>Build predictive algorithms from data</p>
+            </div>
+        </div>
+        
+        <!-- Concept Content -->
+        <div class="concept-content">
+            <!-- Correlation Section -->
+            <div class="concept-section active" id="correlation-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h2>Correlation Techniques</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Understanding Correlation</h3>
+                        <p>Correlation measures the strength and direction of the relationship between two variables. It's a fundamental concept in statistics that helps us understand how changes in one variable are associated with changes in another.</p>
+                        
+                        <p>Correlation coefficients range from -1 to 1:</p>
+                        
+                        <div class="key-points overflow-x-auto">
+                            <ul>
+                                <li><strong>Positive correlation (0 to 1)</strong>: Both variables increase or decrease together</li>
+                                <li><strong>Negative correlation (-1 to 0)</strong>: One variable increases while the other decreases</li>
+                                <li><strong>No correlation (0)</strong>: No relationship between the variables</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Types of Correlation</h3>
+                        <p><strong>Pearson Correlation:</strong> Measures linear relationships between continuous variables. Best for normally distributed data.</p>
+                        <p><strong>Spearman Correlation:</strong> Measures monotonic relationships (linear or non-linear). Works with ordinal data or non-normal distributions.</p>
+                        <p><strong>Kendall's Tau:</strong> Similar to Spearman, but more robust with smaller sample sizes.</p>
+                    </div>
+                    
+                    <div class="visualization overflow-x-auto">
+                        <div class="chart-container">
+                            <canvas id="correlation-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Correlation Explorer</h3>
+                        <div class="value-display">r = <span id="corr-value">0.75</span></div>
+                    </div>
+                    
+                    <div class="tool-content overflow-x-auto"></div>
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Correlation Strength <span>(r value)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="corr-strength" min="-100" max="100" value="75">
+                                    <div class="value-display"><span id="strength-value">0.75</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Data Points <span>(n)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="data-points" min="20" max="200" value="100">
+                                    <div class="value-display"><span id="points-value">100</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Noise Level <span>(σ)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="noise-level" min="0" max="100" value="30">
+                                    <div class="value-display"><span id="noise-value">0.30</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="correlation-explorer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results overflow-x-auto">
+                        <div class="result-card">
+                            <div class="result-value" id="pearson-value">0.82</div>
+                            <div class="result-label">Pearson Correlation</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="spearman-value">0.79</div>
+                            <div class="result-label">Spearman Correlation</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="direction-value">Positive</div>
+                            <div class="result-label">Direction</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="strength-text">Strong</div>
+                            <div class="result-label">Strength</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regression Section -->
+            <div class="concept-section" id="regression-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2>Regression Analysis</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Understanding Regression</h3>
+                        <p>Regression analysis is a statistical method that models the relationship between a dependent variable and one or more independent variables. It's used for prediction, forecasting, and understanding causal relationships.</p>
+                        
+                        <div class="key-points">
+                            <ul>
+                                <li><strong>Simple Linear Regression:</strong> Models relationship between two variables with a straight line</li>
+                                <li><strong>Multiple Regression:</strong> Models relationship with multiple independent variables</li>
+                                <li><strong>Logistic Regression:</strong> Used for binary classification problems</li>
+                                <li><strong>Polynomial Regression:</strong> Models non-linear relationships</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Key Concepts</h3>
+                        <p><strong>Regression Line:</strong> The line that best fits the data points, minimizing the distance between points and the line.</p>
+                        <p><strong>R-squared:</strong> Measures how well the regression line approximates the real data points (0-100%).</p>
+                        <p><strong>P-value:</strong> Determines the statistical significance of the relationship.</p>
+                    </div>
+                    
+                    <div class="visualization">
+                        <div class="chart-container">
+                            <canvas id="regression-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Regression Explorer</h3>
+                        <div class="value-display">R² = <span id="r-squared">0.85</span></div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Slope <span>(β₁)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="slope" min="-2" max="2" step="0.1" value="1.2">
+                                    <div class="value-display"><span id="slope-value">1.2</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Intercept <span>(β₀)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="intercept" min="0" max="20" step="0.5" value="5">
+                                    <div class="value-display"><span id="intercept-value">5</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Data Variance <span>(σ)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="variance" min="1" max="20" value="8">
+                                    <div class="value-display"><span id="variance-value">8</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="regression-explorer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results">
+                        <div class="result-card">
+                            <div class="result-value" id="r2-value">0.85</div>
+                            <div class="result-label">R-squared</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="mse-value">4.2</div>
+                            <div class="result-label">Mean Squared Error</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="prediction-value">24.5</div>
+                            <div class="result-label">Prediction at X=15</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="equation-value">Y = 1.2X + 5</div>
+                            <div class="result-label">Regression Equation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Machine Learning Section -->
+            <div class="concept-section" id="machine-learning-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2>Machine Learning Models</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Understanding Machine Learning</h3>
+                        <p>Machine learning is the science of getting computers to learn and act without being explicitly programmed. It focuses on developing algorithms that can learn from and make predictions on data.</p>
+                        
+                        <div class="key-points">
+                            <ul>
+                                <li><strong>Supervised Learning:</strong> Models learn from labeled training data</li>
+                                <li><strong>Unsupervised Learning:</strong> Models find patterns in unlabeled data</li>
+                                <li><strong>Reinforcement Learning:</strong> Models learn by interacting with an environment</li>
+                                <li><strong>Deep Learning:</strong> Uses neural networks with multiple layers</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Common Algorithms</h3>
+                        <p><strong>Linear Regression:</strong> For predicting continuous values</p>
+                        <p><strong>Logistic Regression:</strong> For binary classification problems</p>
+                        <p><strong>Decision Trees:</strong> For classification and regression using tree-like models</p>
+                        <p><strong>Random Forest:</strong> Ensemble method using multiple decision trees</p>
+                        <p><strong>Neural Networks:</strong> Inspired by the human brain, good for complex patterns</p>
+                    </div>
+                    
+                    <div class="visualization">
+                        <div class="chart-container">
+                            <canvas id="ml-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Model Explorer</h3>
+                        <div class="value-display">Accuracy: <span id="accuracy-value">92</span>%</div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Model Type</label>
+                                <select id="model-type" class="value-display" style="width: 100%; padding: 10px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); color: white; border-radius: 8px;">
+                                    <option value="linear">Linear Regression</option>
+                                    <option value="logistic">Logistic Regression</option>
+                                    <option value="tree">Decision Tree</option>
+                                    <option value="forest">Random Forest</option>
+                                    <option value="nn">Neural Network</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Training Data <span>(split)</span></label>
+                                <div class="slider-container">
+                                    <input type="range" id="training-data" min="50" max="95" value="80">
+                                    <div class="value-display"><span id="training-value">80</span>%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Model Complexity</label>
+                                <div class="slider-container">
+                                    <input type="range" id="complexity" min="1" max="10" value="5">
+                                    <div class="value-display"><span id="complexity-value">5</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="ml-explorer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results">
+                        <div class="result-card">
+                            <div class="result-value" id="precision-value">0.93</div>
+                            <div class="result-label">Precision</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="recall-value">0.91</div>
+                            <div class="result-label">Recall</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="f1-value">0.92</div>
+                            <div class="result-label">F1 Score</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="train-time">0.42s</div>
+                            <div class="result-label">Training Time</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn btn-prev" id="prev-btn">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="nav-btn btn-next" id="next-btn">
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="nav-btn btn-complete" id="complete-btn">
+                Complete Course <i class="fas fa-trophy"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Completion Modal -->
+    <div class="modal" id="completion-modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2>Course Completed!</h2>
+            <p>Congratulations on mastering Advanced Analytics techniques. You've demonstrated proficiency in correlation analysis, regression modeling, and machine learning algorithms.</p>
+            <p>Your certificate of completion is now available in your learning dashboard.</p>
+            <button class="modal-btn" id="close-modal">Continue Learning</button>
+        </div>
+    </div>
+
+    
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                    <p class="mt-4 text-slate-400 text-sm">
+                        A ULA approved platform advancing data literacy and digital wellness research in Nigeria.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Platform</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Learning Trails</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Research Library</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Data Tools</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Policy Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Research Papers</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Tutorials & Guides</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Case Studies</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-envelope mr-2 text-cyan-400"></i> 
+                            nuhumuhammaddatti@gmail.com
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-phone-alt mr-2 text-emerald-400"></i> 
+                            +234 808 884 0095
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-violet-400"></i> 
+                            Abuja, Nigeria
+                        </li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-slate-400 hover:text-cyan-400">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-emerald-400">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-violet-400">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-rose-500">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-sm">
+                    © 2025 MindScreen Analytics. A National Data Literacy Initiative. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <style>
+  .back-button {
+    position: fixed;
+    bottom: 20px; /* stays visible at bottom */
+    left: 20px;
+ /* NITDA deep green */
+    /* color: #ffffff; */
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    display: none; /* hidden by default */
+  }
+
+  .back-button:hover {
+    background: #00a859; /* NCIAIR lighter green */
+    transform: translateY(-3px);
+  }
+
+  .back-button:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<a href="./index.html" class="back-button bg-emerald-500" onclick="history.back()">← Back</a>
+
+<script>
+  window.addEventListener("scroll", function() {
+    const backButton = document.querySelector(".back-button");
+    if (window.scrollY > 100) { 
+      backButton.style.display = "block"; // show after scroll
+    } else {
+      backButton.style.display = "none"; // hide at top
+    }
+  });
+</script>
+
+
+    <script>
+        // Current section tracking
+        let currentSection = 1;
+        const sections = ['correlation', 'regression', 'machine-learning'];
+        const sectionNames = {
+            'correlation': 'Correlation Techniques',
+            'regression': 'Regression Analysis',
+            'machine-learning': 'Machine Learning Models'
+        };
+        
+        // Chart instances
+        let corrChart, corrExplorerChart, regChart, regExplorerChart, mlChart, mlExplorerChart;
+        
+        // Update progress
+        function updateProgress() {
+            const progress = Math.min(100, (currentSection - 1) * 33);
+            document.getElementById('progress-value').textContent = progress;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            
+            // Show complete button on last section
+            if (currentSection === 3) {
+                document.getElementById('complete-btn').style.display = 'flex';
+                document.getElementById('next-btn').style.display = 'none';
+            } else {
+                document.getElementById('complete-btn').style.display = 'none';
+                document.getElementById('next-btn').style.display = 'flex';
+            }
+            
+            // Enable/disable prev button
+            document.getElementById('prev-btn').disabled = currentSection === 1;
+        }
+        
+        // Navigation functions
+        function goToSection(sectionIndex) {
+            // Hide all sections
+            document.querySelectorAll('.concept-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all cards
+            document.querySelectorAll('.concept-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Show selected section
+            currentSection = sectionIndex;
+            const sectionId = sections[sectionIndex - 1] + '-section';
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activate corresponding card
+            document.querySelector(`.concept-card[data-section="${sections[sectionIndex - 1]}"]`).classList.add('active');
+            
+            // Update progress
+            updateProgress();
+        }
+        
+        // Navigation event handlers
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                const sectionIndex = sections.indexOf(section) + 1;
+                goToSection(sectionIndex);
+            });
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentSection > 1) {
+                goToSection(currentSection - 1);
+            }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentSection < 3) {
+                goToSection(currentSection + 1);
+            }
+        });
+        
+        document.getElementById('complete-btn').addEventListener('click', () => {
+            document.getElementById('completion-modal').classList.add('active');
+        });
+        
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('completion-modal').classList.remove('active');
+        });
+        
+        // Generate correlated data
+        function generateCorrelatedData(strength, points, noise) {
+            const data = [];
+            const r = strength / 100;
+            const noiseLevel = noise / 100;
+            
+            for (let i = 0; i < points; i++) {
+                const x = Math.random() * 100;
+                const y = r * x + (1 - Math.abs(r)) * (Math.random() * 100) + (Math.random() - 0.5) * 100 * noiseLevel;
+                data.push({x: x, y: y});
+            }
+            
+            return data;
+        }
+        
+        // Calculate correlation
+        function calculatePearson(data) {
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            const n = data.length;
+            
+            for (const point of data) {
+                sumX += point.x;
+                sumY += point.y;
+                sumXY += point.x * point.y;
+                sumX2 += point.x * point.x;
+                sumY2 += point.y * point.y;
+            }
+            
+            const numerator = n * sumXY - sumX * sumY;
+            const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+            
+            return numerator / denominator;
+        }
+        
+        // Initialize charts
+        function initCharts() {
+            // Destroy existing charts if they exist
+            if (corrChart) corrChart.destroy();
+            if (corrExplorerChart) corrExplorerChart.destroy();
+            if (regChart) regChart.destroy();
+            if (regExplorerChart) regExplorerChart.destroy();
+            if (mlChart) mlChart.destroy();
+            if (mlExplorerChart) mlExplorerChart.destroy();
+            
+            // Correlation Chart
+            const corrCtx = document.getElementById('correlation-chart').getContext('2d');
+            corrChart = new Chart(corrCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Positive Correlation',
+                        data: Array.from({length: 30}, () => ({x: Math.random() * 10 + 5, y: Math.random() * 5 + 10})),
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: 'rgb(56, 189, 248)',
+                        pointRadius: 8
+                    }, {
+                        label: 'Negative Correlation',
+                        data: Array.from({length: 30}, () => ({x: Math.random() * 10 + 5, y: Math.random() * 5 + 5})),
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        pointRadius: 8
+                    }, {
+                        label: 'No Correlation',
+                        data: Array.from({length: 30}, () => ({x: Math.random() * 10 + 5, y: Math.random() * 10 + 5})),
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Variable X',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Variable Y',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Correlation Explorer Chart
+            const corrExplorerCtx = document.getElementById('correlation-explorer').getContext('2d');
+            const corrData = generateCorrelatedData(75, 100, 30);
+            corrExplorerChart = new Chart(corrExplorerCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Data Points',
+                        data: corrData,
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: 'rgb(56, 189, 248)',
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Variable X',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Variable Y',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Regression Chart
+            const regCtx = document.getElementById('regression-chart').getContext('2d');
+            regChart = new Chart(regCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Data Points',
+                        data: Array.from({length: 30}, () => ({x: Math.random() * 10 + 5, y: Math.random() * 5 + 10})),
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: 'rgb(56, 189, 248)',
+                        pointRadius: 6
+                    }, {
+                        label: 'Regression Line',
+                        data: [{x: 0, y: 5}, {x: 20, y: 25}],
+                        type: 'line',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Independent Variable',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Dependent Variable',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Regression Explorer Chart
+            const regExplorerCtx = document.getElementById('regression-explorer').getContext('2d');
+            const regData = Array.from({length: 50}, () => {
+                const x = Math.random() * 20;
+                const y = 1.2 * x + 5 + (Math.random() - 0.5) * 8;
+                return {x, y};
+            });
+            
+            regExplorerChart = new Chart(regExplorerCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Data Points',
+                        data: regData,
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: 'rgb(56, 189, 248)',
+                        pointRadius: 6
+                    }, {
+                        label: 'Regression Line',
+                        data: [{x: 0, y: 5}, {x: 20, y: 29}],
+                        type: 'line',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            min: 0,
+                            max: 20,
+                            title: {
+                                display: true,
+                                text: 'Independent Variable (X)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 40,
+                            title: {
+                                display: true,
+                                text: 'Dependent Variable (Y)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // ML Chart
+            const mlCtx = document.getElementById('ml-chart').getContext('2d');
+            mlChart = new Chart(mlCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Linear', 'Logistic', 'Tree', 'Forest', 'NN'],
+                    datasets: [{
+                        label: 'Model Accuracy',
+                        data: [82, 89, 86, 92, 95],
+                        backgroundColor: [
+                            'rgba(56, 189, 248, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(56, 189, 248)',
+                            'rgb(16, 185, 129)',
+                            'rgb(139, 92, 246)',
+                            'rgb(245, 158, 11)',
+                            'rgb(236, 72, 153)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Accuracy (%)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Model Type',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // ML Explorer Chart
+            const mlExplorerCtx = document.getElementById('ml-explorer').getContext('2d');
+            mlExplorerChart = new Chart(mlExplorerCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 20}, (_, i) => i + 1),
+                    datasets: [{
+                        label: 'Training Accuracy',
+                        data: Array.from({length: 20}, () => Math.floor(Math.random() * 20) + 70),
+                        borderColor: 'rgba(56, 189, 248, 1)',
+                        backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Validation Accuracy',
+                        data: Array.from({length: 20}, () => Math.floor(Math.random() * 20) + 65),
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 60,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Accuracy (%)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Epochs',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update correlation explorer
+        function updateCorrelationExplorer() {
+            const strength = parseInt(document.getElementById('corr-strength').value);
+            const points = parseInt(document.getElementById('data-points').value);
+            const noise = parseInt(document.getElementById('noise-level').value);
+            
+            // Update display values
+            document.getElementById('strength-value').textContent = (strength / 100).toFixed(2);
+            document.getElementById('points-value').textContent = points;
+            document.getElementById('noise-value').textContent = (noise / 100).toFixed(2);
+            document.getElementById('corr-value').textContent = (strength / 100).toFixed(2);
+            
+            // Generate new data
+            const newData = generateCorrelatedData(strength, points, noise);
+            
+            // Calculate correlations
+            const pearson = calculatePearson(newData);
+            const spearman = pearson * 0.95; // Approximation for demo
+            
+            // Update stats
+            document.getElementById('pearson-value').textContent = pearson.toFixed(2);
+            document.getElementById('spearman-value').textContent = spearman.toFixed(2);
+            document.getElementById('direction-value').textContent = strength >= 0 ? 'Positive' : 'Negative';
+            
+            let strengthText;
+            if (Math.abs(strength) < 30) strengthText = 'Weak';
+            else if (Math.abs(strength) < 70) strengthText = 'Moderate';
+            else strengthText = 'Strong';
+            document.getElementById('strength-text').textContent = strengthText;
+            
+            // Update chart
+            corrExplorerChart.data.datasets[0].data = newData;
+            corrExplorerChart.update();
+        }
+        
+        // Update regression explorer
+        function updateRegressionExplorer() {
+            const slope = parseFloat(document.getElementById('slope').value);
+            const intercept = parseFloat(document.getElementById('intercept').value);
+            const variance = parseInt(document.getElementById('variance').value);
+            
+            // Update display values
+            document.getElementById('slope-value').textContent = slope;
+            document.getElementById('intercept-value').textContent = intercept;
+            document.getElementById('variance-value').textContent = variance;
+            
+            // Generate new data
+            const newData = Array.from({length: 50}, () => {
+                const x = Math.random() * 20;
+                const y = slope * x + intercept + (Math.random() - 0.5) * variance;
+                return {x, y};
+            });
+            
+            // Calculate metrics (simulated)
+            const r2 = Math.max(0, Math.min(1, 0.85 + (Math.random() - 0.5) * 0.1));
+            const mse = Math.max(1, Math.min(10, 4.2 + (Math.random() - 0.5) * 2));
+            const prediction = (slope * 15 + intercept).toFixed(1);
+            
+            // Update stats
+            document.getElementById('r-squared').textContent = r2.toFixed(2);
+            document.getElementById('r2-value').textContent = r2.toFixed(2);
+            document.getElementById('mse-value').textContent = mse.toFixed(1);
+            document.getElementById('prediction-value').textContent = prediction;
+            document.getElementById('equation-value').textContent = `Y = ${slope}X + ${intercept}`;
+            
+            // Update chart
+            regExplorerChart.data.datasets[0].data = newData;
+            regExplorerChart.data.datasets[1].data = [
+                {x: 0, y: intercept},
+                {x: 20, y: slope * 20 + intercept}
+            ];
+            regExplorerChart.update();
+        }
+        
+        // Update ML explorer
+        function updateMLExplorer() {
+            const modelType = document.getElementById('model-type').value;
+            const trainingData = parseInt(document.getElementById('training-data').value);
+            const complexity = parseInt(document.getElementById('complexity').value);
+            
+            // Update display values
+            document.getElementById('training-value').textContent = trainingData;
+            document.getElementById('complexity-value').textContent = complexity;
+            
+            // Simulate performance metrics
+            let accuracy, precision, recall, f1, trainTime;
+            
+            switch(modelType) {
+                case 'linear':
+                    accuracy = 80 + complexity;
+                    precision = 0.82 + complexity * 0.01;
+                    recall = 0.78 + complexity * 0.01;
+                    f1 = 0.80 + complexity * 0.01;
+                    trainTime = 0.2 + complexity * 0.05;
+                    break;
+                case 'logistic':
+                    accuracy = 85 + complexity;
+                    precision = 0.86 + complexity * 0.01;
+                    recall = 0.84 + complexity * 0.01;
+                    f1 = 0.85 + complexity * 0.01;
+                    trainTime = 0.3 + complexity * 0.06;
+                    break;
+                case 'tree':
+                    accuracy = 75 + complexity * 2;
+                    precision = 0.76 + complexity * 0.015;
+                    recall = 0.75 + complexity * 0.015;
+                    f1 = 0.75 + complexity * 0.015;
+                    trainTime = 0.4 + complexity * 0.04;
+                    break;
+                case 'forest':
+                    accuracy = 88 + complexity * 1.2;
+                    precision = 0.89 + complexity * 0.012;
+                    recall = 0.87 + complexity * 0.012;
+                    f1 = 0.88 + complexity * 0.012;
+                    trainTime = 0.8 + complexity * 0.1;
+                    break;
+                case 'nn':
+                    accuracy = 90 + complexity * 1.5;
+                    precision = 0.91 + complexity * 0.015;
+                    recall = 0.90 + complexity * 0.015;
+                    f1 = 0.905 + complexity * 0.015;
+                    trainTime = 1.5 + complexity * 0.2;
+                    break;
+            }
+            
+            // Ensure values are within bounds
+            accuracy = Math.min(99, accuracy);
+            precision = Math.min(0.99, precision);
+            recall = Math.min(0.99, recall);
+            f1 = Math.min(0.99, f1);
+            
+            // Update stats
+            document.getElementById('accuracy-value').textContent = accuracy;
+            document.getElementById('precision-value').textContent = precision.toFixed(2);
+            document.getElementById('recall-value').textContent = recall.toFixed(2);
+            document.getElementById('f1-value').textContent = f1.toFixed(2);
+            document.getElementById('train-time').textContent = trainTime.toFixed(2) + 's';
+            
+            // Update chart
+            const epochs = Array.from({length: 20}, (_, i) => i + 1);
+            const trainData = epochs.map(e => Math.min(99, accuracy - 20 + e * (complexity/2) + Math.random() * 3));
+            const valData = epochs.map(e => Math.min(99, accuracy - 25 + e * (complexity/2) + Math.random() * 3));
+            
+            mlExplorerChart.data.labels = epochs;
+            mlExplorerChart.data.datasets[0].data = trainData;
+            mlExplorerChart.data.datasets[1].data = valData;
+            mlExplorerChart.update();
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial section
+            goToSection(1);
+            
+            // Initialize charts
+            initCharts();
+            
+            // Set up event listeners for interactive controls
+            document.getElementById('corr-strength').addEventListener('input', updateCorrelationExplorer);
+            document.getElementById('data-points').addEventListener('input', updateCorrelationExplorer);
+            document.getElementById('noise-level').addEventListener('input', updateCorrelationExplorer);
+            
+            document.getElementById('slope').addEventListener('input', updateRegressionExplorer);
+            document.getElementById('intercept').addEventListener('input', updateRegressionExplorer);
+            document.getElementById('variance').addEventListener('input', updateRegressionExplorer);
+            
+            document.getElementById('model-type').addEventListener('change', updateMLExplorer);
+            document.getElementById('training-data').addEventListener('input', updateMLExplorer);
+            document.getElementById('complexity').addEventListener('input', updateMLExplorer);
+            
+            // Initialize interactive tools
+            updateCorrelationExplorer();
+            updateRegressionExplorer();
+            updateMLExplorer();
+        });
+    </script>
+</body>
+</html>

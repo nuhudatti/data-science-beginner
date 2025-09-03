@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Interactive Visualizations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#3b82f6',
+                        dark: '#0f172a',
+                        light: '#f1f5f9',
+                        interactive: '#1d4ed8',
+                        hover: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            scroll-behavior: smooth;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .keyword { color: #f472b6; }
+        .function { color: #38bdf8; }
+        .string { color: #34d399; }
+        .comment { color: #94a3b8; }
+        .variable { color: #fbbf24; }
+        .module { color: #c084fc; }
+        .parameter { color: #fda4af; }
+        
+        .section-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            border-radius: 3px;
+        }
+        
+        .explanation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .explanation-content.show {
+            max-height: 1000px;
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .concept-pill {
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid #3b82f6;
+        }
+        
+        .module-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            transform: rotate(5deg);
+        }
+        
+        .plotly-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 400px;
+        }
+        
+        .feature-card {
+            transition: all 0.3s;
+            border: 1px solid #334155;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+        }
+        
+        .interactive-demo {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #334155;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .demo-btn:hover {
+            background: #3b82f6;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #1e293b;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-primary to-accent text-white py-6 px-4 sm:px-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <h1 class="text-3xl font-bold flex items-center justify-center md:justify-start">
+                    <i class="fas fa-mouse-pointer mr-3"></i>
+                    NITDA/NCAIR ULA - Data Science Cohort 27
+                </h1>
+                <p class="mt-2 text-blue-100">Module 3: Data Visualization - Interactive Visualizations</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                    <p class="text-sm">Module Progress</p>
+                    <div class="flex items-center mt-1">
+                        <span class="text-xs mr-2">80%</span>
+                        <div class="progress-bar w-32">
+                            <div class="progress-fill w-4/5"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hidden md:block">
+                    <p class="text-sm flex items-center">
+                        <i class="far fa-user mr-2"></i>
+                        DATTI                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Navigation Sidebar -->
+            <nav class="lg:w-1/4 bg-slate-800/50 rounded-xl p-6 h-fit sticky top-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open mr-2"></i>
+                    Module 3: Data Visualization
+                </h2>
+                <p class="text-slate-300 mb-6">Interactive Visualizations with Plotly</p>
+                
+                <ul class="space-y-2">
+                    <li>
+                        <a href="./Matplotlib Fundamentals.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">1</div>
+                                Matplotlib Fundamentals
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Seaborn for Statistical Visualization.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-purple-500 text-white mr-3">2</div>
+                                Seaborn Visualization
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Customizing Plots Themes.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-pink-500 text-white mr-3">3</div>
+                                Customizing Plots
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Interactive Visualizations with Plotly.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50 active">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">4</div>
+                                Interactive Visualizations
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Nigerian Health Data.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-emerald-500 text-white mr-3">5</div>
+                                Nigerian Health Project
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        Interactive Resources
+                    </h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fab fa-js text-yellow-400 mr-3"></i>
+                            Plotly Documentation
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-laptop-code text-blue-400 mr-3"></i>
+                            Interactive Examples
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-project-diagram text-purple-400 mr-3"></i>
+                            Dash Framework
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Interactive Header -->
+                <div class="bg-gradient-to-r from-blue-900/80 to-indigo-900/80 rounded-2xl p-8 mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop')] bg-cover opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="module-badge bg-yellow-400 text-slate-900 font-bold py-1 px-4 rounded-full text-sm">
+                            Real-time Exploration
+                        </div>
+                        <h1 class="text-4xl font-bold mb-4">Mastering Interactive Visualizations</h1>
+                        <p class="text-lg text-blue-100 max-w-3xl">
+                            Transform static data into dynamic, engaging experiences. Learn to build interactive dashboards 
+                            that allow users to explore Nigerian health data in real-time.
+                        </p>
+                        <div class="flex flex-wrap gap-3 mt-6">
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Plotly Express</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Graph Objects</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Dash Framework</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Real-time Updates</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Introduction to Plotly -->
+                <section class="section-card p-6 mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="step-indicator bg-blue-500 text-white mr-4">4</div>
+                        <h2 class="text-2xl font-bold">Interactive Visualizations with Plotly</h2>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Plotly is a leading open-source library for creating interactive, publication-quality graphs. 
+                            It allows users to create complex visualizations with simple syntax and enables rich interactivity 
+                            like hovering, zooming, panning, and clicking.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div class="feature-card bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-blue-400">
+                                    <i class="fas fa-bolt mr-2"></i>
+                                    Why Interactive Visualizations?
+                                </h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <div>
+                                            <h4 class="font-semibold">Enhanced Exploration</h4>
+                                            <p class="text-sm text-slate-300">Users can drill down into data points</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <div>
+                                            <h4 class="font-semibold">Improved Insight Discovery</h4>
+                                            <p class="text-sm text-slate-300">Reveal patterns through interaction</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <div>
+                                            <h4 class="font-semibold">Better Communication</h4>
+                                            <p class="text-sm text-slate-300">Engage stakeholders with dynamic data</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <div>
+                                            <h4 class="font-semibold">Dashboard Creation</h4>
+                                            <p class="text-sm text-slate-300">Build comprehensive data applications</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="feature-card bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-blue-400">
+                                    <i class="fas fa-exchange-alt mr-2"></i>
+                                    Static vs Interactive
+                                </h3>
+                                <table class="comparison-table">
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Static Plots</th>
+                                        <th>Interactive Plots</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Data Exploration</td>
+                                        <td>Limited to predefined views</td>
+                                        <td>User-driven exploration</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Detail Access</td>
+                                        <td>Tooltips not available</td>
+                                        <td>Hover for detailed information</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Engagement</td>
+                                        <td>Passive viewing</td>
+                                        <td>Active participation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Scalability</td>
+                                        <td>Limited with large datasets</td>
+                                        <td>Handles large datasets effectively</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Use Case</td>
+                                        <td>Reports, publications</td>
+                                        <td>Dashboards, web applications</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Plotly Fundamentals -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-code mr-3 text-blue-400"></i>
+                        Plotly Fundamentals
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Plotly offers two main approaches: Plotly Express (high-level, concise) and Graph Objects (low-level, 
+                            highly customizable). We'll explore both with practical examples.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-blue-400">
+                                    <i class="fas fa-rocket mr-2"></i>
+                                    Plotly Express
+                                </h3>
+                                <p class="text-sm text-slate-300 mb-4">
+                                    High-level API for quick creation of common plot types with minimal code.
+                                </p>
+                                
+                                <div class="code-block mb-4">
+                                    <div class="code-header">
+                                        <span>Scatter Plot with Hover</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="keyword">import</span> <span class="module">plotly.express</span> <span class="keyword">as</span> <span class="module">px</span>
+<span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+
+<span class="comment"># Sample health data</span>
+<span class="variable">data</span> = {
+    <span class="string">'State'</span>: [<span class="string">'Lagos'</span>, <span class="string">'Kano'</span>, <span class="string">'Oyo'</span>, <span class="string">'Rivers'</span>, <span class="string">'Kaduna'</span>],
+    <span class="string">'Hospitals'</span>: [<span class="number">320</span>, <span class="number">280</span>, <span class="number">190</span>, <span class="number">170</span>, <span class="number">160</span>],
+    <span class="string">'Clinics'</span>: [<span class="number">1200</span>, <span class="number">980</span>, <span class="number">750</span>, <span class="number">620</span>, <span class="number">580</span>],
+    <span class="string">'Population'</span>: [<span class="number">14.8</span>, <span class="number">13.4</span>, <span class="number">7.8</span>, <span class="number">7.3</span>, <span class="number">8.3</span>]  <span class="comment"># in millions</span>
+}
+<span class="variable">df</span> = pd.DataFrame(data)
+
+<span class="comment"># Create interactive scatter plot</span>
+<span class="variable">fig</span> = px.scatter(
+    df, 
+    x=<span class="string">'Hospitals'</span>, 
+    y=<span class="string">'Clinics'</span>,
+    size=<span class="string">'Population'</span>,
+    color=<span class="string">'State'</span>,
+    hover_name=<span class="string">'State'</span>,
+    hover_data=[<span class="string">'Population'</span>],
+    title=<span class="string">'Nigerian Health Facilities by State'</span>,
+    size_max=<span class="number">60</span>
+)
+
+<span class="comment"># Customize layout</span>
+fig.update_layout(
+    xaxis_title=<span class="string">'Number of Hospitals'</span>,
+    yaxis_title=<span class="string">'Number of Clinics'</span>,
+    hoverlabel={<span class="string">'bgcolor'</span>: <span class="string">'white'</span>}
+)
+
+fig.show()</code></pre>
+                                </div>
+                                
+                                <div class="interactive-demo">
+                                    <h4 class="font-semibold mb-3">Try It Live:</h4>
+                                    <div class="demo-controls">
+                                        <button class="demo-btn" onclick="updatePlot('scatter')">Scatter Plot</button>
+                                        <button class="demo-btn" onclick="updatePlot('bar')">Bar Chart</button>
+                                        <button class="demo-btn" onclick="updatePlot('map')">Nigeria Map</button>
+                                    </div>
+                                    <div id="plotly-demo" class="plotly-container"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 text-blue-400">
+                                    <i class="fas fa-cogs mr-2"></i>
+                                    Graph Objects
+                                </h3>
+                                <p class="text-sm text-slate-300 mb-4">
+                                    Low-level API for maximum customization and complex visualizations.
+                                </p>
+                                
+                                <div class="code-block mb-4">
+                                    <div class="code-header">
+                                        <span>Custom Bar Chart</span>
+                                        <button class="text-slate-300 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code><span class="keyword">import</span> <span class="module">plotly.graph_objects</span> <span class="keyword">as</span> <span class="module">go</span>
+
+<span class="comment"># Create figure</span>
+fig = go.Figure()
+
+<span class="comment"># Add hospital bars</span>
+fig.add_trace(go.Bar(
+    x=df[<span class="string">'State'</span>],
+    y=df[<span class="string">'Hospitals'</span>],
+    name=<span class="string">'Hospitals'</span>,
+    marker_color=<span class="string">'#1f77b4'</span>,
+    hovertemplate=<span class="string">'State: %{x}<br>Hospitals: %{y}'</span>
+))
+
+<span class="comment"># Add clinic bars</span>
+fig.add_trace(go.Bar(
+    x=df[<span class="string">'State'</span>],
+    y=df[<span class="string">'Clinics'</span>],
+    name=<span class="string">'Clinics'</span>,
+    marker_color=<span class="string">'#ff7f0e'</span>,
+    hovertemplate=<span class="string">'State: %{x}<br>Clinics: %{y}'</span>
+))
+
+<span class="comment"># Customize layout</span>
+fig.update_layout(
+    title=<span class="string">'Health Facilities in Nigerian States'</span>,
+    xaxis_title=<span class="string">'State'</span>,
+    yaxis_title=<span class="string">'Number of Facilities'</span>,
+    barmode=<span class="string">'group'</span>,
+    hovermode=<span class="string">'x unified'</span>,
+    template=<span class="string">'plotly_white'</span>
+)
+
+<span class="comment"># Add annotations</span>
+fig.add_annotation(
+    x=<span class="number">0.5</span>, 
+    y=<span class="number">1.1</span>,
+    xref=<span class="string">'paper'</span>,
+    yref=<span class="string">'paper'</span>,
+    text=<span class="string">'Source: Nigerian Health Ministry'</span>,
+    showarrow=<span class="keyword">False</span>,
+    font={<span class="string">'size'</span>: <span class="number">10</span>}
+)
+
+fig.show()</code></pre>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h4 class="font-semibold mb-2">Key Features:</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fas fa-layer-group text-blue-400 mt-1 mr-2"></i>
+                                            <div>Multiple trace types in one visualization</div>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-sliders-h text-blue-400 mt-1 mr-2"></i>
+                                            <div>Fine-grained control over every element</div>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-magic text-blue-400 mt-1 mr-2"></i>
+                                            <div>Custom hover templates and formatting</div>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-shapes text-blue-400 mt-1 mr-2"></i>
+                                            <div>Support for complex chart types</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Interactive Dashboard -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-tachometer-alt mr-3 text-blue-400"></i>
+                        Building a Health Data Dashboard
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Let's create an interactive dashboard for Nigerian health data using Plotly and Dash - 
+                            a productive Python framework for building web applications.
+                        </p>
+                        
+                        <div class="code-block mb-6">
+                            <div class="code-header">
+                                <span>Health Dashboard with Dash</span>
+                                <div>
+                                    <button class="text-slate-300 hover:text-white mr-3">
+                                        <i class="far fa-copy"></i> Copy
+                                    </button>
+                                    <button class="text-slate-300 hover:text-white explain-btn" data-target="explain-dash">
+                                        <i class="far fa-question-circle"></i> Explain
+                                    </button>
+                                </div>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">dash</span>
+<span class="keyword">import</span> <span class="module">dash_core_components</span> <span class="keyword">as</span> <span class="module">dcc</span>
+<span class="keyword">import</span> <span class="module">dash_html_components</span> <span class="keyword">as</span> <span class="module">html</span>
+<span class="keyword">from</span> <span class="module">dash.dependencies</span> <span class="keyword">import</span> <span class="module">Input</span>, <span class="module">Output</span>
+<span class="keyword">import</span> <span class="module">plotly.express</span> <span class="keyword">as</span> <span class="module">px</span>
+<span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+
+<span class="comment"># Load Nigerian health data</span>
+url = <span class="string">"https://raw.githubusercontent.com/datasets/nigeria-health-facilities/main/data/health-facilities.csv"</span>
+df = pd.read_csv(url)
+df = df.dropna(subset=[<span class="string">'latitude'</span>, <span class="string">'longitude'</span>])
+
+<span class="comment"># Initialize Dash app</span>
+app = dash.Dash(__name__)
+
+<span class="comment"># App layout</span>
+app.layout = html.Div([
+    html.Div(
+        className=<span class="string">"app-header"</span>,
+        children=[
+            html.H1(<span class="string">"Nigerian Health Facilities Dashboard"</span>),
+            html.P(<span class="string">"NITDA/NCAIR Data Science Cohort 27"</span>)
+        ]
+    ),
+    
+    html.Div(
+        className=<span class="string">"controls"</span>,
+        children=[
+            dcc.Dropdown(
+                id=<span class="string">'state-selector'</span>,
+                options=[{<span class="string">'label'</span>: state, <span class="string">'value'</span>: state} 
+                        <span class="keyword">for</span> state <span class="keyword">in</span> df[<span class="string">'state'</span>].unique()],
+                value=[<span class="string">'Lagos'</span>, <span class="string">'Kano'</span>],
+                multi=<span class="keyword">True</span>,
+                placeholder=<span class="string">"Select states..."</span>
+            ),
+            dcc.Dropdown(
+                id=<span class="string">'facility-type'</span>,
+                options=[{<span class="string">'label'</span>: ftype, <span class="string">'value'</span>: ftype} 
+                        <span class="keyword">for</span> ftype <span class="keyword">in</span> df[<span class="string">'type'</span>].unique()],
+                value=<span class="string">'Hospital'</span>,
+                placeholder=<span class="string">"Select facility type..."</span>
+            ),
+            dcc.RangeSlider(
+                id=<span class="string">'year-slider'</span>,
+                min=df[<span class="string">'year'</span>].min(),
+                max=df[<span class="string">'year'</span>].max(),
+                value=[df[<span class="string">'year'</span>].min(), df[<span class="string">'year'</span>].max()],
+                marks={str(year): str(year) <span class="keyword">for</span> year <span class="keyword">in</span> df[<span class="string">'year'</span>].unique()}
+            )
+        ]
+    ),
+    
+    html.Div(
+        className=<span class="string">"visualizations"</span>,
+        children=[
+            dcc.Graph(id=<span class="string">'map-plot'</span>),
+            dcc.Graph(id=<span class="string">'bar-plot'</span>)
+        ]
+    ),
+    
+    html.Div(
+        className=<span class="string">"footer"</span>,
+        children=[
+            html.P(<span class="string">"Data Source: Nigerian Health Ministry"</span>),
+            html.P(<span class="string">"© 2023 NITDA/NCAIR Cohort 27"</span>)
+        ]
+    )
+])
+
+<span class="comment"># Callback for updating plots</span>
+@app.callback(
+    [Output(<span class="string">'map-plot'</span>, <span class="string">'figure'</span>),
+     Output(<span class="string">'bar-plot'</span>, <span class="string">'figure'</span>)],
+    [Input(<span class="string">'state-selector'</span>, <span class="string">'value'</span>),
+     Input(<span class="string">'facility-type'</span>, <span class="string">'value'</span>),
+     Input(<span class="string">'year-slider'</span>, <span class="string">'value'</span>)]
+)
+<span class="keyword">def</span> <span class="function">update_plots</span>(selected_states, facility_type, years):
+    <span class="comment"># Filter data based on selections</span>
+    filtered_df = df[
+        (df[<span class="string">'state'</span>].isin(selected_states)) & 
+        (df[<span class="string">'type'</span>] == facility_type) &
+        (df[<span class="string">'year'</span>] >= years[<span class="number">0</span>]) & 
+        (df[<span class="string">'year'</span>] <= years[<span class="number">1</span>])
+    ]
+    
+    <span class="comment"># Create map plot</span>
+    map_fig = px.scatter_mapbox(
+        filtered_df,
+        lat=<span class="string">'latitude'</span>,
+        lon=<span class="string">'longitude'</span>,
+        hover_name=<span class="string">'name'</span>,
+        hover_data=[<span class="string">'state'</span>, <span class="string">'type'</span>, <span class="string">'ownership'</span>],
+        zoom=<span class="number">5</span>,
+        height=<span class="number">500</span>,
+        title=f<span class="string">'{facility_type}s in Selected States'</span>
+    )
+    map_fig.update_layout(mapbox_style=<span class="string">"open-street-map"</span>)
+    
+    <span class="comment"># Create bar plot</span>
+    bar_fig = px.bar(
+        filtered_df.groupby(<span class="string">'state'</span>).size().reset_index(name=<span class="string">'count'</span>),
+        x=<span class="string">'state'</span>,
+        y=<span class="string">'count'</span>,
+        title=f<span class="string">'Number of {facility_type}s by State'</span>,
+        labels={<span class="string">'count'</span>: <span class="string">'Number of Facilities'</span>}
+    )
+    
+    <span class="keyword">return</span> map_fig, bar_fig
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    app.run_server(debug=<span class="keyword">True</span>)</code></pre>
+                        </div>
+                        
+                        <div id="explain-dash" class="explanation-content bg-slate-800/80 rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3">Dashboard Components:</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-sliders-h text-blue-400 mr-2"></i>
+                                        Interactive Controls
+                                    </h4>
+                                    <p class="text-sm">Dropdowns and sliders allow users to filter data dynamically</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-sync-alt text-green-400 mr-2"></i>
+                                        Callback System
+                                    </h4>
+                                    <p class="text-sm">Automatically updates visualizations when controls change</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-map-marked-alt text-yellow-400 mr-2"></i>
+                                        Geographic Visualization
+                                    </h4>
+                                    <p class="text-sm">Plotly Mapbox integration for location-based data</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-chart-bar text-purple-400 mr-2"></i>
+                                        Complementary Charts
+                                    </h4>
+                                    <p class="text-sm">Multiple coordinated views of the same data</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-mobile-alt text-pink-400 mr-2"></i>
+                                        Responsive Design
+                                    </h4>
+                                    <p class="text-sm">Layout adapts to different screen sizes</p>
+                                </div>
+                                
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-database text-indigo-400 mr-2"></i>
+                                        Real-time Filtering
+                                    </h4>
+                                    <p class="text-sm">Data filters update visualizations instantly</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Best Practices -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-medal mr-3 text-yellow-400"></i>
+                        Best Practices for Interactive Visualizations
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-3 text-white">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Do's of Interactive Design
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Meaningful Interactivity</h4>
+                                        <p class="text-sm text-slate-200">Ensure interactions reveal new insights</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Clear Feedback</h4>
+                                        <p class="text-sm text-slate-200">Provide visual cues for user actions</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Performance Optimization</h4>
+                                        <p class="text-sm text-slate-200">Ensure smooth interactions with large datasets</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Mobile Responsiveness</h4>
+                                        <p class="text-sm text-slate-200">Design for all device sizes</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-3 text-white">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Don'ts of Interactive Design
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="bg-cyan-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Overcomplication</h4>
+                                        <p class="text-sm text-slate-200">Avoid unnecessary interactions that confuse users</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-cyan-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Slow Loading</h4>
+                                        <p class="text-sm text-slate-200">Don't make users wait for interactions</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-cyan-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Hidden Controls</h4>
+                                        <p class="text-sm text-slate-200">Make interactive elements obvious</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-cyan-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">No Default State</h4>
+                                        <p class="text-sm text-slate-200">Always show meaningful data on load</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-slate-800/50 rounded-xl p-6">
+                        <h3 class="font-bold text-lg mb-3 text-center">
+                            <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                            Nigerian Health Data Applications
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-heartbeat text-red-400 mr-2"></i>
+                                    Disease Outbreak Tracking
+                                </h4>
+                                <p class="text-sm">Interactive maps showing disease spread over time</p>
+                            </div>
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-hospital text-green-400 mr-2"></i>
+                                    Resource Allocation Dashboard
+                                </h4>
+                                <p class="text-sm">Real-time visualization of healthcare resources</p>
+                            </div>
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-ambulance text-blue-400 mr-2"></i>
+                                    Emergency Response System
+                                </h4>
+                                <p class="text-sm">Interactive tools for disaster management</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Next Steps -->
+                <div class="section-card p-6 mt-6">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Continue Your Learning Journey</h2>
+                    <div class="flex flex-wrap justify-center gap-4 mt-6">
+                        <a href="./Customizing Plots & Themes.html" class="bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-700 hover:to-pink-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-arrow-left mr-2"></i> Previous: Customization
+                        </a>
+                        <a href="./Nigerian Health Data.html" class="bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-700 hover:to-emerald-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            Next: Project <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <!-- <a href="#" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-laptop-code mr-2"></i> Try Dash Live
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+     <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/80 border-t border-slate-700 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-atom text-blue-400 mr-2"></i>
+                        NITDA/NCAIR ULA
+                    </h3>
+                    <p class="text-slate-400 mt-2">Universal Learning Archive - Transforming Nigeria through digital education</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-linkedin text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-youtube text-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm">
+                <p>© 2025 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR)</p>
+                <p class="mt-2">Cohort 27 - Data Science Specialization | Module 3: Data Visualization</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Plotly demo visualization
+        function initPlot() {
+            const data = [{
+                x: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna'],
+                y: [320, 280, 190, 170, 160],
+                type: 'bar',
+                marker: {color: '#3b82f6'},
+                name: 'Hospitals'
+            }, {
+                x: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna'],
+                y: [1200, 980, 750, 620, 580],
+                type: 'bar',
+                marker: {color: '#10b981'},
+                name: 'Clinics'
+            }];
+            
+            const layout = {
+                title: 'Nigerian Health Facilities',
+                xaxis: {title: 'State'},
+                yaxis: {title: 'Number of Facilities'},
+                barmode: 'group',
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white'
+            };
+            
+            Plotly.newPlot('plotly-demo', data, layout);
+        }
+        
+        // Update plot based on selection
+        function updatePlot(type) {
+            let data, layout;
+            
+            if (type === 'bar') {
+                data = [{
+                    x: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna'],
+                    y: [320, 280, 190, 170, 160],
+                    type: 'bar',
+                    marker: {color: '#3b82f6'},
+                    name: 'Hospitals'
+                }, {
+                    x: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna'],
+                    y: [1200, 980, 750, 620, 580],
+                    type: 'bar',
+                    marker: {color: '#10b981'},
+                    name: 'Clinics'
+                }];
+                
+                layout = {
+                    title: 'Health Facilities by State',
+                    xaxis: {title: 'State'},
+                    yaxis: {title: 'Number of Facilities'},
+                    barmode: 'group',
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: 'white'
+                };
+            } 
+            else if (type === 'scatter') {
+                data = [{
+                    x: [320, 280, 190, 170, 160],
+                    y: [1200, 980, 750, 620, 580],
+                    mode: 'markers',
+                    type: 'scatter',
+                    text: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna'],
+                    marker: {
+                        size: [14.8, 13.4, 7.8, 7.3, 8.3].map(s => s * 3),
+                        color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
+                    }
+                }];
+                
+                layout = {
+                    title: 'Hospitals vs Clinics by State',
+                    xaxis: {title: 'Hospitals'},
+                    yaxis: {title: 'Clinics'},
+                    hovermode: 'closest',
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: 'white'
+                };
+            }
+            else if (type === 'map') {
+                data = [{
+                    type: 'scattermapbox',
+                    lat: [6.5244, 12.0022, 7.3775, 4.8156, 10.5105],
+                    lon: [3.3792, 8.5922, 3.9470, 7.0498, 7.4165],
+                    mode: 'markers',
+                    marker: {
+                        size: [14.8, 13.4, 7.8, 7.3, 8.3].map(s => s * 2),
+                        color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
+                    },
+                    text: ['Lagos', 'Kano', 'Oyo', 'Rivers', 'Kaduna']
+                }];
+                
+                layout = {
+                    title: 'Nigerian States Health Facilities',
+                    mapbox: {
+                        style: 'open-street-map',
+                        center: {lon: 8.6753, lat: 9.0820},
+                        zoom: 5
+                    },
+                    height: 400,
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: 'white'
+                };
+            }
+            
+            Plotly.react('plotly-demo', data, layout);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initPlot);
+        
+        // Toggle explanation sections
+        document.querySelectorAll('.explain-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                targetElement.classList.toggle('show');
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (targetElement.classList.contains('show')) {
+                    icon.classList.remove('fa-question-circle');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-question-circle');
+                }
+            });
+        });
+        
+        // Update active navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Simulate progress as user scrolls
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollPosition / documentHeight) * 100;
+            document.querySelector('.progress-fill').style.width = Math.min(progress, 100) + '%';
+        });
+        
+        // Copy code functionality
+        document.querySelectorAll('.fa-copy').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-header').nextElementSibling;
+                const codeText = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const original = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-times';
+                    this.classList.remove(original);
+                    this.classList.add('fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.remove('fa-check');
+                        this.classList.add(original);
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

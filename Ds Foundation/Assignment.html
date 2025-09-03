@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULA - Iris Dataset Analysis | NITDA/NCAIR</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/atom-one-dark.min.css">
+</head>
+  <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --secondary-blue: #93c5fd;
+            --dark-blue: #1e40af;
+            --light-gray: #f9fafb;
+            --medium-gray: #e5e7eb;
+            --dark-gray: #4b5563;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .assignment-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+        }
+        
+        .section-header {
+            background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 20px 25px;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary-blue), var(--primary-blue));
+            margin: 5px 0 15px;
+            border-radius: 2px;
+        }
+        
+        .info-box {
+            padding: 25px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .info-box:last-child {
+            border-bottom: none;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-blue);
+        }
+        
+        .list-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-left: 10px;
+            border-left: 3px solid var(--secondary-blue);
+        }
+        
+        .step-list {
+            counter-reset: step-counter;
+        }
+        
+        .step-list li {
+            position: relative;
+            margin-bottom: 20px;
+            padding-left: 40px;
+        }
+        
+        .step-list li:before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .requirement-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .requirement-table th {
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: left;
+            padding: 14px 20px;
+            font-weight: 600;
+        }
+        
+        .requirement-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        .requirement-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .checkmark {
+            color: #10b981;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tip-box {
+            background: linear-gradient(to right, #dbeafe, #d1e8ff);
+            border-left: 4px solid var(--primary-blue);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .code-block {
+            font-family: 'Roboto Mono', monospace;
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .language-comparison {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .language-card {
+            flex: 1;
+            border: 1px solid var(--medium-gray);
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+        }
+        
+        .language-card h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-blue);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: var(--dark-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        
+        .btn-secondary:hover {
+            background: #eff6ff;
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .language-comparison {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+<body class="font-inter bg-gray-50 text-gray-900">
+    <!-- Navigation -->
+    <nav class="bg-nitsa-blue text-white shadow-lg section-header rounded-xl">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center ">
+            <div class="flex items-center space-x-2 ">
+                
+                <img src="./vecteezy_high-quality-data-science-illustration_23810074.jpg"  alt="Data Science Logo" class="h-10">
+                <span class="text-xl font-bold">Universal Learning Archive</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700 transition">
+                    <i class="fas fa-moon"></i>
+                </button> -->
+                <button class="bg-white-100 text-nitsa-blue px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition">
+                    DATTI
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Learning Path Header -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Cohort 27</span>
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium ml-2">Data Science</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">Estimated Time: 2 hours</span>
+                        <i class="fas fa-clock text-gray-400"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Iris Dataset Analysis in Python and R</h1>
+                <p class="text-gray-600 mb-4">Master fundamental data analysis and visualization techniques using the classic Iris dataset</p>
+                
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-circle-check text-green-500 mr-2"></i>
+                        <span>Beginner Friendly</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-laptop-code text-blue-500 mr-2"></i>
+                        <span>Hands-on Practice</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-graduation-cap text-purple-500 mr-2"></i>
+                        <span>Industry Standard</span>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-blue-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Learning Objective</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>By completing this module, you will understand how to perform basic data exploration, analysis, and visualization in both Python and R, while comparing the approaches of these two popular data science languages.</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <!-- Extras -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+      <div class="flex items-start">
+        <i class="fas fa-lightbulb text-blue-500 text-xl mt-1 mr-3"></i>
+        <div class="text-sm text-blue-700">
+          <p><strong>Want to Get 100% Ready?:</strong>   Explore all 5 learning modules available on the <a href="./fundementals.html" class="text-red-600 hover:underline font-medium">Click Here</a> to fully prepare for this assignment. Each module builds your data science skills step by step.</p>
+        </div>
+      </div>
+    </div>
+            </div>
+        </section>
+
+       
+
+<!-- assignment summary -->
+ <section class="mb-10">
+  <div class="max-w-4xl mx-auto">
+        <!-- Assignment Summary Card -->
+        <div class="assignment-card">
+            <!-- Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    Assignment Overview: Iris Dataset Analysis
+                </h2>
+                <div class="section-divider"></div>
+                <p>Master data analysis techniques by comparing Python and R approaches</p>
+            </div>
+            
+            <!-- Overview -->
+            <div class="info-box">
+                <h3 class="subtitle">
+                    <i class="fas fa-info-circle"></i>
+                    What's This All About?
+                </h3>
+                <p>
+                    You're analyzing the famous <strong>Iris flower dataset</strong> using both <strong>Python</strong> and <strong>R</strong>. 
+                    The goal is to gain hands-on experience in <em>loading, exploring, visualizing, and comparing</em> data across 
+                    two major languages in data science.
+                </p>
+                
+                <div class="language-comparison">
+                    <div class="language-card">
+                        <h4><i class="fab fa-python"></i> Python Approach</h4>
+                        <ul>
+                            <li>Load with <span class="code-block">sklearn</span></li>
+                            <li>Analyze with <span class="code-block">pandas</span></li>
+                            <li>Visualize with <span class="code-block">matplotlib</span></li>
+                        </ul>
+                    </div>
+                    <div class="language-card">
+                        <h4><i class="fas fa-registered"></i> R Approach</h4>
+                        <ul>
+                            <li>Built-in dataset</li>
+                            <li>Base functions</li>
+                            <li>Visualize with <span class="code-block">ggplot2</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learning Goals -->
+            <div class="info-box">
+                <h3 class="subtitle">
+                    <i class="fas fa-bullseye"></i>
+                    Learning Goals
+                </h3>
+                <ul>
+                    <li class="list-item">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        Perform data loading, filtering, and summary statistics
+                    </li>
+                    <li class="list-item">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        Create meaningful charts like scatter plots and boxplots
+                    </li>
+                    <li class="list-item">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        Compare Python and R approaches
+                    </li>
+                    <li class="list-item">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        Practice writing and submitting <span class="code-block">.py</span> and <span class="code-block">.R</span> scripts
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Step Breakdown -->
+            <div class="info-box">
+                <h3 class="subtitle">
+                    <i class="fas fa-list-ol"></i>
+                    What You'll Do (Step-by-Step)
+                </h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Learn the Dataset</strong> — Explore 3 flower species with sepal & petal sizes
+                    </li>
+                    <li>
+                        <strong>In Python</strong> — Load with <span class="code-block">sklearn</span>, analyze with <span class="code-block">pandas</span>, plot with <span class="code-block">matplotlib</span>
+                    </li>
+                    <li>
+                        <strong>In R</strong> — Use built-in dataset, analyze with base functions & <span class="code-block">ggplot2</span>
+                    </li>
+                    <li>
+                        <strong>Compare Results</strong> — Notice syntax, strengths, and ease of use in both tools
+                    </li>
+                </ol>
+            </div>
+            
+            <!-- Requirement Checklist -->
+            <div class="info-box">
+                <h3 class="subtitle">
+                    <i class="fas fa-clipboard-list"></i>
+                    Requirement Checklist
+                </h3>
+                <table class="requirement-table">
+                    <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th>Covered?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Python & R exploration</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td>Basic statistics & filtering</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td>Visualizations</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td>Language comparison</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Clear</span></td>
+                        </tr>
+                        <tr>
+                            <td>Python & R file submission</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Listed</span></td>
+                        </tr>
+                        <tr>
+                            <td>1–2 sentence reflection</td>
+                            <td><span class="checkmark"><i class="fas fa-check-circle"></i> Prompted</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tip Box -->
+            <div class="info-box">
+                <div class="tip-box">
+                    <i class="fas fa-lightbulb text-blue-500 text-2xl"></i>
+                    <div>
+                        <p class="font-medium text-blue-900">Want to Get 100% Ready?</p>
+                        <p>Explore all 5 learning modules available on the <a href="./fundementals.html" class="text-red-600 hover:underline font-medium">Click Here</a> to fully prepare for this assignment. Each module builds your data science skills step by step.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <!-- <div class="info-box">
+                <div class="action-buttons">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Download Assignment
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-book-open"></i>
+                        View Learning Modules
+                    </button>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    </section>
+
+        
+        <!-- Interactive Learning Content -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Table of Contents -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-md sticky top-8 overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <h2 class="text-xl font-bold">Learning Path</h2>
+                    </div>
+                    <div class="p-6">
+                        <ol class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mr-3 flex-shrink-0">1</span>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Introduction to Iris Dataset</h3>
+                                    <p class="text-sm text-gray-500">Understanding the dataset structure</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mr-3 flex-shrink-0">2</span>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Python Implementation</h3>
+                                    <ol class="mt-2 ml-2 space-y-2 text-sm text-gray-500">
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Data Loading and Preparation</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Exploratory Data Analysis</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Data Visualization</span>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mr-3 flex-shrink-0">3</span>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">R Implementation</h3>
+                                    <ol class="mt-2 ml-2 space-y-2 text-sm text-gray-500">
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Data Setup and Exploration</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Basic Data Analysis</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                                            <span>Visualization Techniques</span>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mr-3 flex-shrink-0">4</span>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Python vs R Comparison</h3>
+                                    <p class="text-sm text-gray-500">Key differences and when to use each</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Learning Content -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Introduction Section -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <h2 class="text-xl font-bold">Introduction to Iris Dataset</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p>The Iris flower data set is a multivariate data set introduced by the British statistician and biologist Ronald Fisher in his 1936 paper. It is sometimes called Anderson's Iris data set because Edgar Anderson collected the data to quantify the morphologic variation of Iris flowers of three related species.</p>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-4">
+                                <h3 class="font-medium text-gray-900 mb-2">Dataset Characteristics</h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>Number of Instances:</strong> 150 (50 in each of three classes)</li>
+                                    <li><strong>Number of Attributes:</strong> 4 numeric, predictive attributes and the class</li>
+                                    <li><strong>Attribute Information:</strong>
+                                        <ol class="list-decimal pl-5 mt-1">
+                                            <li>Sepal length in cm</li>
+                                            <li>Sepal width in cm</li>
+                                            <li>Petal length in cm</li>
+                                            <li>Petal width in cm</li>
+                                            <li>Class (Iris Setosa, Iris Versicolour, Iris Virginica)</li>
+                                        </ol>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h3 class="font-medium text-gray-900 mb-2">Why Learn with the Iris Dataset?</h3>
+                                <p>The Iris dataset is perfect for beginners because:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                    <div class="flex items-start p-3 bg-green-50 rounded-lg">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-medium">Simple Structure</h4>
+                                            <p class="text-sm text-gray-600">Only 4 features and 3 classes make it easy to understand</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-3 bg-blue-50 rounded-lg">
+                                        <i class="fas fa-chart-line text-blue-500 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-medium">Visualization Friendly</h4>
+                                            <p class="text-sm text-gray-600">Perfect for learning basic plotting techniques</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-3 bg-purple-50 rounded-lg">
+                                        <i class="fas fa-balance-scale text-purple-500 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-medium">Classification Benchmark</h4>
+                                            <p class="text-sm text-gray-600">Commonly used to test machine learning algorithms</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-3 bg-yellow-50 rounded-lg">
+                                        <i class="fas fa-language text-yellow-500 mt-1 mr-3"></i>
+                                        <div>
+                                            <h4 class="font-medium">Multi-language Support</h4>
+                                            <p class="text-sm text-gray-600">Available in both Python and R for comparison</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Python Implementation Section -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold">Python Implementation</h2>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fab fa-python mr-1"></i> Python
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <!-- Data Loading -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">1</span>
+                                Data Loading and Preparation
+                            </h3>
+                            
+                            <!-- Code Block 1 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-loading-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="python-loading-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Import necessary libraries
+from sklearn.datasets import load_iris
+import pandas as pd
+
+# Load the Iris dataset from sklearn
+iris = load_iris()
+
+# Convert to pandas DataFrame
+iris_df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+
+# Add species names as a new column
+iris_df['species'] = iris.target_names[iris.target]</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-loading-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="python-loading-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>Import statements:</strong> We import the Iris dataset from scikit-learn and pandas for data manipulation.</li>
+                                        <li><strong>Loading data:</strong> <code>load_iris()</code> loads the dataset which contains numerical data and metadata.</li>
+                                        <li><strong>DataFrame conversion:</strong> We create a pandas DataFrame from the numerical data using the feature names as column headers.</li>
+                                        <li><strong>Adding species:</strong> The target values (0,1,2) are mapped to species names ('setosa', 'versicolor', 'virginica') and added as a new column.</li>
+                                    </ol>
+                                    <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                        <p class="text-sm text-blue-800"><strong>Note:</strong> scikit-learn's Iris dataset is a Bunch object (similar to a dictionary) containing both data and metadata. We're extracting the numerical data and feature names to create a structured DataFrame.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Exploration -->
+                            <h4 class="font-medium text-gray-700 mb-3">Data Exploration</h4>
+                            
+                            <!-- Code Block 2 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-exploration-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="python-exploration-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Show first 10 rows
+print("First 10 rows:")
+print(iris_df.head(10))
+
+# Dataset information
+print("\nDataset information:")
+print(iris_df.info())
+
+# Statistical summary
+print("\nStatistical summary:")
+print(iris_df.describe())
+
+# Check for missing values
+print("\nMissing values per column:")
+print(iris_df.isnull().sum())
+
+# Count species occurrences
+print("\nSpecies count:")
+print(iris_df['species'].value_counts())</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-exploration-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="python-exploration-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>head(10):</strong> Displays the first 10 rows of the DataFrame to inspect the data structure.</li>
+                                        <li><strong>info():</strong> Provides metadata about the DataFrame including column data types and non-null counts.</li>
+                                        <li><strong>describe():</strong> Generates descriptive statistics (count, mean, std, min, quartiles, max) for numerical columns.</li>
+                                        <li><strong>isnull().sum():</strong> Checks for missing values in each column (important for data quality assessment).</li>
+                                        <li><strong>value_counts():</strong> Counts occurrences of each species (categorical data analysis).</li>
+                                    </ol>
+                                    <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                        <p class="text-sm text-blue-800"><strong>Pro Tip:</strong> These exploration methods form the foundation of the EDA (Exploratory Data Analysis) process. Always start with these basic checks to understand your dataset's structure and quality.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Analysis -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">2</span>
+                                Data Analysis
+                            </h3>
+                            
+                            <!-- Code Block 3 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-analysis-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="python-analysis-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Average petal length per species
+avg_petal_length = iris_df.groupby('species')['petal length (cm)'].mean()
+print("\nAverage petal length per species:")
+print(avg_petal_length)
+
+# Species with longest average sepal length
+longest_sepal_species = iris_df.groupby('species')['sepal length (cm)'].mean().idxmax()
+print(f"\nSpecies with longest average sepal length: {longest_sepal_species}")
+
+# Filter rows where petal width > 1.5
+filtered_df = iris_df[iris_df['petal width (cm)'] > 1.5]
+print("\nRows where petal width > 1.5:")
+print(filtered_df.head())</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-analysis-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="python-analysis-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>Groupby operation:</strong> <code>groupby('species')</code> groups data by species, then we calculate mean petal length for each group.</li>
+                                        <li><strong>idxmax():</strong> After calculating mean sepal length by species, <code>idxmax()</code> returns the species name with the highest value.</li>
+                                        <li><strong>Filtering:</strong> The condition <code>iris_df['petal width (cm)'] > 1.5</code> creates a boolean mask, used to filter rows where petal width exceeds 1.5cm.</li>
+                                    </ol>
+                                    <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="p-3 bg-white border border-gray-200 rounded-lg">
+                                            <h5 class="font-medium text-gray-800 mb-1">Groupby Concept</h5>
+                                            <p class="text-sm text-gray-600">Groupby splits data into groups based on a criterion, applies a function to each group independently, then combines results.</p>
+                                        </div>
+                                        <div class="p-3 bg-white border border-gray-200 rounded-lg">
+                                            <h5 class="font-medium text-gray-800 mb-1">Boolean Masking</h5>
+                                            <p class="text-sm text-gray-600">A powerful pandas feature where we filter data using True/False conditions applied to each row.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Visualization -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">3</span>
+                                Data Visualization
+                            </h3>
+                            
+                            <!-- Visualization 1 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Scatter Plot: Sepal Length vs Sepal Width</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-scatter-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="python-scatter-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code>import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=iris_df, x='sepal length (cm)', y='sepal width (cm)', hue='species', palette='viridis', s=100)
+plt.title('Sepal Length vs Sepal Width by Species')
+plt.xlabel('Sepal Length (cm)')
+plt.ylabel('Sepal Width (cm)')
+plt.legend(title='Species')
+plt.grid(True, alpha=0.3)
+plt.show()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-scatter-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="python-scatter-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>Imports:</strong> We import matplotlib for basic plotting and seaborn for enhanced visualization.</li>
+                                                <li><strong>Figure size:</strong> <code>figsize</code> sets dimensions (width, height in inches).</li>
+                                                <li><strong>Scatterplot:</strong> <code>sns.scatterplot</code> creates the plot with x/y axes, colors points by species (<code>hue</code>), uses viridis color palette, and sets point size (<code>s</code>).</li>
+                                                <li><strong>Labels/title:</strong> Self-explanatory labeling functions.</li>
+                                                <li><strong>Legend:</strong> Automatically created from hue mapping, with custom title.</li>
+                                                <li><strong>Grid:</strong> Adds light grid lines for better readability.</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="python-scatter-plot.png" alt="Python Scatter Plot" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization 2 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Histogram: Petal Length Distribution</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-hist-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="python-hist-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code>plt.figure(figsize=(8, 6))
+sns.histplot(data=iris_df, x='petal length (cm)', hue='species', element='step', kde=True, palette='viridis')
+plt.title('Distribution of Petal Length by Species')
+plt.xlabel('Petal Length (cm)')
+plt.ylabel('Frequency')
+plt.legend(title='Species')
+plt.grid(True, alpha=0.3)
+plt.show()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-hist-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="python-hist-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>histplot:</strong> Creates histogram with species differentiation via <code>hue</code>.</li>
+                                                <li><strong>element='step':</strong> Draws step-style histogram (alternative to bars).</li>
+                                                <li><strong>kde=True:</strong> Adds Kernel Density Estimate plot (smoothed distribution line).</li>
+                                                <li><strong>palette:</strong> Consistent coloring with scatter plot for comparison.</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="python-histogram.png" alt="Python Histogram" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization 3 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Boxplot: Sepal Width by Species</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.py</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('python-boxplot-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="python-boxplot-code" class="hljs language-python bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code>plt.figure(figsize=(8, 6))
+sns.boxplot(data=iris_df, x='species', y='sepal width (cm)', palette='viridis')
+plt.title('Sepal Width Distribution by Species')
+plt.xlabel('Species')
+plt.ylabel('Sepal Width (cm)')
+plt.grid(True, alpha=0.3)
+plt.show()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('python-boxplot-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="python-boxplot-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>boxplot:</strong> Creates box-and-whisker plot showing distribution statistics.</li>
+                                                <li><strong>x and y:</strong> Categorical variable (species) on x-axis, numerical (sepal width) on y-axis.</li>
+                                                <li><strong>Box components:</strong> The box shows IQR (25th-75th percentile), line at median, whiskers show range (excluding outliers).</li>
+                                                <li><strong>Outliers:</strong> Points beyond whiskers are plotted individually.</li>
+                                            </ol>
+                                            <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                                <p class="text-sm text-blue-800"><strong>Boxplot Insight:</strong> This visualization helps compare distributions across categories, showing central tendency, dispersion, and outliers at a glance.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="python-boxplot.png" alt="Python Boxplot" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- R Implementation Section -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold">R Implementation</h2>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                <i class="fab fa-r-project mr-1"></i> R
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <!-- Data Setup -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">1</span>
+                                Data Setup and Exploration
+                            </h3>
+                            
+                            <!-- Code Block 1 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-loading-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="r-loading-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Load the built-in iris dataset
+data(iris)
+
+# Explore the dataset structure
+head(iris)
+str(iris)</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-loading-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="r-loading-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>data(iris):</strong> Loads the built-in Iris dataset that comes with R.</li>
+                                        <li><strong>head(iris):</strong> Displays the first 6 rows of the dataset.</li>
+                                        <li><strong>str(iris):</strong> Shows the structure of the dataset including variable names, types, and sample values.</li>
+                                    </ol>
+                                    <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                        <p class="text-sm text-blue-800"><strong>R Note:</strong> Unlike Python where we needed to import from sklearn, R includes the Iris dataset by default as it's commonly used for examples and testing.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Exploration -->
+                            <h4 class="font-medium text-gray-700 mb-3">Basic Data Exploration</h4>
+                            
+                            <!-- Code Block 2 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-exploration-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="r-exploration-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Statistical summary
+summary(iris)
+
+# Check for missing values
+colSums(is.na(iris))
+
+# Count species occurrences
+table(iris$Species)</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-exploration-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="r-exploration-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>summary():</strong> Provides descriptive statistics for each column (min, max, mean, median, quartiles for numeric; counts for factors).</li>
+                                        <li><strong>is.na() with colSums():</strong> Checks for NA values (R's equivalent of null/NaN) in each column.</li>
+                                        <li><strong>table():</strong> Creates a frequency table for categorical variables (Species in this case).</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Analysis -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">2</span>
+                                Data Analysis
+                            </h3>
+                            
+                            <!-- Code Block 3 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                    </div>
+                                    <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-analysis-code')">
+                                        <i class="far fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                                <pre id="r-analysis-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Average petal length per species
+avg_petal_length <- aggregate(Petal.Length ~ Species, data = iris, FUN = mean)
+print("Average petal length per species:")
+print(avg_petal_length)
+
+# Species with longest average sepal length
+avg_sepal_length <- aggregate(Sepal.Length ~ Species, data = iris, FUN = mean)
+longest_sepal_species <- avg_sepal_length$Species[which.max(avg_sepal_length$Sepal.Length)]
+print(paste("Species with longest average sepal length:", longest_sepal_species))
+
+# Filter rows where Petal.Width > 1.5
+filtered_iris <- iris[iris$Petal.Width > 1.5, ]
+print("Rows where Petal.Width > 1.5:")
+print(head(filtered_iris))</code></pre>
+                                <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-analysis-explanation')">
+                                    <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                </button>
+                                <div id="r-analysis-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                    <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                        <li><strong>aggregate():</strong> Splits data into subsets by Species and computes mean Petal.Length for each.</li>
+                                        <li><strong>which.max():</strong> Finds the index of the maximum value in the average sepal length vector.</li>
+                                        <li><strong>Filtering:</strong> Uses logical indexing to select rows where Petal.Width exceeds 1.5.</li>
+                                    </ol>
+                                    <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                        <p class="text-sm text-blue-800"><strong>R vs Python:</strong> Notice how R uses $ for column access and [ , ] for row/column selection, while Python uses [] and . notation. The aggregate function in R is similar to groupby in pandas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Visualization -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <span class="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3 text-sm font-medium">3</span>
+                                Data Visualization
+                            </h3>
+                            
+                            <!-- Visualization 1 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Scatter Plot: Sepal.Length vs Sepal.Width</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-scatter-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="r-scatter-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Base R graphics
+plot(iris$Sepal.Length, iris$Sepal.Width, 
+     col = iris$Species, pch = 19,
+     main = "Sepal Length vs Sepal Width by Species",
+     xlab = "Sepal Length (cm)",
+     ylab = "Sepal Width (cm)")
+legend("topright", legend = levels(iris$Species), 
+       col = 1:3, pch = 19, title = "Species")
+
+# Using ggplot2 (recommended)
+library(ggplot2)
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point(size = 3) +
+  labs(title = "Sepal Length vs Sepal Width by Species",
+       x = "Sepal Length (cm)",
+       y = "Sepal Width (cm)") +
+  theme_minimal()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-scatter-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="r-scatter-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>Base R plot:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>plot(x, y)</code> creates scatter plot</li>
+                                                        <li><code>col</code> colors points by Species factor levels</li>
+                                                        <li><code>pch=19</code> uses solid circles</li>
+                                                        <li><code>legend()</code> adds color key</li>
+                                                    </ul>
+                                                </li>
+                                                <li><strong>ggplot2 version:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>ggplot()</code> initializes plot with data and aesthetics</li>
+                                                        <li><code>geom_point()</code> adds scatter points</li>
+                                                        <li><code>labs()</code> sets labels</li>
+                                                        <li><code>theme_minimal()</code> applies clean theme</li>
+                                                    </ul>
+                                                </li>
+                                            </ol>
+                                            <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                                <p class="text-sm text-blue-800"><strong>ggplot2 Advantage:</strong> While base R graphics are quick, ggplot2 provides more elegant, customizable, and consistent visualizations with a layered grammar of graphics approach.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="r-scatter-plot.png" alt="R Scatter Plot" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization 2 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Histogram: Petal.Length Distribution</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-hist-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="r-hist-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Base R histogram
+hist(iris$Petal.Length, 
+     main = "Distribution of Petal Length",
+     xlab = "Petal Length (cm)",
+     col = "lightblue",
+     border = "white")
+
+# ggplot2 version with density
+ggplot(iris, aes(x = Petal.Length, fill = Species)) +
+  geom_histogram(aes(y = ..density..), alpha = 0.7, position = "identity", bins = 20) +
+  geom_density(alpha = 0.2) +
+  labs(title = "Distribution of Petal Length by Species",
+       x = "Petal Length (cm)",
+       y = "Density") +
+  theme_minimal()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-hist-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="r-hist-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>Base R hist:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>hist()</code> creates basic histogram</li>
+                                                        <li>Parameters control appearance (color, borders)</li>
+                                                    </ul>
+                                                </li>
+                                                <li><strong>ggplot2 version:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>geom_histogram()</code> with <code>y=..density..</code> plots density instead of count</li>
+                                                        <li><code>position="identity"</code> overlays histograms</li>
+                                                        <li><code>geom_density()</code> adds smoothed density line</li>
+                                                        <li><code>alpha</code> controls transparency</li>
+                                                    </ul>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="r-histogram.png" alt="R Histogram" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization 3 -->
+                            <div class="mb-8">
+                                <h4 class="font-medium text-gray-700 mb-3">Boxplot: Sepal.Width by Species</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span class="text-gray-300 text-sm ml-2">iris_analysis.R</span>
+                                            </div>
+                                            <button class="text-gray-300 hover:text-white text-sm" onclick="copyCode('r-boxplot-code')">
+                                                <i class="far fa-copy mr-1"></i> Copy
+                                            </button>
+                                        </div>
+                                        <pre id="r-boxplot-code" class="hljs language-r bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto"><code># Base R boxplot
+boxplot(Sepal.Width ~ Species, data = iris,
+        main = "Sepal Width by Species",
+        xlab = "Species",
+        ylab = "Sepal Width (cm)",
+        col = c("lightgreen", "lightblue", "pink"))
+
+# ggplot2 version
+ggplot(iris, aes(x = Species, y = Sepal.Width, fill = Species)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Sepal Width Distribution by Species",
+       x = "Species",
+       y = "Sepal Width (cm)") +
+  theme_minimal() +
+  scale_fill_viridis_d()</code></pre>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center" onclick="toggleExplanation('r-boxplot-explanation')">
+                                            <i class="fas fa-chevron-down mr-1"></i> Show Explanation
+                                        </button>
+                                        <div id="r-boxplot-explanation" class="hidden mt-3 p-4 bg-blue-50 rounded-lg">
+                                            <h4 class="font-medium text-blue-800 mb-2">Code Explanation:</h4>
+                                            <ol class="list-decimal pl-5 space-y-2 text-blue-700">
+                                                <li><strong>Base R boxplot:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>boxplot(y ~ x)</code> formula interface groups y by x</li>
+                                                        <li><code>col</code> sets box colors manually</li>
+                                                    </ul>
+                                                </li>
+                                                <li><strong>ggplot2 version:</strong>
+                                                    <ul class="list-disc pl-5 mt-1">
+                                                        <li><code>geom_boxplot()</code> creates the boxplot</li>
+                                                        <li><code>alpha</code> makes boxes slightly transparent</li>
+                                                        <li><code>scale_fill_viridis_d()</code> uses viridis color palette</li>
+                                                    </ul>
+                                                </li>
+                                            </ol>
+                                            <div class="mt-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-r">
+                                                <p class="text-sm text-blue-800"><strong>Boxplot Interpretation:</strong> The box represents the interquartile range (IQR), the line inside is the median, whiskers show 1.5*IQR, and points are outliers.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center">
+                                        <img src="r-boxplot.png" alt="R Boxplot" class="max-w-full h-auto rounded">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Comparison Section -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <h2 class="text-xl font-bold">Python vs R Comparison</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p>After completing the analysis in both Python and R, let's compare the two approaches and highlight key differences:</p>
+                            
+                            <div class="mt-6">
+                                <h3 class="font-medium text-gray-900 mb-3">Key Observations</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-center mb-3">
+                                            <i class="fab fa-python text-blue-500 text-2xl mr-3"></i>
+                                            <h4 class="font-medium text-lg">Python Advantages</h4>
+                                        </div>
+                                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                            <li><strong>Pandas DataFrames</strong> offer very intuitive data manipulation syntax</li>
+                                            <li><strong>Method chaining</strong> (df.method1().method2()) creates readable workflows</li>
+                                            <li><strong>Seaborn</strong> provides high-level statistical visualization with minimal code</li>
+                                            <li><strong>Better for production</strong> and integration with web applications</li>
+                                            <li><strong>More consistent syntax</strong> across data operations</li>
+                                        </ul>
+                                    </div>
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-center mb-3">
+                                            <i class="fab fa-r-project text-purple-500 text-2xl mr-3"></i>
+                                            <h4 class="font-medium text-lg">R Advantages</h4>
+                                        </div>
+                                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                            <li><strong>Built-in datasets</strong> like iris are immediately available</li>
+                                            <li><strong>ggplot2</strong> offers unparalleled customization and layered grammar</li>
+                                            <li><strong>Statistical functions</strong> are more comprehensive out-of-the-box</li>
+                                            <li><strong>Formula interface</strong> (y ~ x) is elegant for modeling</li>
+                                            <li><strong>RMarkdown</strong> excels at reproducible research reports</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h3 class="font-medium text-gray-900 mb-3">When to Use Each</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scenario</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Language</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Production data pipelines</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">Python</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Better integration with web frameworks and APIs</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Academic research</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-purple-600 font-medium">R</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">More statistical methods readily available</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Machine learning</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">Python</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Stronger ecosystem (scikit-learn, TensorFlow, PyTorch)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Data visualization</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-purple-600 font-medium">R</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ggplot2 offers more customization and publication-quality outputs</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">General-purpose programming</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">Python</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">More versatile beyond data analysis</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-yellow-400 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-yellow-800">Recommendation for Beginners</h3>
+                                        <div class="mt-2 text-sm text-yellow-700">
+                                            <p>If you're just starting in data science, Python may be the better first language due to its general-purpose nature and growing dominance in industry. However, learning both will make you more versatile. Many professionals use R for exploratory analysis and visualization, then Python for production implementation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Submission Section -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <h2 class="text-xl font-bold">What to Submit</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p>To complete this assignment, please submit the following:</p>
+                            
+                            <ol class="list-decimal pl-5 space-y-3 mt-4">
+                                <li>
+                                    <strong>Python notebook or .py file</strong> containing:
+                                    <ul class="list-disc pl-5 mt-2">
+                                        <li>All code from Part 1 (Python implementation)</li>
+                                        <li>Comments explaining key steps</li>
+                                        <li>Visualizations with proper labels</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>R script (.R file)</strong> containing:
+                                    <ul class="list-disc pl-5 mt-2">
+                                        <li>All code from Part 2 (R implementation)</li>
+                                        <li>Comments for clarity</li>
+                                        <li>Both base R and ggplot2 versions of plots</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>1-2 sentence reflection</strong> on:
+                                    <ul class="list-disc pl-5 mt-2">
+                                        <li>What you noticed between Python and R approaches</li>
+                                        <li>Which you found more intuitive or powerful for specific tasks</li>
+                                        <li>Any interesting findings from the dataset itself</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            
+                            <div class="mt-6 bg-green-50 border-l-4 border-green-400 p-4 rounded-r">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-green-800">Submission Tips</h3>
+                                        <div class="mt-2 text-sm text-green-700">
+                                            <ul class="list-disc pl-5 space-y-1">
+                                                <li>Name your files clearly: <code>iris_analysis_yourname.py</code> and <code>iris_analysis_yourname.R</code></li>
+                                                <li>Ensure all code runs without errors before submitting</li>
+                                                <li>Keep visualizations clean and properly labeled</li>
+                                                <li>Your reflection should demonstrate thoughtful comparison</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Next Steps -->
+                <section class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-nitsa-blue text-white px-6 py-4">
+                        <h2 class="text-xl font-bold">Next Steps in Your Learning Journey</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p>Congratulations on completing this foundational exercise! Here's what you might explore next:</p>
+                            
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-database text-blue-500"></i>
+                                        </div>
+                                        <h4 class="font-medium">Advanced EDA Techniques</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Learn correlation analysis, pair plotting, and multivariate visualization.</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-project-diagram text-purple-500"></i>
+                                        </div>
+                                        <h4 class="font-medium">Machine Learning Basics</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Apply classification models to predict iris species from measurements.</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-chart-bar text-green-500"></i>
+                                        </div>
+                                        <h4 class="font-medium">Interactive Dashboards</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Build Shiny (R) or Dash (Python) apps to explore data interactively.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 bg-gray-50 rounded-lg p-6 border border-gray-200">
+                                <h3 class="font-medium text-gray-900 mb-3">Feedback & Improvement</h3>
+                                <p class="text-gray-600">This learning system is designed to evolve with your needs. Please share:</p>
+                                <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600">
+                                    <li>Which explanations were most helpful?</li>
+                                    <li>Where did you need more clarification?</li>
+                                    <li>What additional features would enhance your learning?</li>
+                                </ul>
+                                <button class="mt-4 bg-nitsa-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                                    <i class="fas fa-comment-dots mr-2"></i> Provide Feedback
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Back</span>
+  </button>
+</a>
+
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12 section-header">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Universal Learning Archive</h3>
+                    <p class="text-gray-400">A 5IRE initiative to democratize data science education and create self-sufficient learners.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-medium mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Learning Paths</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Code Examples</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Datasets</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-medium mb-4">Community</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Forums</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Cohort Discussions</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Mentorship</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Events</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-medium mb-4">Connect</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-youtube text-xl"></i></a>
+                    </div>
+                    <p class="text-gray-400">© 2025 5IRE ULA. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Initialize syntax highlighting
+        hljs.highlightAll();
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+        
+        // Copy code functionality
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const codeText = codeElement.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                const copyButton = codeElement.previousElementSibling.querySelector('button');
+                const originalText = copyButton.innerHTML;
+                
+                copyButton.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Toggle explanation functionality
+        function toggleExplanation(elementId) {
+            const explanation = document.getElementById(elementId);
+            const button = explanation.previousElementSibling;
+            
+            explanation.classList.toggle('hidden');
+            
+            if (explanation.classList.contains('hidden')) {
+                button.innerHTML = '<i class="fas fa-chevron-down mr-1"></i> Show Explanation';
+            } else {
+                button.innerHTML = '<i class="fas fa-chevron-up mr-1"></i> Hide Explanation';
+            }
+        }
+    </script>
+</body>
+</html>

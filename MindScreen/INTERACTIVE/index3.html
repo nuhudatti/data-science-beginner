@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindScreen Analytics | Responsive Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #00c6ff;
+            --secondary: #00d977;
+            --accent: #a96cff;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 198, 255, 0.3);
+            z-index: 1000;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon i {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 999;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        .mobile-menu a {
+            display: block;
+            padding: 12px 0;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.1);
+        }
+        
+        .mobile-menu a:last-child {
+            border-bottom: none;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 5% 50px;
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 50px;
+        }
+        
+        @media (min-width: 992px) {
+            .hero-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .hero-text h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-text p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 198, 255, 0.5);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 198, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .partners {
+            margin-top: 20px;
+        }
+        
+        .partners h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .partner-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .partner-badge {
+            background: rgba(0, 198, 255, 0.15);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .hero-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stats-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.7),
+                        inset 0 0 20px rgba(0, 198, 255, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: #cbd5e1;
+            font-size: 1.2rem;
+        }
+        
+        /* Sections */
+        section {
+            padding: 80px 5%;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 2px;
+        }
+        
+        .section-header p {
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 20px auto 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 198, 255, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon i {
+            color: white;
+            font-size: 28px;
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .card p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* Methodology Section */
+        .methodology-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .methodology-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .code-block {
+            background: #0c1220;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .code-comment { color: #64748b; }
+        .code-keyword { color: #f472b6; }
+        .code-function { color: #60a5fa; }
+        .code-string { color: #34d399; }
+        
+        /* Learning Trails */
+        .trail-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .trail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 198, 255, 0.2);
+        }
+        
+        .trail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .trail-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+        
+        .trail-icon i {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .trail-title {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .trail-content p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .module-list {
+            margin-bottom: 25px;
+        }
+        
+        .module-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .module-item:last-child {
+            border-bottom: none;
+        }
+        
+        .module-name {
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-name i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .module-status {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-status i {
+            color: var(--primary);
+        }
+        
+        .trail-button {
+            width: 100%;
+        }
+        
+        /* Interactive Analysis */
+        .analysis-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .analysis-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .slider-container {
+            margin-bottom: 20px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .stat-box {
+            background: rgba(0, 198, 255, 0.15);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value-sm {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label-sm {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+            min-height: 300px;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(0, 198, 255, 0.3);
+            padding: 60px 5% 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .footer-content {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .footer-column h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 198, 255, 0.15);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 120px;
+            }
+            
+            .hero-content {
+                gap: 40px;
+            }
+            
+            .hero-text h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .card h3 {
+                font-size: 1.3rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 12px 5%;
+            }
+            
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .hero {
+                padding-top: 100px;
+            }
+            
+            .hero-text h1 {
+                font-size: 1.6rem;
+            }
+            
+            .hero-text p {
+                font-size: 1rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.6rem;
+            }
+            
+            .card-icon {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="logo-text">MindScreenAnalytics</div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#overview">Project Overview</a>
+            <a href="#methodology">Methodology</a>
+            <a href="#trails">Learning Trails</a>
+            <a href="#analysis">Analysis</a>
+            <a href="#insights">Insights</a>
+        </div>
+        
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="mobile-menu">
+            <a href="#overview">Project Overview</a>
+            <a href="#methodology">Methodology</a>
+            <a href="#trails">Learning Trails</a>
+            <a href="#analysis">Analysis</a>
+            <a href="#insights">Insights</a>
+            <a href="#" class="btn btn-primary">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Analyzing Screen Time & Mental Well-being</h1>
+                <p>This project investigates the relationship between digital screen time and mental health outcomes using comprehensive datasets and advanced analytical techniques. Discover insights that can shape healthier digital habits.</p>
+                
+                <div class="hero-buttons">
+                    <a href="#methodology" class="btn btn-primary">Explore Methodology</a>
+                    <a href="#trails" class="btn btn-secondary">Start Learning Trail</a>
+                </div>
+                
+                <div class="partners">
+                    <h3>Research Partners:</h3>
+                    <div class="partner-badges">
+                        <div class="partner-badge">NITDA</div>
+                        <div class="partner-badge">NCAIR</div>
+                        <div class="partner-badge">Nigerian Health Ministry</div>
+                        <div class="partner-badge">UNICEF</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="stats-card">
+                    <div class="stat-value">74%</div>
+                    <div class="stat-label">Correlation Found</div>
+                    <p class="stat-description">Initial findings show a significant correlation between excessive screen time and decreased mental well-being scores</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Overview -->
+    <section id="overview" style="background: linear-gradient(to bottom, #0c4a6e, #1e293b);">
+        <div class="section-header">
+            <h2>Project Overview</h2>
+            <p>This comprehensive study examines how digital consumption patterns affect mental health across different demographics in Nigeria</p>
+        </div>
+        
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3>Problem Statement</h3>
+                <p>With Nigeria's rapidly increasing digital adoption, understanding the psychological impact of screen time is crucial for public health policy and individual well-being.</p>
+                <ul class="feature-list">
+                    <li>Rising mental health concerns among youth</li>
+                    <li>Lack of localized research in Nigeria</li>
+                    <li>Need for data-driven policy recommendations</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Research Objectives</h3>
+                <p>This project aims to quantify the relationship between screen time and mental health indicators across Nigerian demographics.</p>
+                <ul class="feature-list">
+                    <li>Identify screen time patterns across age groups</li>
+                    <li>Measure correlation with mental well-being metrics</li>
+                    <li>Develop predictive models for risk assessment</li>
+                    <li>Create policy recommendations for digital wellness</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Data Sources</h3>
+                <p>We utilized diverse datasets to ensure comprehensive analysis:</p>
+                <ul class="feature-list">
+                    <li>Nigerian Digital Habits Survey (2023)</li>
+                    <li>WHO Mental Well-being Index</li>
+                    <li>Screen Time Tracking App Data</li>
+                    <li>Academic Performance Records</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology -->
+    <section id="methodology" style="background: linear-gradient(to bottom, #1e293b, #0f172a);">
+        <div class="section-header">
+            <h2>Research Methodology</h2>
+            <p>A comprehensive, multi-phase approach to understanding the screen time and mental health relationship</p>
+        </div>
+        
+        <div class="methodology-content">
+            <div class="methodology-text">
+                <div class="card">
+                    <div class="methodology-step">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <h3>Data Collection & Cleaning</h3>
+                        </div>
+                        <p>We gathered and preprocessed diverse datasets to create a unified analysis framework.</p>
+                        
+                        <h4>Key Processes:</h4>
+                        <ul class="feature-list">
+                            <li>Data acquisition from multiple sources</li>
+                            <li>Handling missing values and outliers</li>
+                            <li>Feature engineering and transformation</li>
+                            <li>Data normalization and standardization</li>
+                        </ul>
+                        
+                        <h4>Tools Used:</h4>
+                        <div class="tools-container">
+                            <span class="tool-badge">Python</span>
+                            <span class="tool-badge">Pandas</span>
+                            <span class="tool-badge">NumPy</span>
+                            <span class="tool-badge">SQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="methodology-code">
+                <div class="card">
+                    <h3>Implementation Code:</h3>
+                    <div class="code-block">
+                        <span class="code-comment"># Nigerian Screen Time Analysis</span><br>
+                        <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd<br>
+                        <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np<br><br>
+                        
+                        <span class="code-comment"># Load datasets</span><br>
+                        screen_data = pd.read_csv(<span class="code-string">'nigerian_screen_time.csv'</span>)<br>
+                        mental_health = pd.read_excel(<span class="code-string">'mental_wellbeing_survey.xlsx'</span>)<br>
+                        demographics = pd.read_json(<span class="code-string">'demographics.json'</span>)<br><br>
+                        
+                        <span class="code-comment"># Merge datasets on participant ID</span><br>
+                        merged_data = pd.merge(screen_data, mental_health, <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;on=<span class="code-string">'participant_id'</span>, how=<span class="code-string">'inner'</span>)<br>
+                        full_data = pd.merge(merged_data, demographics, <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;on=<span class="code-string">'participant_id'</span>)<br><br>
+                        
+                        <span class="code-comment"># Handle missing values</span><br>
+                        full_data[<span class="code-string">'social_media_time'</span>].fillna(<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;full_data[<span class="code-string">'social_media_time'</span>].median(), inplace=<span class="code-keyword">True</span>)<br>
+                        full_data[<span class="code-string">'wellbeing_score'</span>].fillna(<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;full_data[<span class="code-string">'wellbeing_score'</span>].mean(), inplace=<span class="code-keyword">True</span>)<br><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Trails -->
+    <section id="trails" style="background: linear-gradient(to bottom, #0f172a, #0c4a6e);">
+        <div class="section-header">
+            <h2>Learning Trails</h2>
+            <p>Master data science concepts through guided, hands-on learning experiences</p>
+        </div>
+        
+        <div class="card-grid">
+            <div class="trail-card">
+                <div class="trail-header">
+                    <div class="trail-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="trail-title">Foundational Concepts</h3>
+                </div>
+                
+                <div class="trail-content">
+                    <p>Build your data literacy from the ground up with fundamental concepts and techniques.</p>
+                    
+                    <div class="module-list">
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Data Collection Methods</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock-open"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Data Cleaning Techniques</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock-open"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Exploratory Data Analysis</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary trail-button">Start Foundational Trail</button>
+                </div>
+            </div>
+            
+            <div class="trail-card">
+                <div class="trail-header">
+                    <div class="trail-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="trail-title">Advanced Analysis</h3>
+                </div>
+                
+                <div class="trail-content">
+                    <p>Dive deep into statistical methods, correlation analysis, and predictive modeling.</p>
+                    
+                    <div class="module-list">
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Correlation Techniques</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Regression Analysis</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Machine Learning Models</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary trail-button">Start Advanced Trail</button>
+                </div>
+            </div>
+            
+            <div class="trail-card">
+                <div class="trail-header">
+                    <div class="trail-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="trail-title">Policy & Application</h3>
+                </div>
+                
+                <div class="trail-content">
+                    <p>Transform insights into actionable policies and real-world applications.</p>
+                    
+                    <div class="module-list">
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Data-Driven Decision Making</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Policy Development Framework</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="module-item">
+                            <div class="module-name">
+                                <i class="fas fa-circle"></i>
+                                <span>Impact Assessment Models</span>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary trail-button">Start Policy Trail</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Analysis -->
+    <section id="analysis" style="background: linear-gradient(to bottom, #1e293b, #0f172a);">
+        <div class="section-header">
+            <h2>Interactive Analysis</h2>
+            <p>Explore the relationship between screen time and mental well-being with our interactive tools</p>
+        </div>
+        
+        <div class="analysis-container">
+            <div class="analysis-controls">
+                <div class="card">
+                    <h3>Screen Time Impact Simulator</h3>
+                    <p>Adjust screen time variables to see predicted impact on mental well-being</p>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Social Media Time</span>
+                            <span id="socialValue">120 min</span>
+                        </div>
+                        <input type="range" min="0" max="360" value="120" class="slider" id="socialSlider">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Entertainment Time</span>
+                            <span id="entertainmentValue">90 min</span>
+                        </div>
+                        <input type="range" min="0" max="360" value="90" class="slider" id="entertainmentSlider">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Work/Productive Time</span>
+                            <span id="workValue">180 min</span>
+                        </div>
+                        <input type="range" min="0" max="360" value="180" class="slider" id="workSlider">
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-box">
+                            <div class="stat-value-sm">6.2</div>
+                            <div class="stat-label-sm">Well-being Score</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value-sm">4.8/10</div>
+                            <div class="stat-label-sm">Stress Level</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value-sm">7.1/10</div>
+                            <div class="stat-label-sm">Sleep Quality</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-visual">
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights -->
+    <section id="insights" style="background: linear-gradient(to bottom, #0c4a6e, #1e293b);">
+        <div class="section-header">
+            <h2>Key Insights & Recommendations</h2>
+            <p>Data-driven conclusions and actionable strategies for digital wellness</p>
+        </div>
+        
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>Research Findings</h3>
+                
+                <div class="insight-item">
+                    <h4>Threshold Effect</h4>
+                    <p>Mental well-being decreases significantly when daily screen time exceeds 2 hours, with each additional hour correlating to a 12% decrease in well-being scores.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h4>Content Matters</h4>
+                    <p>Social media consumption has 3.2x greater negative impact compared to educational or productive screen time.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h4>Protective Factors</h4>
+                    <p>Regular physical activity (30+ min/day) reduces negative effects by 43%, while in-person social interactions provide a 38% buffer.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Policy Recommendations</h3>
+                
+                <div class="insight-item">
+                    <h4>Educational Programs</h4>
+                    <p>Implement digital literacy curriculum in schools focusing on healthy screen habits and digital wellness.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h4>App Design Guidelines</h4>
+                    <p>Develop national standards for "digital wellness" features in apps and platforms used in Nigeria.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h4>Healthcare Integration</h4>
+                    <p>Include digital habit assessment in routine healthcare screenings, especially for adolescents.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-road"></i>
+                </div>
+                <h3>Implementation Roadmap</h3>
+                
+                <div class="roadmap-item">
+                    <h4>Pilot Program (Q1-Q2 2024)</h4>
+                    <p>Implement in 50 schools across 5 states. Expected impact: Reach 15,000 students, establish baseline metrics.</p>
+                </div>
+                
+                <div class="roadmap-item">
+                    <h4>Policy Development (Q3 2024)</h4>
+                    <p>Create national digital wellness guidelines. Expected impact: Framework for institutions and tech companies.</p>
+                </div>
+                
+                <div class="roadmap-item">
+                    <h4>National Rollout (Q4 2024 - Q2 2025)</h4>
+                    <p>Scale to all 36 states, train educators. Expected impact: Reach 2 million students, establish monitoring.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="logo-text">MindScreenAnalytics</div>
+                </div>
+                <p>A NITDA/NCAIR approved platform advancing data literacy and digital wellness research in Nigeria.</p>
+                <div class="social-icons">
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Platform</h3>
+                <div class="footer-links">
+                    <a href="#">Learning Trails</a>
+                    <a href="#">Research Library</a>
+                    <a href="#">Data Tools</a>
+                    <a href="#">Policy Resources</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <div class="footer-links">
+                    <a href="#">Research Papers</a>
+                    <a href="#">Tutorials & Guides</a>
+                    <a href="#">Case Studies</a>
+                    <a href="#">API Documentation</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>research@mindscreen.ng</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+234 9 461 7000</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>NITDA HQ, Abuja, Nigeria</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 MindScreen Analytics. A National Data Literacy Initiative. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+        });
+        
+        // Slider functionality
+        const socialSlider = document.getElementById('socialSlider');
+        const socialValue = document.getElementById('socialValue');
+        const entertainmentSlider = document.getElementById('entertainmentSlider');
+        const entertainmentValue = document.getElementById('entertainmentValue');
+        const workSlider = document.getElementById('workSlider');
+        const workValue = document.getElementById('workValue');
+        
+        socialSlider.addEventListener('input', function() {
+            socialValue.textContent = this.value + ' min';
+        });
+        
+        entertainmentSlider.addEventListener('input', function() {
+            entertainmentValue.textContent = this.value + ' min';
+        });
+        
+        workSlider.addEventListener('input', function() {
+            workValue.textContent = this.value + ' min';
+        });
+        
+        // Initialize chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Well-being', 'Stress Level', 'Sleep Quality', 'Productivity', 'Social Connection'],
+                    datasets: [{
+                        label: 'Current',
+                        data: [6.2, 4.8, 7.1, 6.5, 6.8],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 198, 255, 0.2)',
+                        borderColor: 'rgb(0, 198, 255)',
+                        pointBackgroundColor: 'rgb(0, 198, 255)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 198, 255)'
+                    }, {
+                        label: 'After Reduction',
+                        data: [7.3, 3.5, 8.2, 7.2, 7.5],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 217, 119, 0.2)',
+                        borderColor: 'rgb(0, 217, 119)',
+                        pointBackgroundColor: 'rgb(0, 217, 119)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 217, 119)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#e2e8f0'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

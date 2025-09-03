@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Visualization Code Explanation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6dd5ed;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(109, 213, 237, 0.4);
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .explain-btn {
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+        }
+        
+        .explain-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .explain-btn:active {
+            transform: translateY(0);
+        }
+        
+        .explain-btn i {
+            margin-right: 10px;
+        }
+        
+        .explanation-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+        }
+        
+        .explanation-panel.active {
+            max-height: 5000px;
+        }
+        
+        .explanation-content {
+            padding: 10px;
+        }
+        
+        .section-title {
+            color: #6dd5ed;
+            margin: 15px 0 10px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #6dd5ed;
+            padding-bottom: 5px;
+        }
+        
+        .code-line {
+            display: flex;
+            margin: 8px 0;
+            align-items: flex-start;
+        }
+        
+        .line-number-sm {
+            width: 30px;
+            color: #6a6a6a;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .line-explanation {
+            flex-grow: 1;
+        }
+        
+        .highlight {
+            background: rgba(109, 213, 237, 0.2);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .note-box {
+            background: rgba(253, 151, 31, 0.1);
+            border-left: 4px solid #fd971f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .concept-box {
+            background: rgba(166, 226, 46, 0.1);
+            border-left: 4px solid #a6e22e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .question-box {
+            background: rgba(102, 217, 239, 0.1);
+            border-left: 4px solid #66d9ef;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .breakdown-box {
+            background: rgba(174, 129, 255, 0.1);
+            border-left: 4px solid #ae81ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .code-breakdown {
+            font-family: monospace;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        .breakdown-step {
+            margin: 5px 0;
+            padding-left: 10px;
+            border-left: 2px solid #6dd5ed;
+        }
+        
+        .output-sample {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .img-placeholder {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            border: 2px dashed #6dd5ed;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .code-block {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .line-number {
+                width: 30px;
+                margin-right: 10px;
+            }
+        }
+        /* chat */
+      .img-placeholder {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.img-placeholder img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.chart-caption {
+    margin-top: 10px;
+    color: #6dd5ed;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+    </style>
+</head>
+<body>
+     <style>
+       
+        /* Back Button Styles */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .back-btn i {
+            font-size: 24px;
+        }
+        
+        /* Example content styling */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    
+    <!-- Back Button -->
+    <button class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <script>
+        function goBack() {
+            // Check if there's a previous page in history
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // If no history, redirect to home or a default page
+                window.location.href = 'index.html'; // Change to your home page URL
+            }
+        }
+        
+        // Optional: Add keyboard shortcut (Esc key)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+
+    <div class="container">
+        <h1>Python Data Visualization Code Explanation</h1>
+        
+        <div class="code-block">
+            <div><span class="line-number">1</span>print(<span class="code-string">"\n--- Generating Visualizations ---"</span>)</div>
+            <div><span class="line-number">2</span>sns.set(style=<span class="code-string">"whitegrid"</span>)</div>
+            <div><span class="line-number">3</span><span class="code-comment"># 6.1 Stress Level Distribution</span></div>
+            <div><span class="line-number">4</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+            <div><span class="line-number">5</span>sns.countplot(data=df, x=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"Set2"</span>)</div>
+            <div><span class="line-number">6</span>plt.title(<span class="code-string">"Stress Level Distribution"</span>)</div>
+            <div><span class="line-number">7</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+            <div><span class="line-number">8</span>plt.ylabel(<span class="code-string">"Count"</span>)</div>
+            <div><span class="line-number">9</span>plt.show()</div>
+            <div><span class="line-number">10</span><span class="code-comment"># 6.2 Age vs Screen Time</span></div>
+            <div><span class="line-number">11</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+            <div><span class="line-number">12</span>sns.scatterplot(data=df, x=<span class="code-string">'age'</span>, y=<span class="code-string">'daily_screen_time'</span>, hue=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"coolwarm"</span>)</div>
+            <div><span class="line-number">13</span>plt.title(<span class="code-string">"Age vs Daily Screen Time by Stress Level"</span>)</div>
+            <div><span class="line-number">14</span>plt.xlabel(<span class="code-string">"Age"</span>)</div>
+            <div><span class="line-number">15</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+            <div><span class="line-number">16</span>plt.show()</div>
+            <div><span class="line-number">17</span><span class="code-comment"># 6.3 Correlation Heatmap</span></div>
+            <div><span class="line-number">18</span>plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">8</span>))</div>
+            <div><span class="line-number">19</span>corr = df.corr(numeric_only=<span class="code-keyword">True</span>)</div>
+            <div><span class="line-number">20</span>sns.heatmap(corr, annot=<span class="code-keyword">True</span>, cmap=<span class="code-string">'coolwarm'</span>)</div>
+            <div><span class="line-number">21</span>plt.title(<span class="code-string">"Correlation Matrix"</span>)</div>
+            <div><span class="line-number">22</span>plt.show()</div>
+            <div><span class="line-number">23</span><span class="code-comment"># --- Chart 4: Scatter plot - Screen Time vs Stress Levels ---</span></div>
+            <div><span class="line-number">24</span>plt.figure(figsize=(<span class="code-number">7</span>, <span class="code-number">5</span>))</div>
+            <div><span class="line-number">25</span>sns.stripplot(data=df, x=<span class="code-string">"self_reported_stress"</span>, y=<span class="code-string">"daily_screen_time"</span>, jitter=<span class="code-keyword">True</span>, palette=<span class="code-string">"viridis"</span>)</div>
+            <div><span class="line-number">26</span>plt.title(<span class="code-string">"Screen Time vs Stress Levels"</span>)</div>
+            <div><span class="line-number">27</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+            <div><span class="line-number">28</span>plt.ylabel(<span class="code-string">"Daily Screen Time (hours)"</span>)</div>
+            <div><span class="line-number">29</span>plt.tight_layout()</div>
+            <div><span class="line-number">30</span>plt.show()</div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="explain-btn" id="explain-btn">
+                <i class="fas fa-code"></i> Explain This Code
+            </button>
+        </div>
+        
+        <div class="explanation-panel" id="explanation-panel">
+            <div class="explanation-content">
+                <h2 class="section-title">Code Explanation</h2>
+                <p>This Python code creates multiple data visualizations using Seaborn and Matplotlib to explore relationships in the dataset.</p>
+                
+                <h3 class="section-title">Line-by-Line Breakdown</h3>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">1</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print("\n--- Generating Visualizations ---")</span> - Prints a section header indicating the start of visualization generation.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">2</div>
+                    <div class="line-explanation">
+                        <span class="highlight">sns.set(style="whitegrid")</span> - Sets the Seaborn style to "whitegrid", which adds a light grid to the background of plots for better readability.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Seaborn Styles</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">Common styles: "whitegrid", "darkgrid", "white", "dark", "ticks"</div>
+                        <div class="breakdown-step">"whitegrid" provides a clean background with grid lines for easier value reading</div>
+                        <div class="breakdown-step">This setting applies to all subsequent plots</div>
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">3-9</div>
+                    <div class="line-explanation">
+                        <span class="highlight">Stress Level Distribution Countplot</span> - Creates a bar plot showing the distribution of stress levels in the dataset.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Countplot Details</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. plt.figure(figsize=(8, 5)) - Creates a figure 8 inches wide and 5 inches tall</div>
+                        <div class="breakdown-step">2. sns.countplot() - Creates a bar plot of value counts</div>
+                        <div class="breakdown-step">3. data=df - Specifies the DataFrame to use</div>
+                        <div class="breakdown-step">4. x='self_reported_stress' - Uses stress levels on the x-axis</div>
+                        <div class="breakdown-step">5. palette="Set2" - Uses the Set2 color palette</div>
+                        <div class="breakdown-step">6. plt.title(), xlabel(), ylabel() - Adds titles and axis labels</div>
+                        <div class="breakdown-step">7. plt.show() - Displays the plot</div>
+                    </div>
+                    
+                   <div class="img-placeholder">
+                    <img src="./Figure_1.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                        <i class="fas fa-chart-bar fa-2x"></i>
+                        <p>Countplot visualization showing stress level distribution</p>
+                    </div>
+                </div>
+
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">10-16</div>
+                    <div class="line-explanation">
+                        <span class="highlight">Age vs Daily Screen Time Scatterplot</span> - Creates a scatter plot showing the relationship between age and screen time, colored by stress level.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Scatterplot Details</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. plt.figure(figsize=(8, 5)) - Creates a new figure</div>
+                        <div class="breakdown-step">2. sns.scatterplot() - Creates a scatter plot</div>
+                        <div class="breakdown-step">3. x='age', y='daily_screen_time' - Maps age to x-axis and screen time to y-axis</div>
+                        <div class="breakdown-step">4. hue='self_reported_stress' - Colors points by stress level</div>
+                        <div class="breakdown-step">5. palette="coolwarm" - Uses a color gradient from cool to warm colors</div>
+                        <div class="breakdown-step">6. Titles and labels are added similar to previous plot</div>
+                    </div>
+
+                     <div class="img-placeholder">
+                    <img src="./Figure_2.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                       <i class="fas fa-chart-scatter fa-3x"></i>
+                        <p>Scatterplot visualization would appear here showing age vs screen time by stress level</p>
+                  </div>
+                    
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">17-22</div>
+                    <div class="line-explanation">
+                        <span class="highlight">Correlation Heatmap</span> - Creates a heatmap visualization of the correlation matrix between numerical variables.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Heatmap Details</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. plt.figure(figsize=(10, 8)) - Creates a larger figure for the heatmap</div>
+                        <div class="breakdown-step">2. corr = df.corr(numeric_only=True) - Calculates correlation matrix for numerical columns</div>
+                        <div class="breakdown-step">3. sns.heatmap() - Creates a heatmap visualization</div>
+                        <div class="breakdown-step">4. annot=True - Displays correlation values in each cell</div>
+                        <div class="breakdown-step">5. cmap='coolwarm' - Uses a color map where cool colors represent negative correlation and warm colors positive</div>
+                    </div>
+
+                    <div class="img-placeholder">
+                    <img src="./Figure_3.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                      <i class="fas fa-border-all fa-3x"></i>
+                        <p>Heatmap visualization would appear here showing correlations between variables</p>     </div>
+                </div>
+                  
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">23-30</div>
+                    <div class="line-explanation">
+                        <span class="highlight">Screen Time vs Stress Levels Stripplot</span> - Creates a strip plot showing the distribution of screen time across different stress levels.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Stripplot Details</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. plt.figure(figsize=(7, 5)) - Creates a slightly smaller figure</div>
+                        <div class="breakdown-step">2. sns.stripplot() - Creates a strip plot (like a scatter plot for categorical data)</div>
+                        <div class="breakdown-step">3. x="self_reported_stress", y="daily_screen_time" - Maps stress to x-axis and screen time to y-axis</div>
+                        <div class="breakdown-step">4. jitter=True - Adds small random noise to prevent overlapping points</div>
+                        <div class="breakdown-step">5. palette="viridis" - Uses the viridis color palette</div>
+                        <div class="breakdown-step">6. plt.tight_layout() - Adjusts subplot parameters for better layout</div>
+                    </div>
+                    <div class="img-placeholder">
+                    <img src="./Figure_4.png" alt="Stress Level Distribution Countplot">
+                    <div class="chart-caption">
+                       <i class="fas fa-chart-line fa-3x"></i>
+                        <p>Stripplot visualization would appear here showing screen time distribution across stress levels</p>
+                    </div>
+                </div>
+                    
+                </div>
+                
+                <div class="concept-box">
+                    <h3><i class="fas fa-lightbulb"></i> Key Concepts</h3>
+                    <p><strong>Data Visualization:</strong> The graphical representation of data to reveal patterns, trends, and relationships.</p>
+                    <p><strong>Exploratory Data Analysis (EDA):</strong> Using visual methods to explore and understand data before formal modeling.</p>
+                    <p><strong>Chart Types:</strong> Different visualizations (countplot, scatterplot, heatmap, stripplot) serve different purposes in data exploration.</p>
+                    <p><strong>Correlation Analysis:</strong> Examining how variables relate to each other, with values ranging from -1 (perfect negative correlation) to +1 (perfect positive correlation).</p>
+                </div>
+                
+                <div class="note-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> Important Notes</h3>
+                    <p>• Always call plt.figure() before creating a new plot to ensure a clean canvas</p>
+                    <p>• Use appropriate figure sizes for different visualization types</p>
+                    <p>• Color palettes should be chosen carefully for clarity and colorblind accessibility</p>
+                    <p>• Heatmaps are particularly useful for identifying relationships between multiple variables</p>
+                    <p>• Jitter in stripplots helps prevent overplotting when many points have similar values</p>
+                    <p>• tight_layout() automatically adjusts subplot parameters to fit the figure area</p>
+                </div>
+                
+                <h3 class="section-title">Potential Questions & Answers</h3>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use a countplot instead of a bar plot for categorical data?</strong></p>
+                    <p>A: Countplot is a specialized version of bar plot that automatically counts and plots the frequency of categorical variables, saving the step of manually calculating value counts before plotting.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: When would you use a scatterplot vs a stripplot?</strong></p>
+                    <p>A: Scatterplots are ideal for showing relationships between two continuous variables. Stripplots are better for showing the distribution of a continuous variable across different categories.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What does the hue parameter do in Seaborn plots?</strong></p>
+                    <p>A: The hue parameter adds a semantic grouping by color based on another variable. This allows you to visualize relationships across three variables in a 2D plot.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why is jitter important in stripplots?</strong></p>
+                    <p>A: Jitter adds a small amount of random noise to the position of points, which helps prevent overlapping when many points have similar values. This makes the distribution easier to see.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What does the correlation value tell us?</strong></p>
+                    <p>A: Correlation measures the strength and direction of a linear relationship between two variables. Values close to 1 or -1 indicate strong relationships, while values near 0 indicate weak or no linear relationship.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use a heatmap for correlation instead of a table?</strong></p>
+                    <p>A: Heatmaps use color to represent values, making patterns and relationships easier to spot quickly. Our brains process visual information much faster than numerical data in tables.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What's the purpose of the numeric_only=True parameter in df.corr()?</strong></p>
+                    <p>A: This parameter ensures that only numerical columns are included in the correlation calculation. Without it, pandas might try to compute correlations for non-numerical data, which could cause errors.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: How would you interpret a correlation heatmap?</strong></p>
+                    <p>A: Look for strong colors (red for positive, blue for negative) to identify strong relationships. The diagonal will always be 1 (each variable perfectly correlates with itself). The matrix is symmetric across the diagonal.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const explainBtn = document.getElementById('explain-btn');
+            const explanationPanel = document.getElementById('explanation-panel');
+            
+            explainBtn.addEventListener('click', function() {
+                explanationPanel.classList.toggle('active');
+                
+                if (explanationPanel.classList.contains('active')) {
+                    explainBtn.innerHTML = '<i class="fas fa-times"></i> Hide Explanation';
+                } else {
+                    explainBtn.innerHTML = '<i class="fas fa-code"></i> Explain This Code';
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>

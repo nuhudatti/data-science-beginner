@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindScreen Analytics | Enhanced Design</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <style>
+        :root {
+            --primary: #00c6ff;
+            --secondary: #00d977;
+            --accent: #a96cff;
+            --accent-alt: #ff6b9d;
+            --dark: #0f172a;
+            --darker: #020617;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .neuro-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(0, 198, 255, 0.5);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.7),
+                        inset 0 0 20px rgba(0, 198, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .neuro-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(2, 6, 23, 0.8),
+                        inset 0 0 25px rgba(0, 198, 255, 0.4);
+            border-color: rgba(0, 198, 255, 0.7);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+        }
+        
+        .code-block {
+            background: #0c1220;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #64748b;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .code-comment { color: #64748b; }
+        .code-keyword { color: #f472b6; }
+        .code-function { color: #60a5fa; }
+        .code-string { color: #34d399; }
+        .code-var { color: #fbbf24; }
+        .code-number { color: #a78bfa; }
+        
+        .explanation-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .phase-indicator {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .phase-indicator::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 8px;
+            background: linear-gradient(to bottom, var(--secondary), var(--primary));
+            border-radius: 4px;
+        }
+        
+        .glow {
+            text-shadow: 0 0 15px rgba(0, 198, 255, 0.7);
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        .h-screen-80 {
+            height: 80vh;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 198, 255, 0.5);
+            background: linear-gradient(135deg, #00c76a, #00b3ff);
+        }
+        
+        .btn-secondary {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 198, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
+        }
+        
+        .floating-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(169, 108, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 8px 25px rgba(169, 108, 255, 0.7);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .partner-badge {
+            background: rgba(0, 198, 255, 0.15);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 10px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .partner-badge:hover {
+            background: rgba(0, 198, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.2);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(0, 198, 255, 0.15), rgba(0, 217, 119, 0.15));
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 198, 255, 0.3);
+        }
+        
+        .chart-container {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 198, 255, 0.1);
+        }
+        
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        .slider-thumb::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        .feature-bullet {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .feature-bullet::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .feature-bullet.alt::before {
+            background: var(--secondary);
+        }
+        
+        .roadmap-item {
+            position: relative;
+            padding-left: 30px;
+            padding-bottom: 30px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .roadmap-item::before {
+            content: "";
+            position: absolute;
+            left: -12px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        .roadmap-item:last-child {
+            border-left: 3px solid transparent;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 198, 255, 0.15);
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Neuro Navigation -->
+    <nav class="fixed w-full top-0 z-50 bg-slate-900 bg-opacity-90 backdrop-blur-md border-b border-cyan-500/30 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                    <div class="hidden md:ml-10 md:flex md:space-x-8">
+                        <a href="#overview" class="text-emerald-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-sky-900/50">Project Overview</a>
+                        <a href="#methodology" class="text-emerald-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-sky-900/50">Methodology</a>
+                        <a href="#trails" class="text-emerald-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-sky-900/50">Learning Trails</a>
+                        <a href="#analysis" class="text-emerald-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-sky-900/50">Analysis</a>
+                        <a href="#insights" class="text-emerald-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-sky-900/50">Insights</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="btn-primary text-sm">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <div class="flex-shrink-0">
+                        <img src="../logo.jpg" alt="NITDA Logo" class="h-8">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- Hero Section -->
+    <section class="h-screen-80 flex items-center pt-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8 slide-in">
+                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+                        <span class="block bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500 mb-3">Analyzing Screen Time & Mental Well-being</span>
+                        <span class="block text-slate-200 text-2xl md:text-3xl font-light">A Data-Driven Exploration of Digital Habits</span>
+                    </h1>
+                    <p class="text-xl text-slate-300 max-w-2xl">
+                        This project investigates the relationship between digital screen time and mental health outcomes using comprehensive datasets and advanced analytical techniques. Discover insights that can shape healthier digital habits.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#methodology" class="btn-primary">
+                            <i class="fas fa-flask mr-2"></i>Explore Methodology
+                        </a>
+                        <a href="#trails" class="btn-secondary">
+                            <i class="fas fa-graduation-cap mr-2"></i>Start Learning Trail
+                        </a>
+                    </div>
+                    
+                    <div class="pt-8">
+                        <h3 class="text-emerald-300 text-lg font-semibold mb-4">Research Partners:</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="partner-badge">NITDA</div>
+                            <div class="partner-badge">NCAIR</div>
+                            <div class="partner-badge">Nigerian Health Ministry</div>
+                            <div class="partner-badge">UNICEF</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative slide-in delay-100">
+                    <div class="neuro-card p-6 h-[500px] flex items-center justify-center">
+                        <div class="w-full h-full flex flex-col items-center justify-center">
+                            <div class="relative w-64 h-64 mb-8">
+                                <!-- Data visualization placeholder -->
+                                <div class="absolute inset-0 rounded-full border-4 border-cyan-500/30 animate-ping-slow"></div>
+                                <div class="absolute inset-0 rounded-full border-4 border-emerald-500/30"></div>
+                                <div class="absolute inset-6 rounded-full bg-gradient-to-br from-cyan-900 to-emerald-900 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-5xl font-bold text-cyan-300">74%</div>
+                                        <div class="text-emerald-200 mt-2">Correlation Found</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center max-w-md">
+                                <p class="text-slate-300 mb-4">Initial findings show a significant correlation between excessive screen time and decreased mental well-being scores</p>
+                                <div class="flex justify-center">
+                                    <div class="w-24 h-2 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Overview -->
+    <section id="overview" class="py-20 bg-gradient-to-b from-slate-900 to-slate-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 slide-in">
+                <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4">Project Overview</h2>
+                <p class="text-slate-400 max-w-3xl mx-auto">This comprehensive study examines how digital consumption patterns affect mental health across different demographics in Nigeria</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="neuro-card p-8 slide-in">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-600 to-emerald-500 flex items-center justify-center mb-6">
+                        <i class="fas fa-question-circle text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Problem Statement</h3>
+                    <p class="text-slate-400 mb-4">With Nigeria's rapidly increasing digital adoption, understanding the psychological impact of screen time is crucial for public health policy and individual well-being.</p>
+                    <ul class="space-y-2 text-slate-400">
+                        <li class="feature-bullet">
+                            <span>Rising mental health concerns among youth</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <span>Lack of localized research in Nigeria</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <span>Need for data-driven policy recommendations</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in delay-200">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-500 flex items-center justify-center mb-6">
+                        <i class="fas fa-bullseye text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Research Objectives</h3>
+                    <p class="text-slate-400 mb-4">This project aims to quantify the relationship between screen time and mental health indicators across Nigerian demographics.</p>
+                    <ul class="space-y-2 text-slate-400">
+                        <li class="feature-bullet alt">
+                            <span>Identify screen time patterns across age groups</span>
+                        </li>
+                        <li class="feature-bullet alt">
+                            <span>Measure correlation with mental well-being metrics</span>
+                        </li>
+                        <li class="feature-bullet alt">
+                            <span>Develop predictive models for risk assessment</span>
+                        </li>
+                        <li class="feature-bullet alt">
+                            <span>Create policy recommendations for digital wellness</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in delay-300">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-600 flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Data Sources</h3>
+                    <p class="text-slate-400 mb-4">We utilized diverse datasets to ensure comprehensive analysis:</p>
+                    <ul class="space-y-2 text-slate-400">
+                        <li class="feature-bullet">
+                            <span>Nigerian Digital Habits Survey (2023)</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <span>WHO Mental Well-being Index</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <span>Screen Time Tracking App Data</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <span>Academic Performance Records</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology -->
+    <section id="methodology" class="py-20 bg-gradient-to-b from-slate-950 to-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 slide-in">
+                <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 mb-4">Research Methodology</h2>
+                <p class="text-slate-400 max-w-3xl mx-auto">A comprehensive, multi-phase approach to understanding the screen time and mental health relationship</p>
+            </div>
+            
+            <div class="space-y-20">
+                <!-- Phase 1 -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-2 neuro-card p-8 slide-in">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-600 to-emerald-500 flex items-center justify-center">
+                                <span class="text-white font-bold">1</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white ml-4">Data Collection & Cleaning</h3>
+                        </div>
+                        <p class="text-slate-400 mb-6">We gathered and preprocessed diverse datasets to create a unified analysis framework.</p>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-lg font-bold text-cyan-300 mb-4">Key Processes:</h4>
+                            <ul class="space-y-3 text-slate-400">
+                                <li class="feature-bullet">
+                                    <span>Data acquisition from multiple sources</span>
+                                </li>
+                                <li class="feature-bullet">
+                                    <span>Handling missing values and outliers</span>
+                                </li>
+                                <li class="feature-bullet">
+                                    <span>Feature engineering and transformation</span>
+                                </li>
+                                <li class="feature-bullet">
+                                    <span>Data normalization and standardization</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <h4 class="text-lg font-bold text-cyan-300 mb-4">Tools Used:</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="stats-card text-sm">Python</div>
+                            <div class="stats-card text-sm">Pandas</div>
+                            <div class="stats-card text-sm">NumPy</div>
+                            <div class="stats-card text-sm">SQL</div>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-3 neuro-card p-6 slide-in delay-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold text-emerald-300">Implementation Code:</h4>
+                            <button class="btn-secondary text-sm explain-btn">
+                                <i class="fas fa-lightbulb mr-2"></i>Explain Code
+                            </button>
+                        </div>
+                        
+                        <div class="code-block p-4 overflow-auto max-h-80">
+                            <pre><code>
+<span class="line-number">1</span>  <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="line-number">2</span>  <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="line-number">3</span>  
+<span class="line-number">4</span>  <span class="code-comment"># Load datasets</span>
+<span class="line-number">5</span>  screen_data = pd.read_csv(<span class="code-string">'nigerian_screen_time.csv'</span>)
+<span class="line-number">6</span>  mental_health = pd.read_excel(<span class="code-string">'mental_wellbeing_survey.xlsx'</span>)
+<span class="line-number">7</span>  demographics = pd.read_json(<span class="code-string">'demographics.json'</span>)
+<span class="line-number">8</span>  
+<span class="line-number">9</span>  <span class="code-comment"># Merge datasets on participant ID</span>
+<span class="line-number">10</span> merged_data = pd.merge(screen_data, mental_health, 
+<span class="line-number">11</span>                     on=<span class="code-string">'participant_id'</span>, how=<span class="code-string">'inner'</span>)
+<span class="line-number">12</span> full_data = pd.merge(merged_data, demographics, 
+<span class="line-number">13</span>                     on=<span class="code-string">'participant_id'</span>)
+<span class="line-number">14</span> 
+<span class="line-number">15</span> <span class="code-comment"># Handle missing values</span>
+<span class="line-number">16</span> full_data[<span class="code-string">'social_media_time'</span>].fillna(
+<span class="line-number">17</span>     full_data[<span class="code-string">'social_media_time'</span>].median(), inplace=<span class="code-keyword">True</span>)
+<span class="line-number">18</span> full_data[<span class="code-string">'wellbeing_score'</span>].fillna(
+<span class="line-number">19</span>     full_data[<span class="code-string">'wellbeing_score'</span>].mean(), inplace=<span class="code-keyword">True</span>)
+<span class="line-number">20</span> 
+<span class="line-number">21</span> <span class="code-comment"># Feature engineering: Total screen time</span>
+<span class="line-number">22</span> full_data[<span class="code-string">'total_screen_time'</span>] = full_data[[
+<span class="line-number">23</span>     <span class="code-string">'social_media_time'</span>, <span class="code-string">'work_screen_time'</span>, 
+<span class="line-number">24</span>     <span class="code-string">'entertainment_time'</span>
+<span class="line-number">25</span> ]].sum(axis=<span class="code-number">1</span>)
+<span class="line-number">26</span> 
+<span class="line-number">27</span> <span class="code-comment"># Create screen time categories</span>
+<span class="line-number">28</span> conditions = [
+<span class="line-number">29</span>     (full_data[<span class="code-string">'total_screen_time'</span>] < <span class="code-number">120</span>),
+<span class="line-number">30</span>     (full_data[<span class="code-string">'total_screen_time'</span>] >= <span class="code-number">120</span>) & 
+<span class="line-number">31</span>         (full_data[<span class="code-string">'total_screen_time'</span>] < <span class="code-number">240</span>),
+<span class="line-number">32</span>     (full_data[<span class="code-string">'total_screen_time'</span>] >= <span class="code-number">240</span>)
+<span class="line-number">33</span> ]
+<span class="line-number">34</span> categories = [<span class="code-string">'Low'</span>, <span class="code-string">'Moderate'</span>, <span class="code-string">'High'</span>]
+<span class="line-number">35</span> full_data[<span class="code-string">'screen_category'</span>] = np.select(conditions, categories)
+                            </code></pre>
+                        </div>
+                        
+                        <div class="explanation-card mt-4 p-4 rounded-lg hidden explanation-section">
+                            <h5 class="font-bold text-emerald-300 mb-3">Code Explanation:</h5>
+                            <div class="space-y-3 text-slate-300 text-sm">
+                                <p><span class="font-bold">Lines 1-2:</span> Import necessary libraries for data manipulation.</p>
+                                <p><span class="font-bold">Lines 5-7:</span> Load three different datasets from various sources (CSV, Excel, JSON).</p>
+                                <p><span class="font-bold">Lines 10-13:</span> Merge datasets using participant ID as the common key.</p>
+                                <p><span class="font-bold">Lines 16-19:</span> Handle missing values by filling with median (for social media time) and mean (for wellbeing scores).</p>
+                                <p><span class="font-bold">Lines 22-25:</span> Create a new feature by summing different types of screen time.</p>
+                                <p><span class="font-bold">Lines 28-35:</span> Categorize screen time into Low, Moderate, and High based on thresholds.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Phase 2 -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-2 neuro-card p-8 slide-in delay-200">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-cyan-500 flex items-center justify-center">
+                                <span class="text-white font-bold">2</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white ml-4">Exploratory Data Analysis</h3>
+                        </div>
+                        <p class="text-slate-400 mb-6">We visualized and explored the data to identify patterns, correlations, and outliers.</p>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-lg font-bold text-cyan-300 mb-4">Key Insights:</h4>
+                            <ul class="space-y-3 text-slate-400">
+                                <li class="feature-bullet">
+                                    <span>Negative correlation between screen time and well-being</span>
+                                </li>
+                                <li class="feature-bullet">
+                                    <span>Age and location as significant moderating factors</span>
+                                </li>
+                                <li class="feature-bullet">
+                                    <span>Social media consumption as primary driver of negative effects</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <h4 class="text-lg font-bold text-cyan-300 mb-4">Visualization Techniques:</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="stats-card text-sm">Matplotlib</div>
+                            <div class="stats-card text-sm">Seaborn</div>
+                            <div class="stats-card text-sm">Plotly</div>
+                            <div class="stats-card text-sm">Tableau</div>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-3 neuro-card p-6 slide-in delay-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold text-emerald-300">Visualization Code:</h4>
+                            <button class="btn-secondary text-sm explain-btn">
+                                <i class="fas fa-lightbulb mr-2"></i>Explain Code
+                            </button>
+                        </div>
+                        
+                        <div class="code-block p-4 overflow-auto max-h-80">
+                            <pre><code>
+<span class="line-number">1</span>  <span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+<span class="line-number">2</span>  <span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns
+<span class="line-number">3</span>  
+<span class="line-number">4</span>  <span class="code-comment"># Set visualization style</span>
+<span class="line-number">5</span>  sns.set_style(<span class="code-string">'whitegrid'</span>)
+<span class="line-number">6</span>  plt.figure(figsize=(<span class="code-number">12</span>, <span class="code-number">8</span>))
+<span class="line-number">7</span>  
+<span class="line-number">8</span>  <span class="code-comment"># Scatter plot: Screen time vs Well-being</span>
+<span class="line-number">9</span>  sns.scatterplot(data=full_data, x=<span class="code-string">'total_screen_time'</span>, 
+<span class="line-number">10</span>                y=<span class="code-string">'wellbeing_score'</span>, hue=<span class="code-string">'age_group'</span>,
+<span class="line-number">11</span>                palette=<span class="code-string">'viridis'</span>, size=<span class="code-string">'social_media_time'</span>,
+<span class="line-number">12</span>                sizes=(<span class="code-number">20</span>, <span class="code-number">200</span>), alpha=<span class="code-number">0.7</span>)
+<span class="line-number">13</span> 
+<span class="line-number">14</span> plt.title(<span class="code-string">'Screen Time vs Mental Well-being by Age Group'</span>, 
+<span class="line-number">15</span>          fontsize=<span class="code-number">16</span>)
+<span class="line-number">16</span> plt.xlabel(<span class="code-string">'Total Daily Screen Time (minutes)'</span>, fontsize=<span class="code-number">14</span>)
+<span class="line-number">17</span> plt.ylabel(<span class="code-string">'Well-being Score'</span>, fontsize=<span class="code-number">14</span>)
+<span class="line-number">18</span> 
+<span class="line-number">19</span> <span class="code-comment"># Add reference lines</span>
+<span class="line-number">20</span> plt.axvline(x=<span class="code-number">120</span>, color=<span class="code-string">'r'</span>, linestyle=<span class="code-string">'--'</span>, 
+<span class="line-number">21</span>            label=<span class="code-string">'WHO Recommended Limit'</span>)
+<span class="line-number">22</span> plt.axhline(y=<span class="code-number">6.5</span>, color=<span class="code-string">'orange'</span>, linestyle=<span class="code-string">'--'</span>,
+<span class="line-number">23</span>            label=<span class="code-string">'Average Well-being'</span>)
+<span class="line-number">24</span> 
+<span class="line-number">25</span> plt.legend(title=<span class="code-string">'Age Groups'</span>, loc=<span class="code-string">'lower left'</span>)
+<span class="line-number">26</span> plt.tight_layout()
+<span class="line-number">27</span> plt.savefig(<span class="code-string">'screen_vs_wellbeing.png'</span>, dpi=<span class="code-number">300</span>)
+<span class="line-number">28</span> plt.show()
+                            </code></pre>
+                        </div>
+                        
+                        <div class="explanation-card mt-4 p-4 rounded-lg hidden explanation-section">
+                            <h5 class="font-bold text-emerald-300 mb-3">Code Explanation:</h5>
+                            <div class="space-y-3 text-slate-300 text-sm">
+                                <p><span class="font-bold">Lines 1-2:</span> Import visualization libraries.</p>
+                                <p><span class="font-bold">Lines 5-6:</span> Set the style and size of the visualization.</p>
+                                <p><span class="font-bold">Lines 9-12:</span> Create a scatter plot showing relationship between screen time and well-being, with age groups differentiated by color and social media time represented by point size.</p>
+                                <p><span class="font-bold">Lines 14-17:</span> Add title and axis labels to the plot.</p>
+                                <p><span class="font-bold">Lines 20-23:</span> Add reference lines for WHO screen time recommendation and average well-being score.</p>
+                                <p><span class="font-bold">Lines 25-28:</span> Add legend, format layout, save, and display the visualization.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visualization -->
+                <div class="neuro-card p-8 slide-in delay-400">
+                    <h3 class="text-xl font-bold text-cyan-300 mb-6">Key Visualization: Screen Time vs Well-being</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div class="chart-container h-80 flex items-center justify-center">
+                                <canvas id="screenChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-emerald-300 mb-4">Insights:</h4>
+                            <ul class="space-y-4 text-slate-300">
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-down text-red-400 mt-1 mr-3"></i>
+                                    <span><strong>Strong negative correlation:</strong> As daily screen time increases beyond 2 hours, well-being scores decrease significantly</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-users text-amber-300 mt-1 mr-3"></i>
+                                    <span><strong>Youth most affected:</strong> Participants aged 15-24 show the steepest decline in well-being with increased screen time</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-mobile-alt text-purple-400 mt-1 mr-3"></i>
+                                    <span><strong>Social media impact:</strong> Social media usage accounts for 68% of the negative effects observed</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-sun text-yellow-400 mt-1 mr-3"></i>
+                                    <span><strong>Protective factors:</strong> Physical activity and in-person social interactions moderate negative effects</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Trails -->
+    <section id="trails" class="py-20 bg-gradient-to-b from-slate-900 to-slate-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 slide-in">
+                <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4">Interactive Learning Trails</h2>
+                <p class="text-slate-400 max-w-3xl mx-auto">Master data science concepts through guided, hands-on learning experiences</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="neuro-card p-8 slide-in">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-600 to-emerald-500 flex items-center justify-center">
+                            <i class="fas fa-seedling text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white ml-4">Foundational Concepts</h3>
+                    </div>
+                    <p class="text-slate-400 mb-6">Build your data literacy from the ground up with fundamental concepts and techniques.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-emerald-400 mr-3"></i>
+                                <span>Data Collection Methods</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock-open text-cyan-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-emerald-400 mr-3"></i>
+                                <span>Data Cleaning Techniques</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock-open text-cyan-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Exploratory Data Analysis</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary w-full mt-6">
+                        Start Foundational Trail
+                    </button>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in delay-200">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white ml-4">Advanced Analysis</h3>
+                    </div>
+                    <p class="text-slate-400 mb-6">Dive deep into statistical methods, correlation analysis, and predictive modeling.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Correlation Techniques</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Regression Analysis</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Machine Learning Models</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary w-full mt-6">
+                        Start Advanced Trail
+                    </button>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in delay-300">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-600 flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white ml-4">Policy & Application</h3>
+                    </div>
+                    <p class="text-slate-400 mb-6">Transform insights into actionable policies and real-world applications.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Data-Driven Decision Making</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Policy Development Framework</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-slate-500 mr-3"></i>
+                                <span>Impact Assessment Models</span>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                                <i class="fas fa-lock text-slate-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary w-full mt-6">
+                        Start Policy Trail
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Analysis -->
+    <section id="analysis" class="py-20 bg-gradient-to-b from-slate-950 to-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 slide-in">
+                <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 mb-4">Interactive Analysis</h2>
+                <p class="text-slate-400 max-w-3xl mx-auto">Explore the relationship between screen time and mental well-being with our interactive tools</p>
+            </div>
+            
+            <div class="neuro-card p-8 slide-in">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-cyan-300 mb-2">Screen Time Impact Simulator</h3>
+                        <p class="text-slate-400 mb-6">Adjust screen time variables to see predicted impact on mental well-being</p>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-slate-300">Social Media Time (minutes)</span>
+                                    <span class="text-emerald-400"><span id="socialValue">120</span> min</span>
+                                </div>
+                                <input type="range" min="0" max="360" value="120" class="w-full slider-thumb accent-cyan-500" id="socialSlider">
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-slate-300">Entertainment Screen Time</span>
+                                    <span class="text-emerald-400"><span id="entertainmentValue">90</span> min</span>
+                                </div>
+                                <input type="range" min="0" max="360" value="90" class="w-full slider-thumb accent-emerald-500" id="entertainmentSlider">
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-slate-300">Work/Productive Screen Time</span>
+                                    <span class="text-emerald-400"><span id="workValue">180</span> min</span>
+                                </div>
+                                <input type="range" min="0" max="360" value="180" class="w-full slider-thumb accent-violet-500" id="workSlider">
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4 mt-8">
+                                <div class="stats-card">
+                                    <div class="text-3xl font-bold text-cyan-400"><span id="wellbeingScore">6.2</span></div>
+                                    <div class="text-slate-400 text-sm mt-1">Well-being Score</div>
+                                </div>
+                                <div class="stats-card">
+                                    <div class="text-3xl font-bold text-emerald-400"><span id="stressLevel">4.8</span>/10</div>
+                                    <div class="text-slate-400 text-sm mt-1">Stress Level</div>
+                                </div>
+                                <div class="stats-card">
+                                    <div class="text-3xl font-bold text-violet-400"><span id="sleepQuality">7.1</span>/10</div>
+                                    <div class="text-slate-400 text-sm mt-1">Sleep Quality</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-emerald-300 mb-4">Analysis Results</h3>
+                        <div class="chart-container h-80">
+                            <canvas id="impactChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights & Recommendations -->
+    <section id="insights" class="py-20 bg-gradient-to-b from-slate-900 to-slate-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 slide-in">
+                <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4">Key Insights & Recommendations</h2>
+                <p class="text-slate-400 max-w-3xl mx-auto">Data-driven conclusions and actionable strategies for digital wellness</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="neuro-card p-8 slide-in">
+                    <h3 class="text-xl font-bold text-cyan-300 mb-6">Research Findings</h3>
+                    <ul class="space-y-6">
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-cyan-900 flex items-center justify-center">
+                                    <i class="fas fa-1 text-cyan-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Threshold Effect</h4>
+                                <p class="text-slate-400">Mental well-being decreases significantly when daily screen time exceeds 2 hours, with each additional hour correlating to a 12% decrease in well-being scores.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">
+                                    <i class="fas fa-2 text-emerald-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Content Matters</h4>
+                                <p class="text-slate-400">Social media consumption has 3.2x greater negative impact compared to educational or productive screen time.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center">
+                                    <i class="fas fa-3 text-violet-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Protective Factors</h4>
+                                <p class="text-slate-400">Regular physical activity (30+ min/day) reduces negative effects by 43%, while in-person social interactions provide a 38% buffer.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-amber-900 flex items-center justify-center">
+                                    <i class="fas fa-4 text-amber-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Demographic Variations</h4>
+                                <p class="text-slate-400">Adolescents (13-18) show 2.4x greater sensitivity to screen time effects compared to adults (35+).</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in delay-200">
+                    <h3 class="text-xl font-bold text-emerald-300 mb-6">Policy Recommendations</h3>
+                    <ul class="space-y-6">
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-cyan-900 flex items-center justify-center">
+                                    <i class="fas fa-graduation-cap text-cyan-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Educational Programs</h4>
+                                <p class="text-slate-400">Implement digital literacy curriculum in schools focusing on healthy screen habits and digital wellness.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">
+                                    <i class="fas fa-mobile-alt text-emerald-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">App Design Guidelines</h4>
+                                <p class="text-slate-400">Develop national standards for "digital wellness" features in apps and platforms used in Nigeria.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center">
+                                    <i class="fas fa-briefcase-medical text-violet-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Healthcare Integration</h4>
+                                <p class="text-slate-400">Include digital habit assessment in routine healthcare screenings, especially for adolescents.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 mr-4 mt-1">
+                                <div class="w-8 h-8 rounded-full bg-amber-900 flex items-center justify-center">
+                                    <i class="fas fa-tree-city text-amber-400"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-2">Community Initiatives</h4>
+                                <p class="text-slate-400">Create "Digital Detox" community spaces and events promoting in-person interactions.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="neuro-card p-8 mt-8 slide-in delay-300">
+                <h3 class="text-xl font-bold text-cyan-300 mb-6">Implementation Roadmap</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-700">
+                                <th class="py-3 px-4 text-left text-emerald-300">Phase</th>
+                                <th class="py-3 px-4 text-left text-emerald-300">Timeline</th>
+                                <th class="py-3 px-4 text-left text-emerald-300">Key Activities</th>
+                                <th class="py-3 px-4 text-left text-emerald-300">Expected Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-800 hover:bg-slate-800/50">
+                                <td class="py-3 px-4">Pilot Program</td>
+                                <td class="py-3 px-4">Q1-Q2 2024</td>
+                                <td class="py-3 px-4">Implement in 50 schools across 5 states</td>
+                                <td class="py-3 px-4">Reach 15,000 students, establish baseline metrics</td>
+                            </tr>
+                            <tr class="border-b border-slate-800 hover:bg-slate-800/50">
+                                <td class="py-3 px-4">Policy Development</td>
+                                <td class="py-3 px-4">Q3 2024</td>
+                                <td class="py-3 px-4">Create national digital wellness guidelines</td>
+                                <td class="py-3 px-4">Framework for institutions and tech companies</td>
+                            </tr>
+                            <tr class="border-b border-slate-800 hover:bg-slate-800/50">
+                                <td class="py-3 px-4">National Rollout</td>
+                                <td class="py-3 px-4">Q4 2024 - Q2 2025</td>
+                                <td class="py-3 px-4">Scale to all 36 states, train educators</td>
+                                <td class="py-3 px-4">Reach 2 million students, establish monitoring</td>
+                            </tr>
+                            <tr class="hover:bg-slate-800/50">
+                                <td class="py-3 px-4">Tech Integration</td>
+                                <td class="py-3 px-4">Q3 2025 onwards</td>
+                                <td class="py-3 px-4">Implement features in popular apps and platforms</td>
+                                <td class="py-3 px-4">Nationwide behavioral impact, reduced screen addiction</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                    <p class="mt-4 text-slate-400 text-sm">
+                        A NITDA/NCAIR approved platform advancing data literacy and digital wellness research in Nigeria.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Platform</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Learning Trails</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Research Library</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Data Tools</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Policy Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Research Papers</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Tutorials & Guides</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Case Studies</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-envelope mr-2 text-cyan-400"></i> 
+                            research@mindscreen.ng
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-phone-alt mr-2 text-emerald-400"></i> 
+                            +234 9 461 7000
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-violet-400"></i> 
+                            NITDA HQ, Abuja
+                        </li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-sm">
+                    © 2023 MindScreen Analytics. A National Data Literacy Initiative. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Assistant -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <div class="floating-btn">
+            <i class="fas fa-robot text-2xl text-white"></i>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Screen Time vs Well-being Chart
+            const screenCtx = document.getElementById('screenChart').getContext('2d');
+            new Chart(screenCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '15-24 years',
+                        data: [
+                            {x: 60, y: 8.2}, {x: 90, y: 8.0}, {x: 120, y: 7.8}, 
+                            {x: 180, y: 7.0}, {x: 240, y: 6.2}, {x: 300, y: 5.5},
+                            {x: 360, y: 4.8}
+                        ],
+                        backgroundColor: 'rgba(0, 217, 119, 0.7)',
+                        borderColor: 'rgba(0, 217, 119, 1)',
+                        borderWidth: 1,
+                        pointRadius: 8
+                    }, {
+                        label: '25-34 years',
+                        data: [
+                            {x: 60, y: 7.8}, {x: 90, y: 7.7}, {x: 120, y: 7.5}, 
+                            {x: 180, y: 7.0}, {x: 240, y: 6.5}, {x: 300, y: 6.0},
+                            {x: 360, y: 5.6}
+                        ],
+                        backgroundColor: 'rgba(0, 198, 255, 0.7)',
+                        borderColor: 'rgba(0, 198, 255, 1)',
+                        borderWidth: 1,
+                        pointRadius: 8
+                    }, {
+                        label: '35+ years',
+                        data: [
+                            {x: 60, y: 7.5}, {x: 90, y: 7.4}, {x: 120, y: 7.3}, 
+                            {x: 180, y: 7.0}, {x: 240, y: 6.8}, {x: 300, y: 6.5},
+                            {x: 360, y: 6.2}
+                        ],
+                        backgroundColor: 'rgba(169, 108, 255, 0.7)',
+                        borderColor: 'rgba(169, 108, 255, 1)',
+                        borderWidth: 1,
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Daily Screen Time (minutes)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Well-being Score (1-10)',
+                                color: '#94a3b8'
+                            },
+                            min: 4,
+                            max: 9,
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#38bdf8',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#1e293b',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+            
+            // Impact Simulator Chart
+            const impactCtx = document.getElementById('impactChart').getContext('2d');
+            const impactChart = new Chart(impactCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Well-being', 'Stress Level', 'Sleep Quality', 'Productivity', 'Social Connection'],
+                    datasets: [{
+                        label: 'Current',
+                        data: [6.2, 4.8, 7.1, 6.5, 6.8],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 198, 255, 0.2)',
+                        borderColor: 'rgb(0, 198, 255)',
+                        pointBackgroundColor: 'rgb(0, 198, 255)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 198, 255)'
+                    }, {
+                        label: 'After Reduction',
+                        data: [7.3, 3.5, 8.2, 7.2, 7.5],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 217, 119, 0.2)',
+                        borderColor: 'rgb(0, 217, 119)',
+                        pointBackgroundColor: 'rgb(0, 217, 119)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 217, 119)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            pointLabels: {
+                                color: '#e2e8f0'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Impact Simulator Sliders
+            const socialSlider = document.getElementById('socialSlider');
+            const socialValue = document.getElementById('socialValue');
+            const entertainmentSlider = document.getElementById('entertainmentSlider');
+            const entertainmentValue = document.getElementById('entertainmentValue');
+            const workSlider = document.getElementById('workSlider');
+            const workValue = document.getElementById('workValue');
+            
+            const wellbeingScore = document.getElementById('wellbeingScore');
+            const stressLevel = document.getElementById('stressLevel');
+            const sleepQuality = document.getElementById('sleepQuality');
+            
+            function updateImpact() {
+                const social = parseInt(socialSlider.value);
+                const entertainment = parseInt(entertainmentSlider.value);
+                const work = parseInt(workSlider.value);
+                const total = social + entertainment + work;
+                
+                // Calculate impacts based on research findings
+                const wellbeing = 7.5 - (total * 0.008) - (social * 0.012);
+                const stress = 2.5 + (total * 0.007) + (social * 0.01);
+                const sleep = 8.0 - (total * 0.006) - (social * 0.008) + (work * 0.002);
+                
+                wellbeingScore.textContent = wellbeing.toFixed(1);
+                stressLevel.textContent = stress.toFixed(1);
+                sleepQuality.textContent = sleep.toFixed(1);
+                
+                // Update radar chart
+                impactChart.data.datasets[0].data = [
+                    wellbeing,
+                    stress,
+                    sleep,
+                    7.0 - (total * 0.005),
+                    7.2 - (social * 0.007) + (work * 0.003)
+                ];
+                impactChart.update();
+            }
+            
+            socialSlider.addEventListener('input', function() {
+                socialValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            entertainmentSlider.addEventListener('input', function() {
+                entertainmentValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            workSlider.addEventListener('input', function() {
+                workValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            // Initialize values
+            updateImpact();
+            
+            // Explanation toggles
+            const explainButtons = document.querySelectorAll('.explain-btn');
+            explainButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const explanationSection = this.closest('.neuro-card').querySelector('.explanation-section');
+                    explanationSection.classList.toggle('hidden');
+                    
+                    if (explanationSection.classList.contains('hidden')) {
+                        this.innerHTML = '<i class="fas fa-lightbulb mr-2"></i>Explain Code';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-times mr-2"></i>Hide Explanation';
+                    }
+                });
+            });
+            
+            // Animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('slide-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('section > *').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

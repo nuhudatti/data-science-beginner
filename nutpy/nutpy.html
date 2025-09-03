@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA | Module 1: NumPy Fundamentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            100: '#e6f7ff',
+                            200: '#b3e6ff',
+                            300: '#80d4ff',
+                            400: '#4dc3ff',
+                            500: '#1a8cff',
+                            600: '#0073e6',
+                            700: '#0059b3',
+                            800: '#004080',
+                            900: '#00264d',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        code: ['Source Code Pro', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            background: #171515;
+            border-radius: 8px; 
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .code-header {
+            background: #1e1e1e;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .code-content {
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Source Code Pro', monospace;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6c757d;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        /* .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .function { color: #dcdcaa; }
+        .string { color: #ce9178; }
+        .operator { color: #d4d4d4; }
+        .variable { color: #9cdcfe; }
+        .value { color: #b5cea8; } */
+        .keyword { color: #00bfff; }     /* Bright blue */
+        .function { color: #fdd835; }    /* Bright yellow */
+        .string { color: #ff8a65; }      /* Soft orange */
+        .comment { color: #6a9955; }     /* This is okay */
+        .operator { color: #ffffff; }    /* Pure white */
+        .variable { color: #82aaff; }    /* Blueish variable */
+        .value { color: #c3e88d; }  
+        .explanation {
+            background: #f8f9fa;
+            border-left: 4px solid #1a8cff;
+            transition: all 0.3s ease;
+        }
+        .concept-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-gray-800">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-nca-800 to-nca-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="bg-white p-2 rounded-lg mr-4">
+                        <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">NITDA/NCAIR</h1>
+                        <p class="text-nca-200">Nuhu Muhammad Datti</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-xl md:text-2xl font-bold">Data Science Cohort 27</h2>
+                    <p class="text-nca-300">Mastering Data Science for Nigeria's Digital Future</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="#" class="nav-item active-nav text-nca-700 font-medium">
+NumPy Fundamentals</a>
+                <a href="#" class="nav-item hover:text-nca-700">
+Pandas Mastery</a>
+                <a href="#" class="nav-item hover:text-nca-700">
+Data Visualization</a>
+              
+            </div>
+        </div>
+        
+    </nav>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Module Header -->
+        <section class="text-center mb-12">
+            <span class="inline-block px-4 py-1 bg-nca-100 text-nca-700 rounded-full text-sm font-semibold mb-3">Module 1</span>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">NumPy Fundamentals</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Master numerical computing for efficient data processing</p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <div class="bg-white rounded-lg shadow-md p-4 w-64">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-nca-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-clock text-nca-500"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-900">Duration</h3>
+                    </div>
+                    <p class="text-gray-600">4-6 hours to complete</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 w-64">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-nca-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-book text-nca-500"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-900">Prerequisites</h3>
+                    </div>
+                    <p class="text-gray-600">Basic Python knowledge</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 w-64">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-nca-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-tasks text-nca-500"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-900">Learning Objectives</h3>
+                    </div>
+                    <p class="text-gray-600">5 key skills to master</p>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-nca-500 to-nca-700 text-white rounded-xl p-6 max-w-4xl mx-auto">
+                <h2 class="text-xl font-bold mb-3">Module Overview</h2>
+                <p class="mb-4">NumPy is the foundational package for scientific computing in Python. This module will transform you from a Python beginner to someone who can efficiently process numerical data using NumPy's powerful array programming capabilities.</p>
+                <p>By the end of this module, you'll be able to process agricultural data 25x faster than using standard Python lists - a crucial skill for Nigeria's growing agritech sector!</p>
+            </div>
+        </section>
+
+        <!-- Module Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Navigation Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-md p-6 sticky top-24">
+                    <h3 class="font-bold text-lg text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-road mr-2 text-nca-500"></i>
+                        Learning Path
+                    </h3>
+                    <ul class="space-y-2">
+                        <a href="#">
+                        <li class="flex items-center bg-nca-100 rounded-lg px-4 py-3">
+                            <i class="fas fa-circle text-nca-500 mr-2 text-xs"></i>
+                            <span class="font-medium">NumPy Arrays vs Python Lists</span>
+                        </li>
+                        <a href="">
+                           
+                         <a href="./a.html">   
+                        <li class="flex items-center hover:bg-gray-50 rounded-lg px-4 py-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-2 text-xs"></i>
+                            <span>Array Creation & Manipulation</span>
+                        </li>
+                         </a>
+
+                            <a href="./v.html">
+                        <li class="flex items-center hover:bg-gray-50 rounded-lg px-4 py-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-2 text-xs"></i>
+                            <span>Vectorized Operations & Broadcasting</span>
+                        </li>
+                            </a>
+                            <a href="s.html">
+                        <li class="flex items-center hover:bg-gray-50 rounded-lg px-4 py-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-2 text-xs"></i>
+                            <span>Statistical Operations on Arrays</span>
+                        </li>
+                            </a>
+
+                        <a href="r.html">
+                        <li class="flex items-center hover:bg-gray-50 rounded-lg px-4 py-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-2 text-xs"></i>
+                            <span>Real Application: Agricultural Yield Analysis</span>
+                        </li>
+                        </a>
+                    </ul>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-lg text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-medal mr-2 text-nca-500"></i>
+                            Achievements
+                        </h3>
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 rounded-full bg-nca-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                            </div>
+                            <span>Complete Section 1</span>
+                        </div>
+                        <div class="flex items-center mb-3 opacity-50">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-code text-gray-400 text-sm"></i>
+                            </div>
+                            <span>Write first NumPy program</span>
+                        </div>
+                        <div class="flex items-center opacity-50">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-chart-line text-gray-400 text-sm"></i>
+                            </div>
+                            <span>Analyze real-world dataset</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="lg:col-span-3">
+                
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Helvetica, Arial,   sans-serif; margin-bottom: 20px; font-size: 12px; line-height: 1.4; color: #333333; border-collapse: collapse;">
+  <tr>
+     <!-- Logo Placeholder -->
+    <!-- <td valign="top" style="padding-right: 15px;">
+     
+      <img src="./logo.jpg" alt="NMD BESPOKE TECH" width="80" style="display: block; border: 0;">
+    </td> -->
+    <td style="border-left: 1px solid #cccccc; padding-left: 15px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td>
+            <strong style="font-size: 15px; color: #1a365d;">NUHU MUHAMMAD DATTI</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 13px; color: #718096;">
+            Principal Consultant | NMD BESPOKE TECH
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 8px;">
+              <tr>
+                <td style="padding-right: 10px;">
+                    <i class="fas fa-globe" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td>
+                  <a href="https://www.nmdtech.io" style="color: #2b6cb0; text-decoration: none;">www.nmdtech.io</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                 <i class="fab fa-linkedin" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td style="padding-top: 3px;">
+                  <a href="https://linkedin.com/in/nuhudatti" style="color: #2b6cb0; text-decoration: none;">linkedin.com/in/nuhudatti</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                    <i class="fas fa-envelope" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                <td style="padding-top: 3px;">
+                  <a href="mailto:nuhu@nmdtech.io" style="color: #2b6cb0; text-decoration: none;">nuhumuhammaddatti@gmail.com</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 10px;">
+<img src="./logo.jpg" 
+     width="100" 
+     height="100"
+     alt="NMD BESPOKE TECH | Custom Digital Solutions" 
+     style="display: block; border-radius: 50%; object-fit: cover;">
+
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+                <!-- Section 1 -->
+
+                <section class="bg-white rounded-xl shadow-md overflow-hidden mb-10">
+                    <div class="bg-nca-600 p-6">
+                        <h2 class="text-2xl font-bold text-white">NumPy Arrays vs Python Lists</h2>
+                        <p class="text-nca-200">Why NumPy is essential for data science and numerical computing</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-6 mb-8">
+                            <div class="concept-card bg-white border border-gray-200 rounded-lg p-6 w-full md:w-[calc(50%-12px)]">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-4">
+                                        <i class="fas fa-list text-red-500 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900">Python Lists</h3>
+                                </div>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-times text-red-400 mt-1 mr-2"></i>
+                                        <span>Store different data types together</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-times text-red-400 mt-1 mr-2"></i>
+                                        <span>No built-in vectorized operations</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-times text-red-400 mt-1 mr-2"></i>
+                                        <span>Require loops for element-wise operations</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-times text-red-400 mt-1 mr-2"></i>
+                                        <span>Memory inefficient for numerical data</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="concept-card bg-white border border-gray-200 rounded-lg p-6 w-full md:w-[calc(50%-12px)]">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                                        <i class="fas fa-cube text-green-500 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900">NumPy Arrays</h3>
+                                </div>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                        <span>Homogeneous data types for efficiency</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                        <span>Vectorized operations (no loops needed)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                        <span>Broadcasting for different-sized arrays</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                        <span>Memory efficient and optimized C backend</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-flask text-nca-500 mr-2"></i>
+                            Performance Comparison
+                        </h3>
+                        
+                        <!-- Code Block -->
+                        <div class="code-block mb-6">
+                            <div class="code-header">
+                                <span class="text-gray-300 font-code">performance_comparison.py</span>
+                                <button class="text-gray-400 hover:text-white transition-colors">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span><span class="keyword">import</span> time
+<span class="line-number">3</span>
+<span class="line-number">4</span><span class="comment"># Create a Python list with 1 million elements</span>
+<span class="line-number">5</span>py_list = <span class="function">list</span>(<span class="function">range</span>(<span class="value">1</span>, <span class="value">1000001</span>))
+<span class="line-number">6</span>
+<span class="line-number">7</span><span class="comment"># Time the list operation</span>
+<span class="line-number">8</span>start = time.<span class="function">time</span>()
+<span class="line-number">9</span>py_squared = [x ** <span class="value">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> py_list]  <span class="comment"># Square each element</span>
+<span class="line-number">10</span>py_time = time.<span class="function">time</span>() - start
+<span class="line-number">11</span>
+<span class="line-number">12</span><span class="comment"># Create a NumPy array with the same elements</span>
+<span class="line-number">13</span>np_array = np.<span class="function">arange</span>(<span class="value">1</span>, <span class="value">1000001</span>)
+<span class="line-number">14</span>
+<span class="line-number">15</span><span class="comment"># Time the NumPy vectorized operation</span>
+<span class="line-number">16</span>start = time.<span class="function">time</span>()
+<span class="line-number">17</span>np_squared = np_array ** <span class="value">2</span>  <span class="comment"># Vectorized squaring</span>
+<span class="line-number">18</span>np_time = time.<span class="function">time</span>() - start
+<span class="line-number">19</span>
+<span class="line-number">20</span><span class="comment"># Print results</span>
+<span class="line-number">21</span><span class="function">print</span>(<span class="string">f"Python list time: </span>{py_time:<span class="value">.5f</span>}<span class="string"> seconds"</span>)
+<span class="line-number">22</span><span class="function">print</span>(<span class="string">f"NumPy array time: </span>{np_time:<span class="value">.5f</span>}<span class="string"> seconds"</span>)
+<span class="line-number">23</span><span class="function">print</span>(<span class="string">f"NumPy is </span>{py_time / np_time:<span class="value">.1f</span>}<span class="string">x faster!"</span>)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full py-3 bg-nca-100 text-nca-700 font-medium rounded-lg hover:bg-nca-200 transition-colors mb-6">
+                            <i class="fas fa-chevron-down mr-2"></i>
+                            Show Full Code Explanation
+                        </button>
+                        
+                        <div class="explanation p-5 rounded-lg mb-8">
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-900 mb-2">Line-by-Line Explanation:</h4>
+                                <ul class="space-y-3">
+                                    <li>
+                                        <span class="font-semibold">Lines 1-2:</span> Import necessary libraries - NumPy for array operations and time for performance measurement.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Line 5:</span> Create a Python list containing numbers from 1 to 1,000,000 using range().
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Line 8:</span> Record the start time before squaring operation.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Line 9:</span> Use list comprehension to square each element - this requires Python to process each element individually.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Line 13:</span> Create a NumPy array with the same elements using arange().
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Line 17:</span> Perform vectorized squaring operation - NumPy processes the entire array in a single operation using optimized C code.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Lines 21-23:</span> Compare and print the execution times, showing NumPy's performance advantage.
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h5 class="font-bold text-gray-900 mb-2 flex items-center">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                                    Key Insight
+                                </h5>
+                                <p>NumPy's vectorized operations eliminate the need for Python loops, leveraging optimized C code under the hood. This makes NumPy typically <strong>10-100x faster</strong> than equivalent Python list operations for numerical computations.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h4 class="font-bold text-gray-900 mb-4">Performance Results:</h4>
+                            <div class="flex items-center justify-center mb-4">
+                                <div class="w-full max-w-xl">
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium">Python List</span>
+                                        <span class="text-sm font-medium">0.15 seconds</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bg-red-500 h-4 rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-center">
+                                <div class="w-full max-w-xl">
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium">NumPy Array</span>
+                                        <span class="text-sm font-medium">0.003 seconds</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bg-green-500 h-4 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <p class="font-bold text-lg text-green-600">NumPy is 50x faster!</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Upcoming Sections -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="bg-white border border-gray-200 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mr-4">
+                                <i class="fas fa-shapes text-purple-500 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Array Creation & Manipulation</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">Learn how to create, reshape, slice, and manipulate NumPy arrays for efficient data handling.</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Array creation methods (zeros, ones, arange)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Reshaping and slicing arrays
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Stacking and splitting arrays
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center mr-4">
+                                <i class="fas fa-bolt text-yellow-500 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Vectorized Operations</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">Discover how vectorization eliminates loops and broadcasting enables operations between different-sized arrays.</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Element-wise operations
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Universal functions (ufuncs)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Broadcasting rules
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mr-4">
+                                <i class="fas fa-calculator text-blue-500 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Statistical Operations</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">Master essential statistical functions for data analysis with NumPy arrays.</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Mean, median, standard deviation
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Aggregations (sum, min, max)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Axis-based calculations
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mr-4">
+                                <i class="fas fa-seedling text-green-500 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Agricultural Yield Analysis</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">Apply all concepts to analyze real agricultural yield data from Nigerian farms.</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Process multi-dimensional data
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Calculate key metrics
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Visualize results with Matplotlib
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Call to Action -->
+                <div class="bg-gradient-to-r from-nca-400 to-nca-600 rounded-xl p-8 text-center text-white">
+                    <h3 class="text-2xl font-bold mb-3">Ready to Continue Your Journey?</h3>
+                    <p class="max-w-2xl mx-auto mb-6">Join thousands of Nigerian data science students mastering NumPy through our Universal Learning Archive platform.</p>
+                    <button class="bg-white text-nca-700 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">
+                        Continue to Next Section <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-nca-900 text-white pt-12 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-lg font-bold mb-4">NITDA/NCAIR</h4>
+                    <p class="text-nca-300 mb-4">Empowering Nigeria through digital literacy and innovation.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-nca-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-nca-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-nca-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-nca-300 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Learning Trails</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nca-300 hover:text-white">Data Science</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Artificial Intelligence</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Cybersecurity</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Blockchain</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">IoT</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nca-300 hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Tutorials</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Research Papers</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Case Studies</a></li>
+                        <li><a href="#" class="text-nca-300 hover:text-white">Community Projects</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-nca-400"></i>
+                            <span>NITDA Headquarters, Abuja, Nigeria</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-2 text-nca-400"></i>
+                            <span>ula@nitda.gov.ng</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-2 text-nca-400"></i>
+                            <span>+234 9 461 7000</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-nca-700 pt-8 text-center text-nca-400">
+                <p>© 2023 National Information Technology Development Agency (NITDA). Universal Learning Archive (ULA). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Copy button functionality
+        document.querySelectorAll('.fa-copy').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('.code-content');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalIcon = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-check';
+                    this.classList.replace(originalIcon, 'fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.replace('fa-check', 'fa-copy');
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Expand/collapse explanations
+        document.querySelectorAll('.explanation').forEach(exp => {
+            exp.previousElementSibling.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                const isExpanded = icon.classList.contains('fa-chevron-up');
+                
+                if (isExpanded) {
+                    icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                    exp.style.maxHeight = '0';
+                    exp.style.opacity = '0';
+                    exp.style.padding = '0';
+                    exp.style.margin = '0';
+                } else {
+                    icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                    exp.style.maxHeight = exp.scrollHeight + 'px';
+                    exp.style.opacity = '1';
+                    exp.style.padding = '1.25rem';
+                    exp.style.marginBottom = '2rem';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Analysis - Screen Time Impact</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00c6ff;
+            --secondary: #00d977;
+            --accent: #a96cff;
+            --accent-alt: #ff6b9d;
+            --dark: #0f172a;
+            --darker: #020617;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .neuro-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(0, 198, 255, 0.5);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.7),
+                        inset 0 0 20px rgba(0, 198, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .neuro-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(2, 6, 23, 0.8),
+                        inset 0 0 25px rgba(0, 198, 255, 0.4);
+            border-color: rgba(0, 198, 255, 0.7);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(0, 198, 255, 0.15), rgba(0, 217, 119, 0.15));
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 198, 255, 0.3);
+        }
+        
+        .chart-container {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 198, 255, 0.1);
+        }
+        
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        .slider-thumb::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+        }
+        
+        /* Text utilities */
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-slate-400 {
+            color: #94a3b8;
+        }
+        
+        .text-slate-300 {
+            color: #cbd5e1;
+        }
+        
+        .text-cyan-300 {
+            color: #67e8f9;
+        }
+        
+        .text-emerald-300 {
+            color: #6ee7b7;
+        }
+        
+        .text-cyan-400 {
+            color: #22d3ee;
+        }
+        
+        .text-emerald-400 {
+            color: #34d399;
+        }
+        
+        .text-violet-400 {
+            color: #a78bfa;
+        }
+        
+        /* Spacing utilities */
+        .py-20 {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+        
+        .mb-16 {
+            margin-bottom: 4rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .p-8 {
+            padding: 2rem;
+        }
+        
+        /* Grid utilities */
+        .grid {
+            display: grid;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        
+        .gap-4 {
+            gap: 1rem;
+        }
+        
+        .gap-8 {
+            gap: 2rem;
+        }
+        
+        /* Flex utilities */
+        .flex {
+            display: flex;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        /* Typography */
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+        
+        .md\:text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+        
+        .font-bold {
+            font-weight: 700;
+        }
+        
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+        
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        /* Gradients */
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+        }
+        
+        .from-cyan-400 {
+            --tw-gradient-from: #22d3ee;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(34, 211, 238, 0));
+        }
+        
+        .to-emerald-400 {
+            --tw-gradient-to: #34d399;
+        }
+        
+        /* Backgrounds */
+        .bg-gradient-to-b {
+            background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+        }
+        
+        .from-slate-950 {
+            --tw-gradient-from: #020617;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(2, 6, 23, 0));
+        }
+        
+        .to-slate-900 {
+            --tw-gradient-to: #0f172a;
+        }
+        
+        /* Animation */
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Slider styles */
+        .slider-thumb {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #1e293b;
+            outline: none;
+        }
+        
+        .accent-cyan-500 {
+            accent-color: #06b6d4;
+        }
+        
+        .accent-emerald-500 {
+            accent-color: #10b981;
+        }
+        
+        .accent-violet-500 {
+            accent-color: #8b5cf6;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            
+            .lg\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Interactive Analysis -->
+        <section id="analysis" class="py-20 bg-gradient-to-b from-slate-950 to-slate-900">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16 slide-in">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 mb-4">Interactive Analysis</h2>
+                    <p class="text-slate-400 max-w-3xl mx-auto">Explore the relationship between screen time and mental well-being with our interactive tools</p>
+                </div>
+                
+                <div class="neuro-card p-8 slide-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-cyan-300 mb-2">Screen Time Impact Simulator</h3>
+                            <p class="text-slate-400 mb-6">Adjust screen time variables to see predicted impact on mental well-being</p>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-slate-300">Social Media Time (minutes)</span>
+                                        <span class="text-emerald-400"><span id="socialValue">120</span> min</span>
+                                    </div>
+                                    <input type="range" min="0" max="360" value="120" class="w-full slider-thumb accent-cyan-500" id="socialSlider">
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-slate-300">Entertainment Screen Time</span>
+                                        <span class="text-emerald-400"><span id="entertainmentValue">90</span> min</span>
+                                    </div>
+                                    <input type="range" min="0" max="360" value="90" class="w-full slider-thumb accent-emerald-500" id="entertainmentSlider">
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-slate-300">Work/Productive Screen Time</span>
+                                        <span class="text-emerald-400"><span id="workValue">180</span> min</span>
+                                    </div>
+                                    <input type="range" min="0" max="360" value="180" class="w-full slider-thumb accent-violet-500" id="workSlider">
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-4 mt-8">
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-cyan-400"><span id="wellbeingScore">6.2</span></div>
+                                        <div class="text-slate-400 text-sm mt-1">Well-being Score</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-emerald-400"><span id="stressLevel">4.8</span>/10</div>
+                                        <div class="text-slate-400 text-sm mt-1">Stress Level</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-violet-400"><span id="sleepQuality">7.1</span>/10</div>
+                                        <div class="text-slate-400 text-sm mt-1">Sleep Quality</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-bold text-emerald-300 mb-4">Analysis Results</h3>
+                            <div class="chart-container h-80">
+                                <canvas id="impactChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize impact chart
+            const impactCtx = document.getElementById('impactChart').getContext('2d');
+            const impactChart = new Chart(impactCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Well-being', 'Stress Level', 'Sleep Quality', 'Productivity', 'Social Connection'],
+                    datasets: [{
+                        label: 'Current',
+                        data: [6.2, 4.8, 7.1, 6.5, 6.8],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 198, 255, 0.2)',
+                        borderColor: 'rgb(0, 198, 255)',
+                        pointBackgroundColor: 'rgb(0, 198, 255)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 198, 255)'
+                    }, {
+                        label: 'After Reduction',
+                        data: [7.3, 3.5, 8.2, 7.2, 7.5],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 217, 119, 0.2)',
+                        borderColor: 'rgb(0, 217, 119)',
+                        pointBackgroundColor: 'rgb(0, 217, 119)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 217, 119)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            pointLabels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                backdropColor: 'transparent',
+                                stepSize: 2
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Slider functionality
+            const socialSlider = document.getElementById('socialSlider');
+            const socialValue = document.getElementById('socialValue');
+            const entertainmentSlider = document.getElementById('entertainmentSlider');
+            const entertainmentValue = document.getElementById('entertainmentValue');
+            const workSlider = document.getElementById('workSlider');
+            const workValue = document.getElementById('workValue');
+            
+            const wellbeingScore = document.getElementById('wellbeingScore');
+            const stressLevel = document.getElementById('stressLevel');
+            const sleepQuality = document.getElementById('sleepQuality');
+            
+            // Update impact based on slider values
+            function updateImpact() {
+                const social = parseInt(socialSlider.value);
+                const entertainment = parseInt(entertainmentSlider.value);
+                const work = parseInt(workSlider.value);
+                const total = social + entertainment + work;
+                
+                // Calculate impacts based on research findings
+                const wellbeing = 7.5 - (total * 0.008) - (social * 0.012);
+                const stress = 2.5 + (total * 0.007) + (social * 0.01);
+                const sleep = 8.0 - (total * 0.006) - (social * 0.008) + (work * 0.002);
+                
+                wellbeingScore.textContent = wellbeing.toFixed(1);
+                stressLevel.textContent = stress.toFixed(1);
+                sleepQuality.textContent = sleep.toFixed(1);
+                
+                // Update radar chart
+                impactChart.data.datasets[0].data = [
+                    wellbeing,
+                    stress,
+                    sleep,
+                    7.0 - (total * 0.005),
+                    7.2 - (social * 0.007) + (work * 0.003)
+                ];
+                impactChart.update();
+            }
+            
+            // Add event listeners to sliders
+            socialSlider.addEventListener('input', function() {
+                socialValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            entertainmentSlider.addEventListener('input', function() {
+                entertainmentValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            workSlider.addEventListener('input', function() {
+                workValue.textContent = this.value;
+                updateImpact();
+            });
+            
+            // Initialize values
+            updateImpact();
+            
+            // Animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('slide-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.slide-in').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

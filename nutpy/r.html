@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA | Agricultural Yield Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --light: #dbeafe;
+            --dark: #1e293b;
+            --success: #10b981;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .code-header {
+            background: #1e1e1e;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6c757d;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .function { color: #dcdcaa; }
+        .string { color: #ce9178; }
+        .operator { color: #d4d4d4; }
+        .variable { color: #9cdcfe; }
+        .value { color: #b5cea8; }
+        .module { color: #4ec9b0; }
+        
+        .explanation {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .concept-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .active-nav:after {
+            width: 100%;
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .section-animation {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #dbeafe;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .floating-action {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-box {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .stat-card {
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: 300px;
+        }
+        
+        .farm-map {
+            background: #e5f5e0;
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            height: 400px;
+        }
+        
+        .farm-plot {
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border: 2px solid #c6f6d5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .farm-plot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .crop-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .crop-1 { color: #22c55e; }
+        .crop-2 { color: #84cc16; }
+        .crop-3 { color: #f59e0b; }
+        .crop-4 { color: #10b981; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="gradient-header text-white shadow-xl">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="bg-white p-2 rounded-xl mr-4 shadow-md">
+                        <div class="bg-gradient-to-r from-green-500 to-green-700 w-16 h-16 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tractor text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">NITDA/NCAIR ULA</h1>
+                        <p class="text-blue-200">Universal Learning Archive</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-xl md:text-2xl font-bold">Data Science Cohort 27</h2>
+                    <p class="text-blue-300">Transforming Agriculture with Data Science</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-20">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-3 gap-4 md:gap-8">
+                <a href="#" class="nav-item active-nav text-nca-700 font-medium">
+NumPy Fundamentals</a>
+                <a href="../pandas/pandas.html" class="nav-item hover:text-nca-700">
+Pandas Mastery</a>
+                <a href="../data Visual/index.html  " class="nav-item hover:text-nca-700">
+Data Visualization</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="bg-green-50 py-2">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center">
+                <div class="w-full mr-4">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%"></div>
+                    </div>
+                </div>
+                <span class="text-green-800 font-medium">95% Completed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Navigation Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                    <h3 class="font-bold text-xl text-green-900 mb-4 flex items-center">
+                        <i class="fas fa-road mr-3 text-green-500"></i>
+                        Learning Path
+                    </h3>
+                    <ul class="space-y-3">
+                        <a href="./nutpy.html">
+                        <li class="mb-3 flex items-center bg-blue-50 rounded-xl px-4 py-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">NumPy Arrays vs Python Lists</span>
+                        </li>
+                        </a>
+                        <a href="./a.html">
+                        <li class=" mb-3 flex items-center bg-blue-50 rounded-xl px-4 py-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">Array Creation & Manipulation</span>
+                        </li>
+                        </a>
+                        <a href="./v.html">
+                        <li class="mb-3 flex items-center bg-blue-50 rounded-xl px-4 py-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">Vectorized Operations & Broadcasting</span>
+                        </li>
+                        </a>
+                        <a href="./s.html">
+                        <li class="mb-3 flex items-center bg-blue-50 rounded-xl px-4 py-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">Statistical Operations on Arrays</span>
+                        </li>
+                        </a>
+                        <a href="./r.html">
+                        <li class="mb-3 flex items-center bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl px-4 py-3 shadow-md">
+                            <i class="fas fa-arrow-right mr-3"></i>
+                            <span class="font-medium">Agricultural Yield Analysis</span>
+                        </li>
+                        </a>
+                    </ul>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-xl text-green-900 mb-4 flex items-center">
+                            <i class="fas fa-trophy mr-3 text-yellow-500"></i>
+                            Achievements
+                        </h3>
+                        <div class="flex items-center mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">NumPy Fundamentals</h4>
+                                <p class="text-sm text-gray-600">Completed all technical modules</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-calculator text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Data Analyst</h4>
+                                <p class="text-sm text-gray-600">Mastered statistical operations</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-seedling text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Agricultural Analyst</h4>
+                                <p class="text-sm text-gray-600">Started yield analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-xl text-green-900 mb-4 flex items-center">
+                            <i class="fas fa-chart-line mr-3 text-green-500"></i>
+                            Your Progress
+                        </h3>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Module Completion</span>
+                                <span class="text-sm font-medium">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Exercises Completed</span>
+                                <span class="text-sm font-medium">6/7</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 86%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="lg:col-span-3">
+                          
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Helvetica, Arial,   sans-serif; margin-bottom: 20px; font-size: 12px; line-height: 1.4; color: #333333; border-collapse: collapse;">
+  <tr>
+     <!-- Logo Placeholder -->
+    <!-- <td valign="top" style="padding-right: 15px;">
+     
+      <img src="./logo.jpg" alt="NMD BESPOKE TECH" width="80" style="display: block; border: 0;">
+    </td> -->
+    <td style="border-left: 1px solid #cccccc; padding-left: 15px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td>
+            <strong style="font-size: 15px; color: #1a365d;">NUHU MUHAMMAD DATTI</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 13px; color: #718096;">
+            Principal Consultant | NMD BESPOKE TECH
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 8px;">
+              <tr>
+                <td style="padding-right: 10px;">
+                    <i class="fas fa-globe" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td>
+                  <a href="https://www.nmdtech.io" style="color: #2b6cb0; text-decoration: none;">www.nmdtech.io</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                 <i class="fab fa-linkedin" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td style="padding-top: 3px;">
+                  <a href="https://linkedin.com/in/nuhudatti" style="color: #2b6cb0; text-decoration: none;">linkedin.com/in/nuhudatti</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                    <i class="fas fa-envelope" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                <td style="padding-top: 3px;">
+                  <a href="mailto:nuhu@nmdtech.io" style="color: #2b6cb0; text-decoration: none;">nuhumuhammaddatti@gmail.com</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 10px;">
+<img src="./logo.jpg" 
+     width="100" 
+     height="100"
+     alt="NMD BESPOKE TECH | Custom Digital Solutions" 
+     style="display: block; border-radius: 50%; object-fit: cover;">
+
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+                <!-- Section Header -->
+                <section class="bg-gradient-to-r from-green-600 to-green-800 text-white rounded-2xl shadow-xl overflow-hidden mb-10 section-animation">
+                    <div class="p-8">
+                        <div class="flex flex-wrap items-center justify-between">
+                            <div>
+                                <span class="inline-block px-4 py-1 bg-green-500 bg-opacity-30 rounded-full text-sm font-semibold mb-2">Final Project</span>
+                                <h2 class="text-3xl font-bold mb-3">Agricultural Yield Analysis</h2>
+                                <p class="text-green-200 max-w-3xl">Apply all your NumPy skills to analyze real agricultural data, derive insights, and make data-driven decisions for improved farming outcomes.</p>
+                            </div>
+                            <div class="mt-4 md:mt-0 floating-action">
+                                <div class="w-24 h-24 rounded-full bg-green-500 bg-opacity-20 flex items-center justify-center">
+                                    <i class="fas fa-seedling text-white text-4xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Project Overview -->
+                <section class="bg-white rounded-2xl shadow-lg p-6 mb-10">
+                    <h3 class="text-2xl font-bold text-green-900 mb-6 flex items-center">
+                        <i class="fas fa-tractor mr-3 text-green-500"></i>
+                        Project Overview: Nigerian Farm Data Analysis
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="stat-card bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-5 border border-green-200">
+                            <div class="flex items-center mb-3">
+                                <div class="w-12 h-12 rounded-lg bg-green-200 flex items-center justify-center mr-3">
+                                    <i class="fas fa-database text-green-700"></i>
+                                </div>
+                                <h4 class="font-bold text-lg">The Dataset</h4>
+                            </div>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li>Crop yields from 16 farm plots across Nigeria</li>
+                                <li>4 different crop types (Maize, Rice, Sorghum, Cassava)</li>
+                                <li>3 growing seasons (2020-2022)</li>
+                                <li>Additional data: Rainfall, Temperature, Soil Quality</li>
+                                <li>Total records: 144 data points</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="stat-card bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
+                            <div class="flex items-center mb-3">
+                                <div class="w-12 h-12 rounded-lg bg-blue-200 flex items-center justify-center mr-3">
+                                    <i class="fas fa-tasks text-blue-700"></i>
+                                </div>
+                                <h4 class="font-bold text-lg">Analysis Goals</h4>
+                            </div>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li>Identify highest and lowest performing crops</li>
+                                <li>Analyze yield trends over seasons</li>
+                                <li>Determine optimal growing conditions</li>
+                                <li>Find correlations between environmental factors and yield</li>
+                                <li>Recommend improvements for future seasons</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-5">
+                        <h4 class="font-bold text-xl mb-3 flex items-center">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Why This Matters for Nigeria
+                        </h4>
+                        <p>Agriculture contributes <span class="font-bold">22% to Nigeria's GDP</span> and employs over <span class="font-bold">36% of the workforce</span>. Data-driven agriculture can:</p>
+                        <ul class="list-disc list-inside mt-2">
+                            <li>Increase crop yields by 20-30%</li>
+                            <li>Reduce resource waste</li>
+                            <li>Improve food security</li>
+                            <li>Increase farmer incomes</li>
+                            <li>Boost economic growth in rural areas</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Data Exploration -->
+                <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-10">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-search mr-3"></i>
+                            Data Exploration with NumPy
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h4 class="text-xl font-bold text-green-900 mb-4">1. Loading and Inspecting Data</h4>
+                            
+                            <!-- Code Block -->
+                            <div class="code-block mb-6">
+                                <div class="code-header">
+                                    <span class="text-gray-300">data_loading.py</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span>
+<span class="line-number">3</span><span class="comment"># Load dataset from CSV</span>
+<span class="line-number">4</span>data = np.<span class="function">genfromtxt</span>(<span class="string">'nigerian_farms.csv'</span>, delimiter=<span class="string">','</span>, skip_header=<span class="value">1</span>)
+<span class="line-number">5</span>
+<span class="line-number">6</span><span class="comment"># Inspect the data</span>
+<span class="line-number">7</span><span class="function">print</span>(<span class="string">"Dataset shape:"</span>, data.<span class="function">shape</span>)  <span class="comment"># (144, 6)</span>
+<span class="line-number">8</span><span class="function">print</span>(<span class="string">"First 5 rows:\n"</span>, data[:<span class="value">5</span>])
+<span class="line-number">9</span>
+<span class="line-number">10</span><span class="comment"># Column indices:</span>
+<span class="line-number">11</span><span class="comment"># 0: Plot ID, 1: Crop Type, 2: Season, 3: Yield (tons/ha)</span>
+<span class="line-number">12</span><span class="comment"># 4: Rainfall (mm), 5: Temperature (°C), 6: Soil Quality (1-10)</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span><span class="comment"># Extract key columns</span>
+<span class="line-number">15</span>yields = data[:, <span class="value">3</span>]
+<span class="line-number">16</span>rainfall = data[:, <span class="value">4</span>]
+<span class="line-number">17</span>temperatures = data[:, <span class="value">5</span>]
+<span class="line-number">18</span>soil_quality = data[:, <span class="value">6</span>]</code></pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Farm Visualization -->
+                            <div class="mb-6">
+                                <h4 class="text-lg font-bold text-green-800 mb-4 text-center">Farm Plot Visualization</h4>
+                                <div class="farm-map">
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-1 fas fa-wheat"></i>
+                                        <div>Plot 1</div>
+                                        <div class="text-sm">5.2t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-2 fas fa-rice"></i>
+                                        <div>Plot 2</div>
+                                        <div class="text-sm">4.9t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-3 fas fa-corn"></i>
+                                        <div>Plot 3</div>
+                                        <div class="text-sm">6.0t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-4 fas fa-root"></i>
+                                        <div>Plot 4</div>
+                                        <div class="text-sm">5.5t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-1 fas fa-wheat"></i>
+                                        <div>Plot 5</div>
+                                        <div class="text-sm">4.8t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-2 fas fa-rice"></i>
+                                        <div>Plot 6</div>
+                                        <div class="text-sm">5.8t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-3 fas fa-corn"></i>
+                                        <div>Plot 7</div>
+                                        <div class="text-sm">6.5t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-4 fas fa-root"></i>
+                                        <div>Plot 8</div>
+                                        <div class="text-sm">5.7t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-1 fas fa-wheat"></i>
+                                        <div>Plot 9</div>
+                                        <div class="text-sm">6.1t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-2 fas fa-rice"></i>
+                                        <div>Plot 10</div>
+                                        <div class="text-sm">5.0t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-3 fas fa-corn"></i>
+                                        <div>Plot 11</div>
+                                        <div class="text-sm">6.3t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-4 fas fa-root"></i>
+                                        <div>Plot 12</div>
+                                        <div class="text-sm">5.9t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-1 fas fa-wheat"></i>
+                                        <div>Plot 13</div>
+                                        <div class="text-sm">5.4t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-2 fas fa-rice"></i>
+                                        <div>Plot 14</div>
+                                        <div class="text-sm">5.1t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-3 fas fa-corn"></i>
+                                        <div>Plot 15</div>
+                                        <div class="text-sm">6.2t</div>
+                                    </div>
+                                    <div class="farm-plot">
+                                        <i class="crop-icon crop-4 fas fa-root"></i>
+                                        <div>Plot 16</div>
+                                        <div class="text-sm">5.8t</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Analysis -->
+                <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-10">
+                    <div class="bg-gradient-to-r from-green-600 to-green-700 p-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-calculator mr-3"></i>
+                            Yield Analysis with NumPy
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h4 class="text-xl font-bold text-green-900 mb-4">1. Crop Performance Analysis</h4>
+                            
+                            <!-- Code Block -->
+                            <div class="code-block mb-6">
+                                <div class="code-header">
+                                    <span class="text-gray-300">crop_analysis.py</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="comment"># Crop type mapping: 1=Maize, 2=Rice, 3=Sorghum, 4=Cassava</span>
+<span class="line-number">2</span>crop_types = data[:, <span class="value">1</span>]
+<span class="line-number">3</span>
+<span class="line-number">4</span><span class="comment"># Create masks for each crop type</span>
+<span class="line-number">5</span>maize_mask = (crop_types == <span class="value">1</span>)
+<span class="line-number">6</span>rice_mask = (crop_types == <span class="value">2</span>)
+<span class="line-number">7</span>sorghum_mask = (crop_types == <span class="value">3</span>)
+<span class="line-number">8</span>cassava_mask = (crop_types == <span class="value">4</span>)
+<span class="line-number">9</span>
+<span class="line-number">10</span><span class="comment"># Calculate average yield per crop</span>
+<span class="line-number">11</span>maize_avg = np.<span class="function">mean</span>(yields[maize_mask])
+<span class="line-number">12</span>rice_avg = np.<span class="function">mean</span>(yields[rice_mask])
+<span class="line-number">13</span>sorghum_avg = np.<span class="function">mean</span>(yields[sorghum_mask])
+<span class="line-number">14</span>cassava_avg = np.<span class="function">mean</span>(yields[cassava_mask])
+<span class="line-number">15</span>
+<span class="line-number">16</span><span class="comment"># Find highest and lowest yielding crops</span>
+<span class="line-number">17</span>crop_avgs = np.<span class="function">array</span>([maize_avg, rice_avg, sorghum_avg, cassava_avg])
+<span class="line-number">18</span>crop_names = np.<span class="function">array</span>([<span class="string">'Maize'</span>, <span class="string">'Rice'</span>, <span class="string">'Sorghum'</span>, <span class="string">'Cassava'</span>])
+<span class="line-number">19</span>
+<span class="line-number">20</span>max_crop = crop_names[np.<span class="function">argmax</span>(crop_avgs)]
+<span class="line-number">21</span>min_crop = crop_names[np.<span class="function">argmin</span>(crop_avgs)]</code></pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization -->
+                            <div class="chart-container mb-6">
+                                <canvas id="cropPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-xl font-bold text-green-900 mb-4">2. Environmental Factor Analysis</h4>
+                            
+                            <!-- Code Block -->
+                            <div class="code-block mb-6">
+                                <div class="code-header">
+                                    <span class="text-gray-300">environmental_analysis.py</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="comment"># Correlation between environmental factors and yield</span>
+<span class="line-number">2</span>rain_yield_corr = np.<span class="function">corrcoef</span>(rainfall, yields)[<span class="value">0</span>, <span class="value">1</span>]
+<span class="line-number">3</span>temp_yield_corr = np.<span class="function">corrcoef</span>(temperatures, yields)[<span class="value">0</span>, <span class="value">1</span>]
+<span class="line-number">4</span>soil_yield_corr = np.<span class="function">corrcoef</span>(soil_quality, yields)[<span class="value">0</span>, <span class="value">1</span>]
+<span class="line-number">5</span>
+<span class="line-number">6</span><span class="comment"># Optimal conditions for maize (example)</span>
+<span class="line-number">7</span>maize_yields = yields[maize_mask]
+<span class="line-number">8</span>maize_rain = rainfall[maize_mask]
+<span class="line-number">9</span>
+<span class="line-number">10</span><span class="comment"># Find rainfall range for top 25% maize yields</span>
+<span class="line-number">11</span>top_25 = np.<span class="function">percentile</span>(maize_yields, <span class="value">75</span>)
+<span class="line-number">12</span>high_yield_mask = (maize_yields >= top_25)
+<span class="line-number">13</span>optimal_rain_min = np.<span class="function">min</span>(maize_rain[high_yield_mask])
+<span class="line-number">14</span>optimal_rain_max = np.<span class="function">max</span>(maize_rain[high_yield_mask])</code></pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div class="visualization-container">
+                                    <h5 class="font-bold text-center mb-3">Rainfall vs Yield</h5>
+                                    <canvas id="rainfallChart"></canvas>
+                                </div>
+                                <div class="visualization-container">
+                                    <h5 class="font-bold text-center mb-3">Temperature vs Yield</h5>
+                                    <canvas id="temperatureChart"></canvas>
+                                </div>
+                                <div class="visualization-container">
+                                    <h5 class="font-bold text-center mb-3">Soil Quality vs Yield</h5>
+                                    <canvas id="soilChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Insights & Recommendations -->
+                <section class="bg-gradient-to-r from-green-500 to-green-700 rounded-2xl shadow-xl overflow-hidden mb-10">
+                    <div class="p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            Insights & Recommendations
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-white bg-opacity-10 rounded-xl p-6 backdrop-blur-sm">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    Key Findings
+                                </h4>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Sorghum had the highest average yield (6.2 tons/ha)</li>
+                                    <li>Rice showed the most sensitivity to rainfall variations</li>
+                                    <li>Optimal temperature range: 26-29°C for most crops</li>
+                                    <li>Soil quality has strong correlation with yield (r=0.78)</li>
+                                    <li>Top-performing farms had consistent soil quality >7</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-10 rounded-xl p-6 backdrop-blur-sm">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Recommendations
+                                </h4>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Expand sorghum cultivation in northern regions</li>
+                                    <li>Implement irrigation systems for rice farms</li>
+                                    <li>Add soil enrichment programs for low-quality plots</li>
+                                    <li>Develop temperature monitoring systems</li>
+                                    <li>Create crop rotation schedule based on soil data</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-15 rounded-xl p-6 backdrop-blur-sm">
+                            <h4 class="font-bold text-xl mb-3 flex items-center">
+                                <i class="fas fa-bullseye mr-2"></i>
+                                Expected Outcomes
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center p-4 bg-green-600 bg-opacity-30 rounded-lg">
+                                    <div class="text-3xl font-bold">15-25%</div>
+                                    <div>Yield Increase</div>
+                                </div>
+                                <div class="text-center p-4 bg-green-600 bg-opacity-30 rounded-lg">
+                                    <div class="text-3xl font-bold">20%</div>
+                                    <div>Resource Savings</div>
+                                </div>
+                                <div class="text-center p-4 bg-green-600 bg-opacity-30 rounded-lg">
+                                    <div class="text-3xl font-bold">30%</div>
+                                    <div>Income Growth</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Completion Celebration -->
+                <section class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-xl overflow-hidden mb-10">
+                    <div class="p-8 text-white text-center">
+                        <h3 class="text-3xl font-bold mb-4">Congratulations! You've Completed the NumPy Learning Trail</h3>
+                        <p class="text-xl max-w-3xl mx-auto mb-6">You've mastered NumPy fundamentals and applied them to solve real agricultural challenges in Nigeria.</p>
+                        
+                        <div class="flex justify-center mb-6">
+                            <div class="w-32 h-32 rounded-full bg-yellow-400 flex items-center justify-center">
+                                <i class="fas fa-trophy text-white text-5xl"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-xl p-6 max-w-2xl mx-auto">
+                            <h4 class="font-bold text-xl mb-4">Your Achievements</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">5</div>
+                                    <div>Modules</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">27</div>
+                                    <div>Concepts</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">48</div>
+                                    <div>Code Examples</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">1</div>
+                                    <div>Real Project</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Next Steps -->
+                <section class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Continue Your Data Science Journey</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto mb-6">You've built a strong foundation in numerical computing with NumPy. Explore more advanced topics to further enhance your data science skills.</p>
+                    
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button class="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-3 px-8 rounded-xl hover:from-green-600 hover:to-green-800 transition-all shadow-lg flex items-center">
+                            Explore Pandas for Data Analysis <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <button class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-blue-800 transition-all shadow-lg flex items-center">
+                            <i class="fas fa-download mr-2"></i> Download Project Certificate
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white pt-12 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h4>
+                    <p class="text-green-300 mb-4">Empowering Nigeria through digital literacy and innovation.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-green-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-green-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-green-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-green-300 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Learning Paths</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-green-300 hover:text-white">Data Science</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Agricultural Technology</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Climate Smart Farming</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Data Visualization</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Machine Learning</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-green-300 hover:text-white">Project Datasets</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Research Papers</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Case Studies</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Tutorial Videos</a></li>
+                        <li><a href="#" class="text-green-300 hover:text-white">Community Forums</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-green-400"></i>
+                            <span>NITDA Headquarters, Abuja, Nigeria</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-2 text-green-400"></i>
+                            <span>agritech@nitda.gov.ng</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-2 text-green-400"></i>
+                            <span>+234 9 461 7000</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-green-700 pt-8 text-center text-green-400">
+                <p>© 2023 National Information Technology Development Agency (NITDA). Universal Learning Archive (ULA). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy button functionality
+        document.querySelectorAll('.fa-copy').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('.code-content');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalIcon = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-check';
+                    this.classList.replace(originalIcon, 'fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.replace('fa-check', 'fa-copy');
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Crop Performance Chart
+        const cropCtx = document.getElementById('cropPerformanceChart').getContext('2d');
+        new Chart(cropCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Maize', 'Rice', 'Sorghum', 'Cassava'],
+                datasets: [{
+                    label: 'Average Yield (tons/ha)',
+                    data: [5.4, 5.2, 6.2, 5.6],
+                    backgroundColor: [
+                        'rgba(255, 205, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 4,
+                        title: {
+                            display: true,
+                            text: 'Tons per Hectare'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Environmental Charts
+        const rainCtx = document.getElementById('rainfallChart').getContext('2d');
+        new Chart(rainCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Rainfall vs Yield',
+                    data: [
+                        {x: 120, y: 5.2}, {x: 150, y: 5.8}, {x: 180, y: 6.2},
+                        {x: 90, y: 4.9}, {x: 130, y: 5.5}, {x: 160, y: 6.0},
+                        {x: 110, y: 5.0}, {x: 140, y: 5.7}, {x: 100, y: 5.1},
+                        {x: 170, y: 6.1}, {x: 125, y: 5.3}, {x: 155, y: 5.9}
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    pointRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Rainfall (mm)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Yield (tons/ha)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+        new Chart(tempCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Temperature vs Yield',
+                    data: [
+                        {x: 28.5, y: 5.2}, {x: 29.0, y: 5.8}, {x: 27.8, y: 6.2},
+                        {x: 30.2, y: 4.9}, {x: 28.9, y: 5.5}, {x: 27.5, y: 6.0},
+                        {x: 29.5, y: 5.0}, {x: 28.2, y: 5.7}, {x: 30.0, y: 4.8},
+                        {x: 27.0, y: 6.3}, {x: 28.7, y: 5.4}, {x: 29.2, y: 5.3}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    pointRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Yield (tons/ha)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const soilCtx = document.getElementById('soilChart').getContext('2d');
+        new Chart(soilCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Soil Quality vs Yield',
+                    data: [
+                        {x: 7, y: 5.2}, {x: 6, y: 4.9}, {x: 8, y: 6.0},
+                        {x: 5, y: 4.5}, {x: 7, y: 5.5}, {x: 9, y: 6.5},
+                        {x: 6, y: 5.0}, {x: 8, y: 5.9}, {x: 4, y: 4.2},
+                        {x: 9, y: 6.2}, {x: 7, y: 5.4}, {x: 8, y: 5.8}
+                    ],
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    pointRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Soil Quality (1-10)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Yield (tons/ha)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Progress simulation
+        let progress = 95;
+        const progressFill = document.querySelector('.progress-fill');
+        
+        setInterval(() => {
+            if (progress < 100) {
+                progress += 0.1;
+                progressFill.style.width = `${progress}%`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

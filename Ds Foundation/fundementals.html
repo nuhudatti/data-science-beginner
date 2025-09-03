@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Python Fundamentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+      <script>hljs.highlightAll();</script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --progress: 25%;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .explanation-panel {
+            background: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            padding: 16px;
+        }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            width: var(--progress);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .highlight {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(56, 189, 248, 0.3);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+        
+        .update-ticker {
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .learning-path {
+            position: relative;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 24px;
+            height: calc(100% - 80px);
+            width: 4px;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .path-item::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item.active::before {
+            background: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
+        }
+        
+        .path-item.completed::before {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .path-item h3::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: -24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            z-index: -1;
+        }
+        
+        .interactive-code {
+            min-height: 200px;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .interactive-output {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .python-keyword {
+            color: #f472b6;
+        }
+        
+        .python-function {
+            color: #38bdf8;
+        }
+        
+        .python-string {
+            color: #86efac;
+        }
+        
+        .python-comment {
+            color: #94a3b8;
+        }
+        
+        .python-operator {
+            color: #fbbf24;
+        }
+
+        /* NAV */
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                    <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Python Fundamentals</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Latest updates ticker -->
+    <div class="update-ticker">
+        <div class="ticker-content">
+            <span class="px-4"><i class="fas fa-bullhorn mr-2"></i>New: Added Nigerian census dataset examples</span>
+            <span class="px-4"><i class="fas fa-star mr-2"></i>Updated: Python 3.12 pattern matching in Control Flow</span>
+            <span class="px-4"><i class="fas fa-book mr-2"></i>Now available: Data Structures cheat sheet</span>
+        </div>
+    </div>
+
+        <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="#" class="nav-item active-nav text-nca-700 font-medium"><i class="fas fa-code mr-1"></i>Python</a>
+                <a href="./index2.html" class="nav-item hover:text-nca-700"><i class="fas fa-database mr-1"></i>Data</a>
+                <a href="./index3.html" class="nav-item hover:text-nca-700"><i class="fas fa-chart-line mr-1"></i>Plots</a>
+                <a href="./index4.html" class="nav-item hover:text-nca-700"><i class="fas fa-robot mr-1"></i>ML</a>
+                <a href="./index5.html" class="nav-item hover:text-nca-700"><i class="fas fa-graduation-cap mr-1"></i>Project</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page header with progress -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Python Fundamentals: From Zero to Data Science Ready</h1>
+                <p class="text-gray-600 mb-4">Master essential programming concepts needed for data science</p>
+                
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-secondary mr-2"></i>
+                        <span>Estimated Time: 3-4 hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span>Self-Paced Learning</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium">Your Progress</span>
+                        <span id="progress-text" class="text-sm font-medium">25%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>5IRE Curriculum Compliant
+            </div>
+        </div>
+
+        <!-- Mission statement -->
+        <div class="bg-gradient-to-r from-dsblue to-dspurple text-white rounded-xl shadow-md p-6 mb-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">Our Learning Revolution</h2>
+            <p class="text-lg mb-4">
+                "Replacing textbooks, traditional classes, and expensive tutorials with an intuitive, 
+                self-guided learning experience designed to take you from absolute beginner to proficient coder."
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <span>No textbooks needed</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <span>No classroom required</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <span>No expensive courses</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Starter Guide Section -->
+<div class="relative bg-gradient-to-br from-white via-blue-50 to-indigo-100 p-8 rounded-3xl shadow-2xl max-w-5xl mx-auto mb-20">
+  <div class="absolute top-0 left-0 w-full h-full bg-pattern-dots text-indigo-300 opacity-10"></div>
+
+  <div class="relative z-10">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-indigo-800 mb-2">📘 Beginner's Launchpad</h2>
+      <p class="text-gray-700 text-lg">Everything you need to know <strong>before starting</strong> your Python Fundamentals journey.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Python Introduction -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-code text-indigo-500 text-xl mr-3"></i>
+          <h3 class="text-lg font-semibold text-gray-800">What is Python?</h3>
+        </div>
+        <p class="text-gray-600 text-sm leading-relaxed">
+          Python is like a smart assistant that follows your instructions. It's used to build apps, analyze data, and solve real-world problems in tech, finance, healthcare, and more.
+        </p>
+      </div>
+
+      <!-- Why Learn Python -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-lightbulb text-yellow-400 text-xl mr-3"></i>
+          <h3 class="text-lg font-semibold text-gray-800">Why Should You Care?</h3>
+        </div>
+        <p class="text-gray-600 text-sm leading-relaxed">
+          Learning Python opens doors to tech jobs, helps you automate tasks, and lets you understand data — the fuel of today’s economy.
+        </p>
+      </div>
+
+      <!-- Real-World Examples -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-chart-line text-green-500 text-xl mr-3"></i>
+          <h3 class="text-lg font-semibold text-gray-800">Real-World Impact</h3>
+        </div>
+        <ul class="list-disc list-inside text-gray-600 text-sm">
+          <li>Analyze Nigerian economic data 📊</li>
+          <li>Calculate student performance 🧮</li>
+          <li>Clean and visualize messy data sets 🧹</li>
+        </ul>
+      </div>
+
+      <!-- What You Will Learn -->
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-road text-blue-600 text-xl mr-3"></i>
+          <h3 class="text-lg font-semibold text-gray-800">What You’ll Learn</h3>
+        </div>
+        <ul class="text-gray-600 text-sm space-y-1">
+          <li>✅ Python Basics — like ABC for coding</li>
+          <li>✅ Decision-making with control flow</li>
+          <li>✅ Reusable code with functions</li>
+          <li>✅ Lists, dictionaries & data structures</li>
+          <li>✅ Working with files & fixing errors</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+ 
+  </div>
+</div>
+
+<!-- Custom Background Pattern -->
+<style>
+  .bg-pattern-dots {
+    background-image: radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+</style>
+
+        <!-- Complete Learning Trail -->
+        <h2 class="text-2xl font-bold mb-6 text-center">Complete Learning Trail: Python Fundamentals</h2>
+        
+        <div class="learning-path bg-white rounded-xl shadow-lg p-6 mb-16">
+            <!-- Module 1: Python Basics -->
+            <div class="path-item completed active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-green-600">1</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Python Basics</h3>
+                        <p class="text-gray-600">Syntax, variables, data types and operators</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Python basics are the foundation of all programming. Just like learning the alphabet before writing, 
+                        understanding variables and data types is essential for data science. You'll use these concepts every 
+                        time you work with data in Python.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    variables.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Variable assignment examples</span>
+<span class="text-blue-400">student_name</span> = <span class="text-green-400">"Chinedu Okoro"</span>  <span class="text-gray-500"># String</span>
+<span class="text-blue-400">student_age</span> = <span class="text-amber-400">24</span>            <span class="text-gray-500"># Integer</span>
+<span class="text-blue-400">cgpa</span> = <span class="text-amber-400">3.8</span>                <span class="text-gray-500"># Float</span>
+<span class="text-blue-400">is_graduated</span> = <span class="text-blue-400">False</span>        <span class="text-gray-500"># Boolean</span>
+
+<span class="text-purple-400"># Arithmetic operations</span>
+<span class="text-blue-400">years_to_graduate</span> = <span class="text-amber-400">4</span> - (<span class="text-blue-400">student_age</span> - <span class="text-amber-400">20</span>)
+<span class="text-blue-400">total_score</span> = <span class="text-blue-400">cgpa</span> * <span class="text-amber-400">25</span>  <span class="text-gray-500"># Convert CGPA to percentage</span>
+
+<span class="text-purple-400"># Print formatted information</span>
+<span class="text-pink-400">print</span>(<span class="text-green-400">f"Student: {student_name}"</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">f"Years to graduation: {years_to_graduate}"</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">f"Total Score: {total_score}%"</span>)</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Explanation</h4>
+                        <div class="explanation-panel">
+                            <ul class="space-y-3 text-gray-700">
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">student_name = "Chinedu Okoro"</span> - Creates a string variable with student's name</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">student_age = 24</span> - Creates an integer variable for age</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">cgpa = 3.8</span> - Creates a float (decimal) variable for CGPA</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">is_graduated = False</span> - Boolean variable (True/False)</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">years_to_graduate = 4 - (student_age - 20)</span> - Calculates years until graduation</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">total_score = cgpa * 25</span> - Converts CGPA to percentage scale</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">print(f"Student: {student_name}")</span> - Prints formatted output with variable value</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200 mt-6">
+                            <h4 class="font-bold text-green-700 mb-2 flex items-center">
+                                <i class="fas fa-brain mr-2"></i> Real-World Analogy
+                            </h4>
+                            <p class="text-gray-700">
+                                Think of variables as labeled storage boxes in a Nigerian market. The variable name is the label on the box 
+                                (e.g., "Yam Tubers"), and the value is what's inside the box (e.g., 50 tubers). Data types define what kind of 
+                                items can be stored - numbers for quantities, text for descriptions, and true/false for availability status.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border rounded-lg p-4 bg-white">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-laptop-code mr-2"></i> Try It Yourself
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Create a variable for state population:</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 font-mono">population =</span>
+                                <input type="text" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 15000000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Create a variable for state name:</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 font-mono">state =</span>
+                                <input type="text" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 'Lagos'">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <button class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                        Run Code & See Result
+                    </button> -->
+                </div>
+            </div>
+            
+            <!-- Module 2: Control Flow -->
+            <div class="path-item active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">2</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Control Flow</h3>
+                        <p class="text-gray-600">Conditionals, loops and logic</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Control flow allows your programs to make decisions and repeat actions. In data science, you'll use conditionals 
+                        to filter datasets, loops to process thousands of records, and logical operators to combine complex conditions.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    control_flow.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Nigerian university grading system</span>
+<span class="text-blue-400">scores</span> = [<span class="text-amber-400">72</span>, <span class="text-amber-400">85</span>, <span class="text-amber-400">63</span>, <span class="text-amber-400">90</span>, <span class="text-amber-400">55</span>]
+<span class="text-blue-400">passed</span> = []
+
+<span class="text-purple-400"># Loop through scores with conditional logic</span>
+<span class="text-pink-400">for</span> <span class="text-blue-400">score</span> <span class="text-pink-400">in</span> <span class="text-blue-400">scores</span>:
+    <span class="text-pink-400">if</span> <span class="text-blue-400">score</span> >= <span class="text-amber-400">70</span>:
+        <span class="text-blue-400">passed</span>.<span class="text-blue-400">append</span>(<span class="text-blue-400">score</span>)
+        <span class="text-pink-400">print</span>(<span class="text-green-400">f"Score {score}: Passed"</span>)
+    <span class="text-pink-400">elif</span> <span class="text-blue-400">score</span> >= <span class="text-amber-400">50</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">f"Score {score}: Passed with condition"</span>)
+    <span class="text-pink-400">else</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">f"Score {score}: Failed"</span>)
+
+<span class="text-purple-400"># While loop example</span>
+<span class="text-blue-400">count</span> = <span class="text-amber-400">0</span>
+<span class="text-pink-400">while</span> <span class="text-blue-400">count</span> < <span class="text-amber-400">5</span>:
+    <span class="text-pink-400">print</span>(<span class="text-green-400">f"Processing student {count+1}"</span>)
+    <span class="text-blue-400">count</span> += <span class="text-amber-400">1</span></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Explanation</h4>
+                        <div class="explanation-panel">
+                            <ul class="space-y-3 text-gray-700">
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">scores = [72, 85, 63, 90, 55]</span> - Creates a list of student scores</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">passed = []</span> - Creates an empty list to store passing scores</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">for score in scores:</span> - Loops through each score in the list</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">if score >= 70:</span> - Checks if score is 70 or higher</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">passed.append(score)</span> - Adds passing scores to new list</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">elif score >= 50:</span> - Checks for conditional pass (50-69)</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">else:</span> - Handles failing scores (below 50)</li>
+                                <li><span class="font-mono bg-blue-100 px-1 rounded">while count < 5:</span> - While loop that runs until condition is false</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200 mt-6">
+                            <h4 class="font-bold text-green-700 mb-2 flex items-center">
+                                <i class="fas fa-brain mr-2"></i> Real-World Analogy
+                            </h4>
+                            <p class="text-gray-700">
+                                Control flow is like a traffic officer directing vehicles at a busy Lagos intersection. 
+                                <strong>Conditionals (if/else)</strong> are the officer deciding which cars can go based on conditions. 
+                                <strong>Loops</strong> are like the continuous flow of traffic during rush hour, processing each vehicle 
+                                one after another until the road is clear.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 3: Functions -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">3</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Functions</h3>
+                        <p class="text-gray-600">Creating reusable code blocks</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Functions allow you to write reusable code blocks, making your programs more organized and efficient. 
+                        In data science, you'll create functions for data cleaning, transformation, and analysis that you can 
+                        reuse across multiple projects.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    functions.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Function to calculate Nigeria's GDP growth</span>
+<span class="text-pink-400">def</span> <span class="text-blue-400">calculate_growth</span>(<span class="text-blue-400">current_gdp</span>, <span class="text-blue-400">previous_gdp</span>):
+    <span class="text-purple-400">"""Calculate percentage growth between two GDP values"""</span>
+    <span class="text-blue-400">growth</span> = ((<span class="text-blue-400">current_gdp</span> - <span class="text-blue-400">previous_gdp</span>) / <span class="text-blue-400">previous_gdp</span>) * <span class="text-amber-400">100</span>
+    <span class="text-pink-400">return</span> <span class="text-blue-400">round</span>(<span class="text-blue-400">growth</span>, <span class="text-amber-400">2</span>)
+
+<span class="text-purple-400"># Function to analyze economic sector performance</span>
+<span class="text-pink-400">def</span> <span class="text-blue-400">sector_performance</span>(<span class="text-blue-400">sectors</span>):
+    <span class="text-purple-400">"""Analyze and print sector performance"""</span>
+    <span class="text-pink-400">print</span>(<span class="text-green-400">"\nSector Performance Analysis:"</span>)
+    <span class="text-pink-400">for</span> <span class="text-blue-400">sector</span>, <span class="text-blue-400">growth</span> <span class="text-pink-400">in</span> <span class="text-blue-400">sectors</span>.<span class="text-blue-400">items</span>():
+        <span class="text-pink-400">if</span> <span class="text-blue-400">growth</span> > <span class="text-amber-400">5</span>:
+            <span class="text-pink-400">print</span>(<span class="text-green-400">f"- {sector}: <span class="text-green-600">▲ Strong growth</span> ({growth}%)"</span>)
+        <span class="text-pink-400">elif</span> <span class="text-blue-400">growth</span> > <span class="text-amber-400">0</span>:
+            <span class="text-pink-400">print</span>(<span class="text-green-400">f"- {sector}: <span class="text-amber-600">↗ Moderate growth</span> ({growth}%)"</span>)
+        <span class="text-pink-400">else</span>:
+            <span class="text-pink-400">print</span>(<span class="text-green-400">f"- {sector}: <span class="text-red-600">▼ Decline</span> ({growth}%)"</span>)
+
+<span class="text-purple-400"># Using the functions</span>
+<span class="text-blue-400">gdp_2022</span> = <span class="text-amber-400">440</span>  <span class="text-gray-500"># Billion USD</span>
+<span class="text-blue-400">gdp_2023</span> = <span class="text-amber-400">477</span>  <span class="text-gray-500"># Billion USD</span>
+
+<span class="text-blue-400">growth_rate</span> = <span class="text-blue-400">calculate_growth</span>(<span class="text-blue-400">gdp_2023</span>, <span class="text-blue-400">gdp_2022</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">f"Nigeria GDP Growth: {growth_rate}%"</span>)
+
+<span class="text-blue-400">sectors</span> = {
+    <span class="text-green-400">"Agriculture"</span>: <span class="text-amber-400">3.2</span>,
+    <span class="text-green-400">"Oil & Gas"</span>: <span class="text-amber-400">-1.5</span>,
+    <span class="text-green-400">"Technology"</span>: <span class="text-amber-400">8.7</span>,
+    <span class="text-green-400">"Manufacturing"</span>: <span class="text-amber-400">2.1</span>
+}
+<span class="text-blue-400">sector_performance</span>(<span class="text-blue-400">sectors</span>)</pre>
+                            </div>
+                        </div>
+                        <style>
+    .gdp-btn {
+      background-color: #047857;
+      color: #fff;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .gdp-btn:hover {
+      background-color: #065f46;
+    }
+
+    .gdp-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f9fafb;
+      border-left: 4px solid #10b981;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 14px;
+      color: #1f2937;
+      display: none;
+    }
+
+    .gdp-highlight {
+      color: #065f46;
+      font-weight: bold;
+    }
+
+    .gdp-code {
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+  </style>
+  
+<button class="gdp-btn" onclick="toggleGdpExplain()">💡 Explain GDP Code</button>
+
+<div class="gdp-box" id="gdpExplain">
+  <div>
+    <p><span class="gdp-highlight">calculate_growth:</span> A function that calculates Nigeria's GDP growth rate by comparing the current GDP with the previous year's GDP.</p>
+    <p><span class="gdp-highlight">sector_performance:</span> This function analyzes how well each sector of the economy performed. It prints a summary with icons: ▲ for strong growth, ↗ for moderate growth, ▼ for decline.</p>
+    <p><span class="gdp-highlight">Example:</span> GDP grew from $440B to $477B in 2023, so the function will return the growth rate.</p>
+    <div class="gdp-code">
+      gdp_2022 = 440<br>
+      gdp_2023 = 477<br>
+      growth_rate = calculate_growth(gdp_2023, gdp_2022)  ➝ <span class="gdp-highlight">8.41%</span>
+    </div>
+    <p><span class="gdp-highlight">Sector Output:</span> Technology showed strong growth, Oil & Gas declined, while Agriculture and Manufacturing had moderate growth.</p>
+  </div>
+</div>
+
+<script>
+  function toggleGdpExplain() {
+    const box = document.getElementById('gdpExplain');
+    box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Interactive Learning</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <p class="text-gray-700 mb-3">Create a function to calculate the Body Mass Index (BMI):</p>
+                            <textarea id="function-code" class="interactive-code w-full" spellcheck="false">
+# Define your BMI function here
+def calculate_bmi(weight, height):
+    # BMI formula: weight (kg) / height (m) squared
+    bmi = weight / (height ** 2)
+    return round(bmi, 1)
+
+# Test your function
+weight = 70   # in kilograms
+height = 1.75 # in meters
+bmi_result = calculate_bmi(weight, height)
+print(f"BMI: {bmi_result}")</textarea>
+                            <button onclick="runCode()" class="mt-3 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                                Run Code
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded-lg">
+                            <h5 class="font-bold text-gray-200 mb-2">Output:</h5>
+                            <div id="output" class="interactive-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 4: Data Structures -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">4</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Structures</h3>
+                        <p class="text-gray-600">Lists, dictionaries, tuples and sets</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-700 mb-2">Lists</h4>
+                            <p class="text-gray-700 mb-3">Ordered, mutable collections</p>
+                             <p class="text-slate-700 mb-4">Lists are like expandable file folders - you can add, remove, and modify items at any position.</p>
+                      
+                            <pre class="text-sm bg-blue-100 p-2 rounded overflow-x-auto font-mono">
+states = ["Lagos", "Kano", "Abuja", "Rivers"]
+states.append("Oyo")</pre>
+ <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-check-circle mr-2"></i>When to Use</h4>
+                            <ul class="list-disc pl-5 text-blue-700 space-y-1">
+                                <li>When you need an ordered collection of items</li>
+                                <li>When you need to modify your collection (add/remove items)</li>
+                                <li>When items may have duplicates</li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-purple-700 mb-2">Dictionaries</h4>
+                            <p class="text-gray-700 mb-3">Key-value pairs for data mapping</p>
+                             <p class="text-green-700 mb-5">Dictionaries are like phone books - look up information using a key (name) to find a value (number).</p>
+                         
+                            <pre class="text-sm bg-purple-100 p-2 rounded font-mono overflow-x-auto">
+population = {
+    "Lagos": 14.8,
+    "Kano": 4.3,
+    "Abuja": 3.6,
+    "Rivers": 3.3
+}</pre>
+<div class="bg-green-50 p-4 rounded-lg mt-5">
+                            <h4 class="font-bold text-green-800 mb-2"><i class="fas fa-check-circle mr-2"></i>When to Use</h4>
+                            <ul class="list-disc pl-5 text-green-700 space-y-1">
+                                <li>When you need to store data that shouldn't change</li>
+                                <li>For fixed collections like coordinates, RGB values</li>
+                                <li>When you need faster iteration than lists</li>
+                            </ul>
+                        </div>
+
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-700 mb-2">Tuples</h4>
+                            <p class="text-gray-700 mb-3">Immordered, immutable sequences</p>
+                              <p class="text-purple-700 mb-5">Tuples are like sealed documents - once created, their content cannot be changed.</p>
+                         
+                            <pre class="text-sm bg-green-100 p-2 rounded font-mono overflow-x-auto">
+geo_coords = (6.5244, 3.3792)  # Lagos coordinates</pre>
+<div class="bg-purple-50 p-4 rounded-lg mt-5">
+                            <h4 class="font-bold text-purple-800 mb-2"><i class="fas fa-check-circle mr-2"></i>When to Use</h4>
+                            <ul class="list-disc pl-5 text-purple-700 space-y-1">
+                                <li>When you need to store labeled data</li>
+                                <li>For fast lookups by key instead of position</li>
+                                <li>When data has unique identifiers</li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-700 mb-2">Sets</h4>
+                            <p class="text-gray-700 mb-3">Unordered, unique elements</p>
+                              <p class="text-red-700 mt-5">Sets are like mathematical sets - they contain unique elements and support operations like union and intersection.</p>
+                  
+                            <pre class="text-sm bg-yellow-100 p-2 rounded font-mono overflow-x-auto">
+unique_products = {"oil", "cocoa", "rubber", "cocoa"}</pre>
+<div class="bg-red-50 p-4 rounded-lg mt-5">
+                            <h4 class="font-bold text-red-800 mb-2"><i class="fas fa-check-circle mr-2"></i>When to Use</h4>
+                            <ul class="list-disc pl-5 text-red-700 space-y-1">
+                                <li>When you need to ensure all elements are unique</li>
+                                <li>For membership tests (checking if item exists)</li>
+                                <li>For mathematical set operations</li>
+                            </ul>
+                        </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-700 mb-2 flex items-center">
+                        <i class="fas fa-brain mr-2"></i> Real-World Analogy
+                    </h4>
+                    <p class="text-gray-700">
+                        Data structures are like different storage solutions in a Nigerian home:
+                        <strong>Lists</strong> are like shelves where items are stored in order and can be rearranged. 
+                        <strong>Dictionaries</strong> are like labeled storage boxes - you find things by their label (key). 
+                        <strong>Tuples</strong> are like sealed packages that can't be changed once created. 
+                        <strong>Sets</strong> are like a collection of unique spices - duplicates are automatically removed.
+                    </p>
+                </div>
+            </div>
+
+            <style>
+                 .code-block {
+            border-radius: 8px;
+            background: #282c34;
+            position: relative;
+        }
+        
+        .explanation-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .explanation-dropdown.open {
+            max-height: 1000px;
+        }
+        
+        .explanation-line {
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin: 0.5rem 0;
+        }
+       
+            </style>
+
+              <!-- Detailed Example -->
+        <section class="mb-16">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6">
+                    <h3 class="text-2xl font-bold text-white">Practical Application: Student Database</h3>
+                    <p class="text-blue-100 mt-2">Combining data structures to solve real problems</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-slate-700 mb-6">In data science, you'll often combine different data structures. Here's an example of managing student records:</p>
+                    
+                    <div class="code-block rounded-lg overflow-hidden mb-6">
+                        <pre><code class="hljs language-python"># List of student dictionaries
+students = [
+    {
+        "id": "ST001",
+        "name": "Chinwe Okonkwo",
+        "courses": {"Math", "Physics", "Computer Science"},
+        "grades": (85, 92, 78)
+    },
+    {
+        "id": "ST002",
+        "name": "Tunde Okafor",
+        "courses": {"Economics", "Statistics", "Computer Science"},
+        "grades": (76, 88, 91)
+    }
+]
+
+# Add a new student
+new_student = {
+    "id": "ST003",
+    "name": "Amina Mohammed",
+    "courses": {"Biology", "Chemistry", "Physics"},
+    "grades": (92, 85, 89)
+}
+students.append(new_student)
+
+# Find all students taking Computer Science
+cs_students = [student["name"] for student in students 
+               if "Computer Science" in student["courses"]]
+
+print("Computer Science Students:", cs_students)
+
+# Calculate average grade for a student
+def calculate_average(grades_tuple):
+    return sum(grades_tuple) / len(grades_tuple)
+
+# Print student report
+print("\nStudent Report:")
+for student in students:
+    avg = calculate_average(student["grades"])
+    print(f"{student['name']}: {avg:.1f}% average")</code></pre>
+                    </div>
+                    
+                    <button class="explain-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-300 mb-4">
+                        <i class="fas fa-chevron-down mr-2"></i> Explain This Code
+                    </button>
+                    
+                    <div class="explanation-dropdown bg-slate-50 p-4 rounded-lg">
+                        <div class="explanation-line">
+                            <span class="font-bold text-indigo-700">Lines 1-14:</span>
+                            <p class="text-slate-700 mt-1">We create a <span class="highlight">list</span> called <code>students</code> that contains <span class="highlight">dictionaries</span>. Each dictionary represents a student with:</p>
+                            <ul class="list-disc pl-6 text-slate-700 mt-1">
+                                <li>An ID (string)</li>
+                                <li>Name (string)</li>
+                                <li>Courses (a <span class="highlight">set</span> of unique course names)</li>
+                                <li>Grades (a <span class="highlight">tuple</span> of immutable grades)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="explanation-line">
+                            <span class="font-bold text-indigo-700">Line 18:</span> <span class="code-font">students.append(new_student)</span>
+                            <p class="text-slate-700 mt-1">We add a new student to our list using the <code>append()</code> method. This demonstrates how lists can grow dynamically.</p>
+                        </div>
+                        
+                        <div class="explanation-line">
+                            <span class="font-bold text-indigo-700">Lines 21-22:</span> List comprehension
+                            <p class="text-slate-700 mt-1">This compact syntax filters students who have "Computer Science" in their courses set and extracts their names.</p>
+                        </div>
+                        
+                        <div class="explanation-line">
+                            <span class="font-bold text-indigo-700">Lines 25-26:</span> Function definition
+                            <p class="text-slate-700 mt-1">We define a function to calculate average grades. This shows how to create reusable code blocks.</p>
+                        </div>
+                        
+                        <div class="explanation-line">
+                            <span class="font-bold text-indigo-700">Lines 29-32:</span> Looping through students
+                            <p class="text-slate-700 mt-1">We iterate through each student dictionary, calculate their average grade, and print a formatted report.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+               // Toggle explanation dropdown
+        document.querySelector('.explain-btn').addEventListener('click', function() {
+            const dropdown = document.querySelector('.explanation-dropdown');
+            dropdown.classList.toggle('open');
+            
+            const icon = this.querySelector('i');
+            if (dropdown.classList.contains('open')) {
+                this.innerHTML = '<i class="fas fa-chevron-up mr-2"></i> Hide Explanation';
+            } else {
+                this.innerHTML = '<i class="fas fa-chevron-down mr-2"></i> Explain This Code';
+            }
+        });
+        </script>
+
+                <!-- Best Practices & Common Mistakes -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg">
+                <h4 class="font-bold text-amber-800 text-xl mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>Common Mistakes</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-times-circle text-amber-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Modifying tuples:</span> 
+                            <p class="text-slate-700">Attempting to change elements in a tuple (immutable)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-times-circle text-amber-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Using wrong brackets:</span> 
+                            <p class="text-slate-700">Confusing [] (lists), {} (dicts/sets), and () (tuples)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-times-circle text-amber-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Assuming order in sets/dicts:</span> 
+                            <p class="text-slate-700">Sets and dicts are unordered (use OrderedDict if order matters)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-times-circle text-amber-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Key errors:</span> 
+                            <p class="text-slate-700">Accessing dictionary keys that don't exist without checking</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+                <h4 class="font-bold text-green-800 text-xl mb-4"><i class="fas fa-check-circle mr-2"></i>Best Practices</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Choose the right structure:</span> 
+                            <p class="text-slate-700">Select based on your data needs (mutable? ordered? unique?)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Use list comprehensions:</span> 
+                            <p class="text-slate-700">For concise and readable list transformations</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Leverage dictionary methods:</span> 
+                            <p class="text-slate-700"><code>.get()</code> avoids KeyErrors, <code>.items()</code> for iteration</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mt-1 mr-2"></i>
+                        <div>
+                            <span class="font-medium">Use sets for uniqueness:</span> 
+                            <p class="text-slate-700">Quickly remove duplicates from lists</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+      
+            
+            <!-- Module 5: File Handling -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">5</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">File Handling</h3>
+                        <p class="text-gray-600">Reading and writing data</p>
+                    </div>
+                </div>
+                
+                <div class="code-block mb-6">
+                    <div class="code-header">
+                        <div class="text-gray-300 text-sm">
+                            file_handling.py
+                        </div>
+                        <div>
+                            <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                <i class="fas fa-copy mr-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Reading from a file (Nigeria census data)</span>
+<span class="text-pink-400">with</span> <span class="text-blue-400">open</span>(<span class="text-green-400">'census_data.csv'</span>, <span class="text-green-400">'r'</span>) <span class="text-pink-400">as</span> <span class="text-blue-400">file</span>:
+    <span class="text-blue-400">header</span> = <span class="text-blue-400">file</span>.<span class="text-blue-400">readline</span>().<span class="text-blue-400">strip</span>().<span class="text-blue-400">split</span>(<span class="text-green-400">','</span>)
+    <span class="text-pink-400">print</span>(<span class="text-green-400">f"Columns: {header}"</span>)
+    
+    <span class="text-blue-400">data</span> = []
+    <span class="text-pink-400">for</span> <span class="text-blue-400">line</span> <span class="text-pink-400">in</span> <span class="text-blue-400">file</span>:
+        <span class="text-blue-400">row</span> = <span class="text-blue-400">line</span>.<span class="text-blue-400">strip</span>().<span class="text-blue-400">split</span>(<span class="text-green-400">','</span>)
+        <span class="text-blue-400">data</span>.<span class="text-blue-400">append</span>(<span class="text-blue-400">row</span>)
+
+<span class="text-purple-400"># Writing to a new file</span>
+<span class="text-pink-400">with</span> <span class="text-blue-400">open</span>(<span class="text-green-400">'summary.txt'</span>, <span class="text-green-400">'w'</span>) <span class="text-pink-400">as</span> <span class="text-blue-400">output</span>:
+    <span class="text-blue-400">output</span>.<span class="text-blue-400">write</span>(<span class="text-green-400">"Nigeria State Population Summary\n\n"</span>)
+    <span class="text-pink-400">for</span> <span class="text-blue-400">state_data</span> <span class="text-pink-400">in</span> <span class="text-blue-400">data</span>[:<span class="text-amber-400">5</span>]:  <span class="text-gray-500"># First 5 states</span>
+        <span class="text-blue-400">output</span>.<span class="text-blue-400">write</span>(<span class="text-green-400">f"{state_data[0]}: {state_data[1]} people\n"</span>)</pre>
+                    </div>
+                    
+                </div>
+                <!-- BUTTON TO TOGGLE -->
+<button class="explain-btn" onclick="toggleExplanation(this)">📄 Explain Census Code</button>
+
+<!-- BOX THAT SHOWS ON CLICK -->
+<div class="explanation-box" style="display: none;">
+  <h3>📂 Python Census Code Explanation</h3>
+  <p><strong>Reading the file:</strong></p>
+  <ul>
+    <li><code>with open('census_data.csv', 'r')</code>: Opens the CSV file containing census data in read mode.</li>
+    <li><code>file.readline().strip().split(',')</code>: Reads the first line (header), removes spaces, and splits it into column names.</li>
+    <li><code>for line in file:</code>: Iterates through each subsequent line (each state’s data).</li>
+    <li><code>data.append(row)</code>: Appends each state’s data as a list into a new list called <code>data</code>.</li>
+  </ul>
+
+  <p><strong>Writing to a file:</strong></p>
+  <ul>
+    <li><code>with open('summary.txt', 'w')</code>: Opens/creates <code>summary.txt</code> in write mode.</li>
+    <li><code>output.write()</code>: Writes a heading and summary information to the new file.</li>
+    <li><code>for state_data in data[:5]</code>: Loops over the first five rows in the <code>data</code> list (i.e., first 5 states).</li>
+  </ul>
+
+  <p>✅ This script reads a CSV, parses it, and writes a summary of population data into a new file.</p>
+</div>
+<script>
+  function toggleExplanation(button) {
+    const box = button.nextElementSibling;
+    box.style.display = box.style.display === "none" ? "block" : "none";
+    button.textContent = box.style.display === "block" ? "❌ Close Explanation" : "📄 Explain Census Code";
+  }
+</script>
+<style>
+    :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --accent: #8b5cf6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+  .explain-btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  .explain-btn:hover {
+    background-color: #2563eb;
+  }
+  .explanation-box {
+    background-color: #f3f4f6;
+    border-left: 4px solid #3b82f6;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #111827;
+  }
+  .explanation-box code {
+    background: #e5e7eb;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+</style>
+
+            </div>
+            
+            <!-- Module 6: Error Handling -->
+            <div class="path-item pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">6</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Error Handling</h3>
+                        <p class="text-gray-600">Debugging and exceptions</p>
+                    </div>
+                </div>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="text-gray-300 text-sm">
+                            error_handling.py
+                        </div>
+                        <div>
+                            <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                <i class="fas fa-copy mr-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Safe division with error handling</span>
+<span class="text-pink-400">def</span> <span class="text-blue-400">safe_divide</span>(<span class="text-blue-400">a</span>, <span class="text-blue-400">b</span>):
+    <span class="text-pink-400">try</span>:
+        <span class="text-blue-400">result</span> = <span class="text-blue-400">a</span> / <span class="text-blue-400">b</span>
+    <span class="text-pink-400">except</span> <span class="text-blue-400">ZeroDivisionError</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">"Error: Cannot divide by zero!"</span>)
+        <span class="text-blue-400">result</span> = <span class="text-blue-400">None</span>
+    <span class="text-pink-400">except</span> <span class="text-blue-400">TypeError</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">"Error: Please provide numbers"</span>)
+        <span class="text-blue-400">result</span> = <span class="text-blue-400">None</span>
+    <span class="text-pink-400">else</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">f"Division successful: {a} / {b} = {result}"</span>)
+    <span class="text-pink-400">finally</span>:
+        <span class="text-pink-400">print</span>(<span class="text-green-400">"Operation attempted\n"</span>)
+    <span class="text-pink-400">return</span> <span class="text-blue-400">result</span>
+
+<span class="text-purple-400"># Test cases</span>
+<span class="text-blue-400">safe_divide</span>(<span class="text-amber-400">100</span>, <span class="text-amber-400">25</span>)   <span class="text-gray-500"># Valid division</span>
+<span class="text-blue-400">safe_divide</span>(<span class="text-amber-400">50</span>, <span class="text-amber-400">0</span>)    <span class="text-gray-500"># Divide by zero</span>
+<span class="text-blue-400">safe_divide</span>(<span class="text-green-400">"100"</span>, <span class="text-amber-400">5</span>)  <span class="text-gray-500"># Type error</span></pre>
+                    </div>
+                </div>
+                <button class="explain-btn mt-5" onclick="toggleExplanation()">Explain Code</button>
+
+  <div class="explanation-box" id="explanation">
+    <p><strong>Explanation:</strong></p>
+    <ul>
+      <li><code>try</code>: Attempts to divide <code>a</code> by <code>b</code>.</li>
+      <li><code>except ZeroDivisionError</code>: Catches if <code>b</code> is 0 and avoids crashing.</li>
+      <li><code>except TypeError</code>: Catches if the inputs aren't numbers.</li>
+      <li><code>else</code>: Executes if no errors occur and prints the result.</li>
+      <li><code>finally</code>: Always prints that the operation was attempted.</li>
+      <li>The function returns the result or <code>None</code> if there was an error.</li>
+    </ul>
+    <p><strong>Test cases:</strong></p>
+    <ul>
+      <li><code>safe_divide(100, 25)</code> → Outputs result normally.</li>
+      <li><code>safe_divide(50, 0)</code> → Catches divide-by-zero error.</li>
+      <li><code>safe_divide("100", 5)</code> → Catches type mismatch.</li>
+    </ul>
+  </div>
+
+  <script>
+    function toggleExplanation() {
+      const box = document.getElementById("explanation");
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+  </script>
+
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg p-8 text-center mb-16">
+            <div class="max-w-2xl mx-auto">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-trophy text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Congratulations on Completing Python Fundamentals!</h2>
+                <p class="text-xl mb-6">You've built a strong foundation for your data science journey</p>
+                
+                <div class="bg-white bg-opacity-20 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">What's Next in Your Learning Trail</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-chart-bar text-2xl mb-2"></i>
+                            <p>Data Analysis with Pandas</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-project-diagram text-2xl mb-2"></i>
+                            <p>Data Visualization</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-robot text-2xl mb-2"></i>
+                            <p>Machine Learning</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="./index2.html" class="bg-white text-emerald-700 hover:bg-gray-100 px-6 py-3 rounded-full text-lg font-bold shadow-lg transform transition hover:scale-105">
+                    Continue Your Data Science Journey
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home</span>
+  </button>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">5IRE ULA</h3>
+                    <p class="text-sm opacity-80">
+                        The Universal Learning Archive is a flagship project of the 5th Industrial Revelution, designed to democratize technology education across Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Cohort 27 Learning Trail</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">Python Fundamentals</a></li>
+                        <li><a href="#" class="hover:underline">Data Analysis with Pandas</a></li>
+                        <li><a href="#" class="hover:underline">Data Visualization</a></li>
+                        <li><a href="#" class="hover:underline">Machine Learning Essentials</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>5IRE Headquarters, Abuja</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white border-opacity-20 mt-8 pt-6 text-center text-sm opacity-80">
+                <p>© 2025 Universal Learning Archive. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle explanation panels
+        document.querySelectorAll('.explain-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const explanation = this.closest('.code-block').querySelector('.explanation-panel');
+                explanation.style.display = explanation.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+        
+        // Copy code functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('pre');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Run interactive code
+        function runCode() {
+            const code = document.getElementById('function-code').value;
+            const outputDiv = document.getElementById('output');
+            
+            try {
+                // Capture console.log output
+                const originalLog = console.log;
+                let output = '';
+                
+                console.log = function(message) {
+                    output += message + '\n';
+                };
+                
+                // Execute the code
+                eval(code);
+                
+                // Restore console.log
+                console.log = originalLog;
+                
+                outputDiv.innerHTML = output;
+            } catch (error) {
+                outputDiv.innerHTML = `<span class="text-red-400">Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Update progress
+        function updateProgress(percent) {
+            document.documentElement.style.setProperty('--progress', percent + '%');
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(25);
+        });
+    </script>
+</body>
+</html>

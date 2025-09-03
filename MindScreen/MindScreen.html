@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>MindScreen Learning Trail — Screen Time & Mental Well-being (NITDA/NCAIR)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Prism for code highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <!-- Chart.js for demo visuals -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Subtle VS Code-like code window */
+    .code-window {
+      background: #0f172a; /* slate-900 */
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      overflow: hidden;
+    }
+    .code-titlebar {
+      background: linear-gradient(90deg, rgba(56,189,248,.08), rgba(34,197,94,.08));
+      padding: .75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 9999px; }
+    .dot.red { background:#ef4444 } .dot.yellow{ background:#f59e0b } .dot.green{ background:#22c55e }
+    .explain-block { display: none; }
+    .kbd { background:#0b1220; border:1px solid #233; border-radius:6px; padding:.15rem .4rem; font-size:.8rem }
+    .badge { padding:.2rem .5rem; border-radius:9999px; font-size:.75rem }
+    .glass {
+      background: linear-gradient(180deg, rgba(15,23,42,.7), rgba(2,6,23,.7));
+      border:1px solid rgba(148,163,184,.18);
+      backdrop-filter: blur(8px);
+      border-radius: 18px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-300/20">
+
+  <!-- Nav -->
+  <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                                <i class="fas fa-brain text-white"></i>
+                            </div>
+                            <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">
+                                MindScreen<span class="font-light">Analytics</span>
+                            </span>
+                        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-6 text-slate-300">
+        <a href="#overview" class="hover:text-white">Overview</a>
+        <a href="#install" class="hover:text-white">Install & Run</a>
+        <a href="#script" class="hover:text-white">Script</a>
+        <a href="#explain" class="hover:text-white">Explain</a>
+        <a href="#demo" class="hover:text-white">Demo Charts</a>
+        <a href="#insights" class="hover:text-white">Insights</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-cyan-900/10 to-transparent pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 py-14 md:py-20 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-black leading-tight">
+          Analyzing the Relationship Between
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+            Screen Time
+          </span>
+          & Mental Well-being
+        </h1>
+        <p class="mt-5 text-lg text-slate-300">
+          A national-standard, beginner-friendly learning trail designed to NITDA/NCAIR expectations.
+          Follow it solo, present it with confidence, and help others replicate it without a third party.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <span class="badge bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Beginner-Friendly</span>
+          <span class="badge bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">Presentation-Ready</span>
+          <span class="badge bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/30">Single File</span>
+        </div>
+        <div class="mt-8 flex gap-3">
+          <a href="#script" class="px-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold hover:opacity-90">
+            View Final Script
+          </a>
+          <a href="#install" class="px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5">
+            Install & Run Steps
+          </a>
+        </div>
+      </div>
+      <div class="glass p-6">
+        <div class="text-sm text-slate-300">Author</div>
+        <div class="text-2xl font-bold">Nuhu Muhammad Datti</div>
+        <div class="mt-2 text-sm text-slate-400">Project: Screen Time Analysis — Kaggle dataset</div>
+        <div class="mt-4 grid grid-cols-2 gap-4">
+          <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5">
+            <div class="text-xs text-slate-400">Avg Screen Time</div>
+            <div class="text-2xl font-extrabold">5.44h</div>
+          </div>
+          <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5">
+            <div class="text-xs text-slate-400">Avg Sleep</div>
+            <div class="text-2xl font-extrabold">6.89h</div>
+          </div>
+          <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5">
+            <div class="text-xs text-slate-400">Most Common Gender</div>
+            <div class="text-2xl font-extrabold">Male</div>
+          </div>
+          <div class="p-4 bg-slate-900/60 rounded-xl border border-white/5">
+            <div class="text-xs text-slate-400">Charts</div>
+            <div class="text-2xl font-extrabold">4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overview -->
+  <section id="overview" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">What You’ll Do</h2>
+    <ol class="mt-6 grid md:grid-cols-3 gap-6">
+      <li class="glass p-5">
+        <div class="font-bold text-emerald-300">1) Load & Explore</div>
+        <p class="text-slate-300 mt-2">Open the Kaggle CSV, preview info & summary stats.</p>
+      </li>
+      <li class="glass p-5">
+        <div class="font-bold text-cyan-300">2) Clean</div>
+        <p class="text-slate-300 mt-2">Remove duplicates & fill missing values safely.</p>
+      </li>
+      <li class="glass p-5">
+        <div class="font-bold text-fuchsia-300">3) Analyze & Visualize</div>
+        <p class="text-slate-300 mt-2">Produce 4 titled charts and save a cleaned CSV.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Install & Run -->
+  <section id="install" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">Install & Run (VS Code / Jupyter / Colab)</h2>
+    <div class="mt-6 grid md:grid-cols-2 gap-6">
+      <div class="glass p-6  overflow-x-auto">
+        <div class="font-bold text-slate-200 mb-3 ">Requirements</div>
+        <ul class="list-disc list-inside text-slate-300">
+          <li>Python 3.9+ (works on Windows/Mac/Linux)</li>
+          <li>VS Code (or Jupyter, or Google Colab)</li>
+          <li>Libraries: pandas, numpy, matplotlib, seaborn</li>
+        </ul>
+        <div class="mt-4 p-3 bg-slate-900/60 rounded-xl border border-white/5 overflow-x-auto">
+<pre class="text-sm"><code>$ <span class="text-emerald-400">pip install pandas numpy matplotlib seaborn</span></code></pre>
+        </div>
+      </div>
+      <div class="glass p-6">
+        <div class="font-bold text-slate-200 mb-3">Run</div>
+        <ol class="list-decimal list-inside text-slate-300 space-y-1">
+          <li>Put <span class="kbd">screen_time.csv</span> in the same folder as the script.</li>
+          <li>Open the folder in VS Code.</li>
+          <li>Run the script (Terminal → <span class="kbd">python screen_time_analysis.py</span>).</li>
+          <li>Charts will pop up; a cleaned CSV is saved as <span class="kbd">screen_time_cleaned.csv</span>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script -->
+  <section id="script" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">Final National-Standard Single-File Script</h2>
+    <p class="text-slate-300 mt-2">Your exact, presentation-ready code with no warnings and clear flow.</p>
+
+    <div class="code-window mt-6">
+      <div class="code-titlebar">
+        <div class="flex items-center gap-2">
+          <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+          <div class="ml-3 text-sm text-slate-300">screen_time_analysis.py</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copyBtn" class="px-3 py-1 text-sm bg-emerald-500 text-slate-950 rounded-md font-bold hover:opacity-90">
+            <i class="fa fa-copy mr-1"></i> Copy
+          </button>
+          <button id="downloadBtn" class="px-3 py-1 text-sm border border-white/10 rounded-md hover:bg-white/5">
+            <i class="fa fa-download mr-1"></i> Download
+          </button>
+        </div>
+      </div>
+<pre class="language-python m-0 p-4 overflow-x-auto text-sm" id="scriptText"><code class="language-python">"""
+Screen Time Analysis - Final National Standard Single File Version
+Author: Nuhu Muhammad Datti
+Date: 2025
+Description:
+    Analyzes the Kaggle screen time dataset.
+    Clean, beginner-friendly, and ready for presentation.
+"""
+
+# =========================
+# 1. Import Required Libraries
+# =========================
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# =========================
+# 2. Load Dataset
+# =========================
+file_name = "screen_time.csv"
+try:
+    df = pd.read_csv(file_name)
+    print(f"✅ Successfully loaded '{file_name}'")
+except FileNotFoundError:
+    print(f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script.")
+    raise SystemExit
+
+# =========================
+# 3. Explore Dataset
+# =========================
+print("\n--- Dataset Preview ---")
+print(df.head())
+
+print("\n--- Dataset Info ---")
+print(df.info())
+
+print("\n--- Summary Statistics ---")
+print(df.describe())
+
+# =========================
+# 4. Data Cleaning (Future-proof, no warnings)
+# =========================
+print("\n--- Data Cleaning ---")
+df = df.drop_duplicates()
+for column in df.columns:
+    if df[column].dtype in ["int64", "float64", "int32", "float32"]:
+        df[column] = df[column].fillna(df[column].mean())
+    else:
+        df[column] = df[column].fillna(df[column].mode()[0])
+print("✅ Missing values handled.")
+print("✅ Duplicates removed.")
+
+# =========================
+# 5. Basic Analysis
+# =========================
+print("\n--- Basic Analysis ---")
+avg_screen_time = df['daily_screen_time'].mean()
+print(f"📊 Average daily screen time: {avg_screen_time:.2f} hours")
+avg_sleep = df['sleep_duration'].mean()
+print(f"💤 Average sleep duration: {avg_sleep:.2f} hours")
+top_gender = df['gender'].mode()[0]
+print(f"🧍 Most common gender: {top_gender}")
+stress_counts = df['self_reported_stress'].value_counts()
+print("\n📌 Stress level distribution:\n", stress_counts)
+
+# =========================
+# 6. Visualizations
+# =========================
+print("\n--- Generating Visualizations ---")
+sns.set(style="whitegrid")
+
+# 6.1 Stress Level Distribution
+plt.figure(figsize=(8, 5))
+sns.countplot(data=df, x='self_reported_stress')
+plt.title("Stress Level Distribution")
+plt.xlabel("Stress Level")
+plt.ylabel("Count")
+plt.tight_layout()
+plt.show()
+
+# 6.2 Age vs Daily Screen Time by Stress Level
+plt.figure(figsize=(8, 5))
+sns.scatterplot(data=df, x='age', y='daily_screen_time', hue='self_reported_stress')
+plt.title("Age vs Daily Screen Time by Stress Level")
+plt.xlabel("Age")
+plt.ylabel("Daily Screen Time (hours)")
+plt.tight_layout()
+plt.show()
+
+# 6.3 Correlation Heatmap
+plt.figure(figsize=(10, 8))
+corr = df.corr(numeric_only=True)
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title("Correlation Matrix")
+plt.tight_layout()
+plt.show()
+
+# 6.4 Screen Time vs Stress Levels (jittered)
+plt.figure(figsize=(7, 5))
+sns.stripplot(data=df, x="self_reported_stress", y="daily_screen_time", jitter=True)
+plt.title("Screen Time vs Stress Levels")
+plt.xlabel("Stress Level")
+plt.ylabel("Daily Screen Time (hours)")
+plt.tight_layout()
+plt.show()
+
+# =========================
+# 7. Save Cleaned Data
+# =========================
+clean_file_name = "screen_time_cleaned.csv"
+df.to_csv(clean_file_name, index=False)
+print(f"💾 Cleaned data saved as '{clean_file_name}'")
+
+# =========================
+# 8. End of Script
+# =========================
+print("\n✅ Analysis Complete. Ready for presentation!")</code></pre>
+    </div>
+
+    <div class="mt-4 text-sm text-slate-400">
+      Tip: Put <span class="kbd">screen_time.csv</span> next to the script, then run:
+      <span class="kbd">python screen_time_analysis.py</span>
+    </div>
+    <div class="mt-8">
+  <a 
+    href="screen_time.csv" 
+    download 
+    class="px-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold hover:opacity-90"
+  >
+    Download CSV File
+  </a>
+</div>
+
+  </section>
+
+  <!-- Explain line-by-line -->
+  <section id="explain" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">Explain the Code — Line by Line</h2>
+    <p class="text-slate-300 mt-2">Click a section to reveal a simple, plain-English breakdown.</p>
+
+    <!-- Section 1 -->
+    <details class="mt-6 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        1) Imports & Description
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">""" ... """</span> → A top banner comment (docstring) that explains what the file does and who wrote it.</div>
+        <div><span class="kbd">import pandas as pd</span> → Loads pandas for loading and manipulating tables (DataFrames).</div>
+        <div><span class="kbd">import numpy as np</span> → Loads numpy for numeric helpers (not strictly required, but standard).</div>
+        <div><span class="kbd">import matplotlib.pyplot as plt</span> → Drawing charts with Matplotlib.</div>
+        <div><span class="kbd">import seaborn as sns</span> → Stylish charts built on Matplotlib.</div>
+      </div>
+    </details>
+
+    <!-- Section 2 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        2) Load Dataset
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">file_name = "screen_time.csv"</span> → The CSV file must be next to this script.</div>
+        <div><span class="kbd">pd.read_csv(file_name)</span> → Opens the CSV into a DataFrame called <span class="kbd">df</span>.</div>
+        <div><span class="kbd">try/except FileNotFoundError</span> → If the file is missing, print a friendly error and stop.</div>
+      </div>
+    </details>
+
+    <!-- Section 3 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        3) Explore Dataset (head, info, describe)
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">df.head()</span> → Shows first 5 rows (quick preview).</div>
+        <div><span class="kbd">df.info()</span> → Column names, types, and missing values count.</div>
+        <div><span class="kbd">df.describe()</span> → Summary stats (mean, min, max, quartiles) for numeric columns.</div>
+      </div>
+    </details>
+
+    <!-- Section 4 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        4) Clean Data (duplicates + missing values)
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">df.drop_duplicates()</span> → Removes repeated rows.</div>
+        <div>Loop each column:
+          <ul class="list-disc list-inside ml-4">
+            <li>Numeric? fill missing with <span class="kbd">mean()</span> (typical baseline).</li>
+            <li>Text/categorical? fill missing with <span class="kbd">mode()[0]</span> (most common value).</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <!-- Section 5 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        5) Basic Analysis (key numbers to say on stage)
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">mean()</span> → Average screen time and sleep duration.</div>
+        <div><span class="kbd">mode()[0]</span> → Most common gender.</div>
+        <div><span class="kbd">value_counts()</span> → Stress level counts.</div>
+      </div>
+    </details>
+
+    <!-- Section 6 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        6) Visualizations (4 charts)
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div>Countplot → “How many in each stress level?”</div>
+        <div>Scatterplot → “How does age relate to screen time, colored by stress?”</div>
+        <div>Heatmap → “Which numeric columns move together?”</div>
+        <div>Stripplot → “Do stress groups differ in screen time?”</div>
+      </div>
+    </details>
+
+    <!-- Section 7 -->
+    <details class="mt-4 glass p-5 group">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        7) Save Cleaned Data
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div><span class="kbd">df.to_csv("screen_time_cleaned.csv", index=False)</span> → Exports a clean version for your team.</div>
+      </div>
+    </details>
+
+    <!-- Section 8 -->
+    <details class="mt-4 glass p-5 group" id="code">
+      <summary class="cursor-pointer text-lg font-bold flex items-center justify-between">
+        8) End of Script
+        <span class="text-cyan-300 text-sm group-open:rotate-180 transition"><i class="fa fa-chevron-down"></i></span>
+      </summary>
+      <div class="mt-4 space-y-2 text-slate-300">
+        <div>Clear message: <span class="kbd">Analysis Complete. Ready for presentation!</span></div>
+      </div>
+    </details>
+
+<!-- Section 8 -->
+   <a 
+    href="./code explain/index.html" 
+    class="text-cyan-300 text-sm flex items-center gap-2 hover:text-cyan-400 transition"
+   
+    
+  >
+<div class="mt-4 glass p-5 flex items-center justify-between" >
+  <span class="text-lg font-bold">More Code Explanation   <i class="fa fa-chevron-right"></i> </span>
+
+  
+  
+</div>
+</a>
+
+<!-- Section 8 -->
+   <a 
+    href="./visials/b33.html" 
+    class="text-cyan-300 text-sm flex items-center gap-2 hover:text-cyan-400 transition"
+    
+  >
+<div class="mt-4 glass p-5 flex items-center justify-between" >
+  <span class="text-lg font-bold">Data Visualization Examples & Explanations  <i class="fa fa-chevron-right"></i> </span>
+
+  
+  
+</div>
+</a>
+
+  </section>
+
+  <!-- Demo Charts (Front-end only to visualize the story) -->
+  <section id="demo" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">Presentation Demo Charts (Front-end)</h2>
+    <p class="text-slate-300 mt-2">These mirror what your Python script will produce (for live web demos).</p>
+    <div class="mt-8 grid md:grid-cols-2 gap-8">
+      <div class="glass p-5">
+        <div class="text-sm text-slate-400 mb-2">Chart A</div>
+        <h3 class="font-bold">Stress Level Distribution</h3>
+        <canvas id="chartA" height="180"></canvas>
+      </div>
+      <div class="glass p-5">
+        <div class="text-sm text-slate-400 mb-2">Chart B</div>
+        <h3 class="font-bold">Age vs Daily Screen Time</h3>
+        <canvas id="chartB" height="180"></canvas>
+      </div>
+      <div class="glass p-5 md:col-span-2">
+        <div class="text-sm text-slate-400 mb-2">Chart C</div>
+        <h3 class="font-bold">Correlation Heatmap (Demo)</h3>
+        <canvas id="chartC" height="120"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insights -->
+  <section id="insights" class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-black">End-of-Script Insights (What To Say)</h2>
+    <div class="mt-6 grid md:grid-cols-3 gap-6">
+      <div class="glass p-5">
+        <div class="font-bold text-emerald-300">1) Summary</div>
+        <p class="text-slate-300 mt-2">
+          Average screen time is ~5.4 hours/day, average sleep is ~6.9 hours. Stress levels cluster visibly in charts.
+        </p>
+      </div>
+      <div class="glass p-5">
+        <div class="font-bold text-cyan-300">2) Relationship</div>
+        <p class="text-slate-300 mt-2">
+          Higher screen time tends to align with higher self-reported stress in this dataset (see stripplot & counts).
+        </p>
+      </div>
+      <div class="glass p-5">
+        <div class="font-bold text-fuchsia-300">3) Next Steps</div>
+        <p class="text-slate-300 mt-2">
+          Try modeling: predict stress levels from screen & sleep; segment by age; track change after interventions.
+        </p>
+      </div>
+    </div>
+  </section>
+  <style>
+  .back-button {
+    position: fixed;
+    bottom: 20px; /* stays visible at bottom */
+    left: 20px;
+ /* NITDA deep green */
+    /* color: #ffffff; */
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    display: none; /* hidden by default */
+  }
+
+  .back-button:hover {
+    background: #00a859; /* NCIAIR lighter green */
+    transform: translateY(-3px);
+  }
+
+  .back-button:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<a href="./index.html#mindscreen" class="back-button bg-emerald-500" onclick="history.back()">← Home</a>
+
+<script>
+  window.addEventListener("scroll", function() {
+    const backButton = document.querySelector(".back-button");
+    if (window.scrollY > 100) { 
+      backButton.style.display = "block"; // show after scroll
+    } else {
+      backButton.style.display = "none"; // hide at top
+    }
+  });
+</script>
+
+  <!-- Footer -->
+ <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                    <p class="mt-4 text-slate-400 text-sm">
+                        A ULA approved platform advancing data literacy and digital wellness research in Nigeria.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Platform</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Learning Trails</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Research Library</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Data Tools</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Policy Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Research Papers</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Tutorials & Guides</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Case Studies</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-envelope mr-2 text-cyan-400"></i> 
+                            nuhumuhammaddatti@gmail.com
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-phone-alt mr-2 text-emerald-400"></i> 
+                            +234 808 884 0095
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-violet-400"></i> 
+                            Abuja, Nigeria
+                        </li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-slate-400 hover:text-cyan-400">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-emerald-400">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-violet-400">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-rose-500">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-sm">
+                    © 2025 MindScreen Analytics. A National Data Literacy Initiative. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+  <!-- JS (copy/download + demo charts) -->
+  <script>
+    // Copy script text
+    const copyBtn = document.getElementById('copyBtn');
+    const scriptEl = document.getElementById('scriptText');
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(scriptEl.textContent);
+        copyBtn.innerHTML = '<i class="fa fa-check mr-1"></i> Copied';
+        setTimeout(()=> copyBtn.innerHTML = '<i class="fa fa-copy mr-1"></i> Copy', 1500);
+      } catch(e) {
+        alert('Copy failed, please select and copy manually.');
+      }
+    });
+
+    // Download script as .py
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const blob = new Blob([scriptEl.textContent], {type: 'text/x-python'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'screen_time_analysis.py';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Demo Charts
+    const a = document.getElementById('chartA');
+    new Chart(a, {
+      type: 'bar',
+      data: {
+        labels: ['low', 'medium', 'high'],
+        datasets: [{ label: 'Count', data: [24, 17, 59] }]
+      },
+      options: {
+        plugins: { legend: { display: false }, title: { display: true, text: 'Stress Level Distribution (Demo)' } },
+        scales: { x: { grid: { display:false } } }
+      }
+    });
+
+    const b = document.getElementById('chartB');
+    // pseudo datapoints (age, screen)
+    const points = [
+      {x:21,y:4.8},{x:24,y:6.2},{x:28,y:5.9},{x:31,y:5.1},{x:35,y:6.8},{x:41,y:7.1},{x:45,y:6.0}
+    ];
+    new Chart(b, {
+      type:'scatter',
+      data:{ datasets:[{ label:'Age vs Screen Time', data: points }]},
+      options:{ plugins:{ title:{ display:true, text:'Age vs Daily Screen Time (Demo)' } }, scales:{ x:{ title:{ text:'Age', display:true } }, y:{ title:{ text:'Hours', display:true } } } }
+    });
+
+    const c = document.getElementById('chartC');
+    // simple heatmap-like via bubble (demo visual only)
+    const heatData = {
+      labels: ['age','daily','sleep','anxiety','depression'],
+      datasets: [
+        { label:'age', data:[{x:0,y:0,r:8},{x:1,y:0,r:6},{x:2,y:0,r:4},{x:3,y:0,r:5},{x:4,y:0,r:5}]},
+        { label:'daily', data:[{x:0,y:1,r:6},{x:1,y:1,r:8},{x:2,y:1,r:5},{x:3,y:1,r:6},{x:4,y:1,r:6}]},
+        { label:'sleep', data:[{x:0,y:2,r:4},{x:1,y:2,r:5},{x:2,y:2,r:8},{x:3,y:2,r:4},{x:4,y:2,r:4}]},
+        { label:'anxiety', data:[{x:0,y:3,r:5},{x:1,y:3,r:6},{x:2,y:3,r:4},{x:3,y:3,r:8},{x:4,y:3,r:7}]},
+        { label:'depression', data:[{x:0,y:4,r:5},{x:1,y:4,r:6},{x:2,y:4,r:4},{x:3,y:4,r:7},{x:4,y:4,r:8}]}
+      ]
+    };
+    new Chart(c, {
+      type:'bubble',
+      data: heatData,
+      options:{
+        plugins:{ legend:{ display:false }, title:{ display:true, text:'Correlation Map (Illustrative)' } },
+        scales:{ x:{ ticks:{ callback:(v)=>['age','daily','sleep','anxiety','depression'][v] }, beginAtZero:true, max:4 },
+                y:{ ticks:{ callback:(v)=>['age','daily','sleep','anxiety','depression'][v] }, beginAtZero:true, max:4 } }
+      }
+    });
+  </script>
+</body>
+</html>

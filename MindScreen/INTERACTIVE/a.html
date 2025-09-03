@@ -1,0 +1,97 @@
+<!-- Button to show/hide explanation -->
+<button onclick="toggleExplanation()" 
+        style="padding: 12px 24px; 
+               background: #0d4a9b; /* NITDA Blue */
+               color: #ffffff; 
+               font-weight: 600; 
+               border-radius: 6px; 
+               border: none;
+               cursor: pointer;
+               transition: all 0.3s;
+               box-shadow: 0 2px 8px rgba(13, 74, 155, 0.3);">
+    📖 Toggle Code Explanation
+</button>
+
+<!-- Explanation Section (hidden by default) -->
+<div id="explanation-section" 
+     style="display:none; 
+            margin-top: 20px; 
+            padding: 25px; 
+            background: #1e1e1e; /* VS Code Dark */
+            border-radius: 8px; 
+            border: 1px solid #3c3c3c;
+            font-family: 'Consolas', monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);">
+     
+  <h2 style="font-size: 20px; 
+             font-weight: 700; 
+             margin-bottom: 18px;
+             color: #569cd6; /* VS Code Blue */
+             display: flex;
+             align-items: center;
+             gap: 10px;">
+    <span style="font-size: 24px;">🔍</span> Step-by-Step Code Explanation
+  </h2>
+
+  <div style="line-height: 1.6; color: #d4d4d4;">
+    <p><b style="color: #4ec9b0;">1. Importing Libraries</b><br>
+    - <code style="background: #2d2d2d; 
+                  padding: 2px 6px;
+                  border-radius: 4px;
+                  border: 1px solid #3c3c3c;
+                  color: #d7ba7d;">pandas</code> (pd): Data manipulation and analysis<br>
+    - <code style="background: #2d2d2d; 
+                  padding: 2px 6px;
+                  border-radius: 4px;
+                  border: 1px solid #3c3c3c;
+                  color: #d7ba7d;">numpy</code> (np): Numerical operations</p>
+
+    <p><b style="color: #4ec9b0;">2. Loading Datasets</b><br>
+    - <code style="color: #6a9955;">nigerian_screen_time.csv</code>: Digital engagement metrics<br>
+    - <code style="color: #6a9955;">mental_wellbeing_survey.xlsx</code>: Psychological assessment data<br>
+    - <code style="color: #6a9955;">demographics.json</code>: Participant profiles</p>
+
+    <p><b style="color: #4ec9b0;">3. Merging Datasets</b><br>
+    - Unified using <code style="color: #9cdcfe;">participant_id</code> as primary key<br>
+    - Dual integration: Screen time → Mental health → Demographics<br>
+    <span style="color: #0d4a9b; font-weight: 600;">✓</span> Consolidated dataset for comprehensive analysis</p>
+
+    <p><b style="color: #4ec9b0;">4. Handling Missing Values</b><br>
+    - <code style="color: #9cdcfe;">social_media_time</code>: Nulls → Median (robust to outliers)<br>
+    - <code style="color: #9cdcfe;">wellbeing_score</code>: Nulls → Mean (balanced imputation)<br>
+    <span style="display: inline-block; 
+               background: #0d4a9b22; 
+               padding: 4px 8px;
+               border-radius: 4px;
+               margin-top: 8px;
+               border-left: 3px solid #0d4a9b;">
+    Ensures statistical integrity for NITDA/NCAIR policy research
+    </span></p>
+
+    <p><b style="color: #4ec9b0;">5. Research Significance</b><br>
+    - Reveals digital habits → mental health correlations<br>
+    - Provides evidence for national digital wellbeing frameworks<br>
+    - Enables targeted interventions by demographic groups</p>
+  </div>
+
+  <div style="margin-top: 20px; 
+              padding: 16px; 
+              background: #0d4a9b11;
+              border-radius: 8px;
+              border: 1px solid #0d4a9b33;">
+    <p style="color: #b5cea8; 
+              font-weight: 500;
+              margin: 0;">
+      ✨ Core Insight: This pipeline creates Nigeria's first integrated dataset for analyzing 
+      <span style="color: #4ec9b0;">screen time impacts</span> on mental wellbeing - 
+      enabling evidence-based policy decisions by NITDA/NCAIR
+    </p>
+  </div>
+</div>
+
+<script>
+function toggleExplanation() {
+  const section = document.getElementById("explanation-section");
+  section.style.display = section.style.display === "none" ? "block" : "none";
+}
+</script>

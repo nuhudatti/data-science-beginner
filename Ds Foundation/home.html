@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR Data Science Cohort - Legacy Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nigeriaGreen: '#008751',
+                        nigeriaYellow: '#FCD116',
+                        nigeriaBlack: '#000000',
+                        primary: '#1a365d',
+                        secondary: '#2b6cb0'
+                    },
+                    fontFamily: {
+                        heading: ['Raleway', 'sans-serif'],
+                        body: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(0,135,81,0.9) 0%, rgba(0,0,0,0.8) 100%), 
+                        url('https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=2070') center/cover;
+        }
+        .module-card {
+            transition: all 0.3s ease;
+            border-top: 4px solid #FCD116;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .assignment-card {
+            background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .nigerian-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23fcd116' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="font-body bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-5 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="flex items-center">
+                    <div class="bg-nigeriaGreen w-12 h-12 rounded-full flex items-center justify-center">
+                        <div class="bg-nigeriaYellow w-8 h-8 rounded-full"></div>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-primary">NITDA/NCAIR</h1>
+                        <p class="text-xs text-gray-600">Data Science Cohort 27</p>
+                    </div>
+                </div>
+                <h2 class="ml-8 text-2xl font-heading font-bold text-gray-800">Universal Learning Archive</h2>
+            </div>
+            <div class="flex items-center">
+                <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                    <div class="w-8 h-8 rounded-full bg-nigeriaGreen flex items-center justify-center">
+                        <span class="text-white font-bold">DS</span>
+                    </div>
+                    <span class="ml-2 font-medium">Data Scientist</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block bg-black bg-opacity-30 px-6 py-1 rounded-full mb-4">
+                <span class="text-nigeriaYellow font-semibold"><i class="fas fa-medal mr-2"></i>LEGACY PLATFORM</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-heading font-bold mb-6">Nigeria's Digital Future Starts Here</h1>
+            <p class="text-xl max-w-3xl mx-auto mb-10">A revolutionary learning platform designed to propel Nigeria into the forefront of global data science excellence</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mt-12">
+                <a href="#assignment" class="bg-nigeriaYellow hover:bg-yellow-500 text-nigeriaGreen font-bold py-4 px-8 rounded-full text-lg transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-tasks mr-2"></i>View Assignment
+                </a>
+                <a href="#modules" class="bg-white hover:bg-gray-100 text-nigeriaGreen font-bold py-4 px-8 rounded-full text-lg transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-book-open mr-2"></i>Explore Modules
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assignment Section -->
+    <section id="assignment" class="py-16 nigerian-pattern">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold text-primary mb-4">Data Science Assignment</h2>
+                <div class="w-24 h-1 bg-nigeriaYellow mx-auto"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto assignment-card text-white rounded-2xl overflow-hidden">
+                <div class="p-8 md:p-12">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">Iris Dataset Analysis</h3>
+                            <p class="text-yellow-200">Cohort 27 - Beginner Assignment</p>
+                        </div>
+                        <div class="bg-black bg-opacity-30 rounded-full px-4 py-1">
+                            <i class="fas fa-clock mr-2"></i>~2 hours
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">Python Tasks</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Load Iris dataset from sklearn</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data exploration with pandas</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data analysis and filtering</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data visualization (scatter, histogram, boxplot)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">R Tasks</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Load built-in Iris dataset</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data exploration functions</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data analysis and aggregation</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                    <span>Data visualization (scatter, histogram, boxplot)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black bg-opacity-30 rounded-xl p-6 mb-6">
+                        <h4 class="font-bold text-lg mb-3 text-nigeriaYellow">Deliverables</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-center">
+                                <i class="fab fa-python text-2xl mr-3"></i>
+                                <span>Python notebook or .py file</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fab fa-r-project text-2xl mr-3"></i>
+                                <span>R script (.R file)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-file-alt text-2xl mr-3"></i>
+                                <span>1-2 sentence comparison</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-nigeriaYellow hover:bg-yellow-500 text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-download mr-2"></i>Download Resources
+                        </button>
+                        <button class="bg-white hover:bg-gray-100 text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-play-circle mr-2"></i>Start Assignment
+                        </button>
+                        <button class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-nigeriaGreen font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-video mr-2"></i>Watch Tutorial
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section id="modules" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold text-primary mb-4">Learning Modules</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">Our revolutionary learning trail takes you from beginner to data science expert with Nigeria-focused curriculum</p>
+                <div class="w-24 h-1 bg-nigeriaYellow mx-auto mt-4"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Module 1 -->
+                <div class="module-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-green-100 text-nigeriaGreen px-3 py-1 rounded-full text-sm font-medium mb-2">25% Complete</span>
+                                <h3 class="text-xl font-bold text-gray-800">Python Fundamentals</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-nigeriaGreen rounded-full flex items-center justify-center">
+                                <i class="fab fa-python text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Master essential programming concepts needed for data science with Nigeria-focused examples</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Estimated Time: 3-4 hours</span>
+                                <span>Self-Paced</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-nigeriaGreen h-2 rounded-full" style="width: 25%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-nigeriaGreen font-bold py-3 rounded-lg transition-all">
+                            <i class="fas fa-book-open mr-2"></i>Continue Learning
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Module 2 -->
+                <div class="module-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">45% Complete</span>
+                                <h3 class="text-xl font-bold text-gray-800">Data Analysis with Pandas</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-table text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Master the essential data manipulation library for transforming data into insights with Nigerian economic data</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Estimated Time: 4-5 hours</span>
+                                <span>Self-Paced</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-blue-600 font-bold py-3 rounded-lg transition-all">
+                            <i class="fas fa-book-open mr-2"></i>Continue Learning
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Module 3 -->
+                <div class="module-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-2">65% Complete</span>
+                                <h3 class="text-xl font-bold text-gray-800">Data Visualization</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-bar text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Master the art of transforming data into compelling visual narratives with Nigerian state data</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Estimated Time: 4-5 hours</span>
+                                <span>Self-Paced</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-purple-600 font-bold py-3 rounded-lg transition-all">
+                            <i class="fas fa-book-open mr-2"></i>Continue Learning
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Module 4 -->
+                <div class="module-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium mb-2">85% Complete</span>
+                                <h3 class="text-xl font-bold text-gray-800">Machine Learning Fundamentals</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Learn to build predictive models and uncover insights from data with Nigerian crop prediction dataset</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Estimated Time: 6-8 hours</span>
+                                <span>Self-Paced</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-orange-500 font-bold py-3 rounded-lg transition-all">
+                            <i class="fas fa-book-open mr-2"></i>Continue Learning
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Module 5 -->
+                <div class="module-card bg-white rounded-xl overflow-hidden shadow-md">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium mb-2">100% Complete</span>
+                                <h3 class="text-xl font-bold text-gray-800">Capstone Project</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Apply all your skills to analyze and predict Nigeria's economic trends for real-world impact</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Estimated Time: 10-15 hours</span>
+                                <span>Self-Paced</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-600 h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-red-600 font-bold py-3 rounded-lg transition-all">
+                            <i class="fas fa-eye mr-2"></i>View Project
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-gradient-to-br from-primary to-secondary text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold mb-4">Global Recognition</h2>
+                <div class="w-24 h-1 bg-nigeriaYellow mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-8 border border-white border-opacity-20">
+                    <div class="text-5xl text-nigeriaYellow mb-4">"</div>
+                    <p class="italic mb-6">This platform represents the future of technical education in Africa. NITDA/NCAIR has created something truly revolutionary that will impact generations to come.</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Kashifu Inuwa Abdullahi</h4>
+                            <p class="text-nigeriaYellow">Director General, NITDA</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-8 border border-white border-opacity-20">
+                    <div class="text-5xl text-nigeriaYellow mb-4">"</div>
+                    <p class="italic mb-6">The Nigerian data science program sets a new standard for technical education globally. Its focus on practical, real-world applications is truly impressive.</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Sundar Pichai</h4>
+                            <p class="text-nigeriaYellow">CEO, Google</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-8 border border-white border-opacity-20">
+                    <div class="text-5xl text-nigeriaYellow mb-4">"</div>
+                    <p class="italic mb-6">I've never seen a more comprehensive and well-structured data science curriculum. The Nigerian approach to contextual learning should be adopted worldwide.</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Fei-Fei Li</h4>
+                            <p class="text-nigeriaYellow">Director, Stanford AI Lab</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-heading font-bold mb-4">NITDA/NCAIR</h3>
+                    <p class="mb-4">Empowering Nigeria through technological innovation and digital literacy.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-nigeriaYellow"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white hover:text-nigeriaYellow"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-white hover:text-nigeriaYellow"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white hover:text-nigeriaYellow"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-nigeriaYellow">Home</a></li>
+                        <li><a href="#assignment" class="hover:text-nigeriaYellow">Assignment</a></li>
+                        <li><a href="#modules" class="hover:text-nigeriaYellow">Modules</a></li>
+                        <li><a href="#" class="hover:text-nigeriaYellow">Resources</a></li>
+                        <li><a href="#" class="hover:text-nigeriaYellow">Certification</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
+                            <span>NITDA Headquarters, Abuja, Nigeria</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1 mr-3"></i>
+                            <span>+234 9 461 7000</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-3"></i>
+                            <span>datascience@nitda.gov.ng</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Newsletter</h4>
+                    <p class="mb-4">Subscribe to receive updates on the Data Science program</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 w-full rounded-l-lg text-gray-800 focus:outline-none">
+                        <button class="bg-nigeriaYellow text-nigeriaGreen px-4 rounded-r-lg font-bold">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 National Information Technology Development Agency (NITDA). All rights reserved.</p>
+                <p class="mt-2">A Legacy Platform for Nigeria's Digital Future</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

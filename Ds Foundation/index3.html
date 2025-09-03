@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Data Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce',
+                        dspink: '#db2777',
+                        dsorange: '#ea580c'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --progress: 65%;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .explanation-panel {
+            background: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            padding: 16px;
+        }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            width: var(--progress);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .highlight {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(56, 189, 248, 0.3);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+        
+        .update-ticker {
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .learning-path {
+            position: relative;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 24px;
+            height: calc(100% - 80px);
+            width: 4px;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .path-item::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item.active::before {
+            background: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
+        }
+        
+        .path-item.completed::before {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .path-item h3::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: -24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            z-index: -1;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            color: #4b5563;
+        }
+        
+        .chart-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+        
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .chart-bar {
+            position: absolute;
+            bottom: 40px;
+            width: 30px;
+            background: #3b82f6;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+            box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: 15px;
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .chart-axis {
+            position: absolute;
+            height: 1px;
+            background: #6b7280;
+        }
+        
+        .chart-axis-label {
+            position: absolute;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .chart-line {
+            position: absolute;
+            height: 2px;
+            background: #db2777;
+            transform-origin: left center;
+            box-shadow: 0 0 5px rgba(219, 39, 119, 0.3);
+        }
+        
+        .chart-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #db2777;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 5px rgba(219, 39, 119, 0.5);
+        }
+        
+        .interactive-code {
+            min-height: 200px;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .interactive-output {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .python-keyword {
+            color: #f472b6;
+        }
+        
+        .python-function {
+            color: #38bdf8;
+        }
+        
+        .python-string {
+            color: #86efac;
+        }
+        
+        .python-comment {
+            color: #94a3b8;
+        }
+        
+        .python-operator {
+            color: #fbbf24;
+        }
+        
+        .dataframe-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .dataframe-table th {
+            background: #334155;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #475569;
+        }
+        
+        .dataframe-table td {
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .dataframe-table tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+        
+        .dataframe-table tr:hover {
+            background: #e2e8f0;
+        }
+          /* NAV */
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+
+        /* dropdown */
+         .ula-explain-wrap {
+      max-width: 800px;
+      margin: 30px auto;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.7;
+    }
+
+    .ula-dropdown-btn {
+      background-color: #006b3f;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .ula-dropdown-btn:hover {
+      background-color: #025f33;
+    }
+
+    .ula-dropdown-content {
+      display: none;
+      background-color: #f1f1f1;
+      border-left: 4px solid #006b3f;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .ula-dropdown-content code {
+      background: #e0e0e0;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                    <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Data Visualization</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Latest updates ticker -->
+    <div class="update-ticker">
+        <div class="ticker-content">
+            <span class="px-4"><i class="fas fa-bullhorn mr-2"></i>New: Interactive Plotly visualizations added</span>
+            <span class="px-4"><i class="fas fa-star mr-2"></i>Updated: Geo-mapping of Nigerian states</span>
+            <span class="px-4"><i class="fas fa-book mr-2"></i>Now available: Visualization best practices guide</span>
+        </div>
+    </div>
+            <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="./fundementals.html" class="nav-item text-nca-700"><i class="fas fa-code mr-1"></i>Python</a>
+                <a href="./index2.html" class="nav-item hover:text-nca-700"><i class="fas fa-database mr-1"></i>Data</a>
+                <a href="#" class="nav-item hover:text-nca-700 font-medium active-nav"><i class="fas fa-chart-line mr-1"></i>Plots</a>
+                <a href="./index4.html" class="nav-item hover:text-nca-700"><i class="fas fa-robot mr-1"></i>ML</a>
+                <a href="./index5.html" class="nav-item hover:text-nca-700"><i class="fas fa-graduation-cap mr-1"></i>Project</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page header with progress -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Data Visualization: Telling Stories with Data</h1>
+                <p class="text-gray-600 mb-4">Master the art of transforming data into compelling visual narratives</p>
+                
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-secondary mr-2"></i>
+                        <span>Estimated Time: 4-5 hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span>Prerequisite: Data Analysis with Pandas</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium">Your Progress</span>
+                        <span id="progress-text" class="text-sm font-medium">65%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>5IRE Curriculum Compliant
+            </div>
+        </div>
+
+        <!-- Mission statement -->
+        <div class="bg-gradient-to-r from-dsblue to-dsorange text-white rounded-xl shadow-md p-6 mb-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">Visualize Insights, Inspire Action</h2>
+            <p class="text-lg mb-4">
+                "Learn to transform complex data into clear, compelling visual stories that drive understanding and decision-making."
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <span>Create insightful charts</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <span>Visualize geographic data</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-hand-pointer"></i>
+                    </div>
+                    <span>Build interactive dashboards</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legacy Data Visualization Trail -->
+<section id="data-viz-legacy" class="bg-white py-12 px-4 sm:px-8 lg:px-24  rounded-xl ">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <!-- Visual Section -->
+      <div class="relative">
+        <img src="./IMG/flag.jpeg" alt="Nigeria Flag" class="w-16 h-16 mb-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Data Visualization: Telling Stories with Data</h2>
+        <p class="text-gray-600 text-lg mb-6">Turn numbers into narratives using powerful visual tools like Matplotlib, Seaborn, Plotly, and geo-maps.</p>
+        <ul class="space-y-4 text-gray-700">
+          <li class="flex items-start">
+            <i class="fas fa-chart-bar text-blue-600 text-xl mt-1 mr-3"></i>
+            Create insightful charts from real Nigerian datasets
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-map-marked-alt text-green-600 text-xl mt-1 mr-3"></i>
+            Visualize geo-economic data of Nigerian states
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-sliders-h text-yellow-600 text-xl mt-1 mr-3"></i>
+            Build interactive dashboards with Plotly
+          </li>
+        </ul>
+      </div>
+
+      <!-- Informational Trail Section -->
+      <div class="bg-gray-50 p-6 rounded-2xl shadow-lg">
+        <p class="uppercase text-sm text-indigo-600 font-semibold mb-2">Learning Trail</p>
+        <ol class="list-decimal list-inside space-y-4 text-gray-800">
+          <li>
+            <span class="font-bold">Introduction to Data Visualization:</span>
+            Master the principles of clear communication with charts.
+          </li>
+          <li>
+            <span class="font-bold">Matplotlib Essentials:</span>
+            Learn to craft custom bar, line, and scatter plots.
+          </li>
+          <li>
+            <span class="font-bold">Advanced Visualization:</span>
+            Use Seaborn for patterns, Plotly for interaction, and maps for spatial insight.
+          </li>
+        </ol>
+
+        <div class="mt-6">
+          <p class="text-sm text-gray-500">Includes Nigerian color palette, Plotly choropleths, and interactive GDP maps.</p>
+          <!-- <a href="#trail-start" class="inline-flex items-center mt-4 text-indigo-700 font-semibold hover:underline">
+            <i class="fas fa-arrow-right mr-2"></i> Explore Full Learning Trail
+          </a> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress + Certification Badge -->
+    <div class="mt-12 flex flex-col sm:flex-row items-center justify-between">
+      <div class="w-full sm:w-auto flex items-center space-x-4">
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div class="bg-green-500 h-full text-xs text-white text-center p-1 leading-none" style="width: 65%">65% Complete</div>
+        </div>
+      </div>
+      <div class="mt-6 sm:mt-0">
+        <span class="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+          <i class="fas fa-award mr-2"></i> 5IRE Certified Module
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Legacy Data Visualization Trail -->
+
+
+        <!-- Complete Learning Trail -->
+        <h2 class="text-2xl font-bold mb-6 mt-16 text-center">Learning Trail: Data Visualization</h2>
+        
+        <div class="learning-path bg-white rounded-xl shadow-lg p-6 mb-16">
+            <!-- Module 1: Introduction to Data Visualization -->
+            <div class="path-item completed active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-green-600">1</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Introduction to Data Visualization</h3>
+                        <p class="text-gray-600">Principles, types, and choosing the right chart</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Effective visualization transforms complex data into understandable insights. It helps identify patterns, 
+                        communicate findings, and drive data-informed decisions. Choosing the right visualization is crucial 
+                        for conveying your message clearly.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Visualization Principles</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Clarity Over Creativity</strong>
+                                        <p class="text-sm">Prioritize clear communication over decorative elements</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Know Your Audience</strong>
+                                        <p class="text-sm">Tailor complexity to your audience's expertise</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Highlight Key Insights</strong>
+                                        <p class="text-sm">Use visual cues to direct attention to important findings</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Simplify</strong>
+                                        <p class="text-sm">Remove unnecessary elements that don't convey information</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Choosing the Right Chart</h4>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-2">Purpose</th>
+                                        <th class="p-2">Recommended Charts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2 border-b">Compare values</td>
+                                        <td class="p-2 border-b">Bar chart, Column chart</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border-b">Show distribution</td>
+                                        <td class="p-2 border-b">Histogram, Box plot</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border-b">Reveal relationships</td>
+                                        <td class="p-2 border-b">Scatter plot, Bubble chart</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border-b">Display composition</td>
+                                        <td class="p-2 border-b">Pie chart, Stacked bar</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2">Show trends over time</td>
+                                        <td class="p-2">Line chart, Area chart</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div class="chart-container">
+                        <div class="chart-grid"></div>
+                        <div class="chart-bar" style="left: 20%; height: 60%;">
+                            <div class="chart-label">Lagos</div>
+                        </div>
+                        <div class="chart-bar" style="left: 40%; height: 30%;">
+                            <div class="chart-label">Kano</div>
+                        </div>
+                        <div class="chart-bar" style="left: 60%; height: 45%;">
+                            <div class="chart-label">Abuja</div>
+                        </div>
+                        <div class="chart-bar" style="left: 80%; height: 35%;">
+                            <div class="chart-label">Rivers</div>
+                        </div>
+                        <div class="chart-axis" style="bottom: 40px; left: 0; width: 100%;"></div>
+                        <div class="chart-axis" style="left: 40px; bottom: 40px; height: 240px; transform: rotate(-90deg); transform-origin: left bottom;"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-grid"></div>
+                        <div class="chart-line" style="top: 60%; left: 10%; width: 80%; transform: rotate(-15deg);"></div>
+                        <div class="chart-line" style="top: 50%; left: 10%; width: 80%;"></div>
+                        <div class="chart-line" style="top: 40%; left: 10%; width: 80%; transform: rotate(15deg);"></div>
+                        
+                        <div class="chart-dot" style="top: 60%; left: 20%;"></div>
+                        <div class="chart-dot" style="top: 55%; left: 30%;"></div>
+                        <div class="chart-dot" style="top: 45%; left: 40%;"></div>
+                        <div class="chart-dot" style="top: 40%; left: 50%;"></div>
+                        <div class="chart-dot" style="top: 45%; left: 60%;"></div>
+                        <div class="chart-dot" style="top: 55%; left: 70%;"></div>
+                        <div class="chart-dot" style="top: 60%; left: 80%;"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-grid"></div>
+                        <div class="absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <div class="w-40 h-40 rounded-full border-8 border-green-500"></div>
+                            <div class="w-30 h-30 rounded-full border-8 border-yellow-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            <div class="w-20 h-20 rounded-full border-8 border-red-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 2: Matplotlib Fundamentals -->
+            <div class="path-item active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">2</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Matplotlib Fundamentals</h3>
+                        <p class="text-gray-600">Creating basic plots and customizing visuals</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Matplotlib is the foundation of Python visualization. It provides fine-grained control over every aspect 
+                        of your plots. Mastering Matplotlib enables you to create publication-quality visualizations and forms 
+                        the basis for understanding higher-level libraries.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    matplotlib_basics.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Import libraries</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">matplotlib.pyplot</span> <span class="text-pink-400">as</span> <span class="text-blue-400">plt</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">numpy</span> <span class="text-pink-400">as</span> <span class="text-blue-400">np</span>
+
+<span class="text-purple-400"># Nigerian state data</span>
+<span class="text-blue-400">states</span> = [<span class="text-green-400">'Lagos'</span>, <span class="text-green-400">'Kano'</span>, <span class="text-green-400">'Abuja'</span>, <span class="text-green-400">'Rivers'</span>, <span class="text-green-400">'Oyo'</span>]
+<span class="text-blue-400">population</span> = [<span class="text-amber-400">14.8</span>, <span class="text-amber-400">4.3</span>, <span class="text-amber-400">3.6</span>, <span class="text-amber-400">3.3</span>, <span class="text-amber-400">3.2</span>]  <span class="text-gray-500"># Millions</span>
+<span class="text-blue-400">gdp</span> = [<span class="text-amber-400">102.4</span>, <span class="text-amber-400">23.7</span>, <span class="text-amber-400">29.3</span>, <span class="text-amber-400">21.6</span>, <span class="text-amber-400">16.2</span>]    <span class="text-gray-500"># Billion USD</span>
+
+<span class="text-purple-400"># Create figure and axes</span>
+<span class="text-blue-400">fig</span>, <span class="text-blue-400">ax</span> = <span class="text-blue-400">plt</span>.<span class="text-blue-400">subplots</span>(<span class="text-blue-400">figsize</span>=(<span class="text-amber-400">10</span>, <span class="text-amber-400">6</span>))
+
+<span class="text-purple-400"># Bar plot for population</span>
+<span class="text-blue-400">x</span> = <span class="text-blue-400">np</span>.<span class="text-blue-400">arange</span>(<span class="text-blue-400">len</span>(<span class="text-blue-400">states</span>))
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">bar</span>(<span class="text-blue-400">x</span> - <span class="text-amber-400">0.2</span>, <span class="text-blue-400">population</span>, <span class="text-amber-400">0.4</span>, <span class="text-blue-400">label</span>=<span class="text-green-400">'Population (Millions)'</span>, <span class="text-blue-400">color</span>=<span class="text-green-400">'#006b3f'</span>)
+
+<span class="text-purple-400"># Bar plot for GDP</span>
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">bar</span>(<span class="text-blue-400">x</span> + <span class="text-amber-400">0.2</span>, <span class="text-blue-400">gdp</span>, <span class="text-amber-400">0.4</span>, <span class="text-blue-400">label</span>=<span class="text-green-400">'GDP (Billions USD)'</span>, <span class="text-blue-400">color</span>=<span class="text-green-400">'#fcd116'</span>)
+
+<span class="text-purple-400"># Customize the plot</span>
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">set_xlabel</span>(<span class="text-green-400">'State'</span>)
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">set_ylabel</span>(<span class="text-green-400">'Value'</span>)
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">set_title</span>(<span class="text-green-400">'Nigerian State Population and GDP'</span>)
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">set_xticks</span>(<span class="text-blue-400">x</span>)
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">set_xticklabels</span>(<span class="text-blue-400">states</span>)
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">legend</span>()
+
+<span class="text-purple-400"># Add grid and improve layout</span>
+<span class="text-blue-400">ax</span>.<span class="text-blue-400">grid</span>(<span class="text-blue-400">axis</span>=<span class="text-green-400">'y'</span>, <span class="text-blue-400">linestyle</span>=<span class="text-green-400">'--'</span>, <span class="text-blue-400">alpha</span>=<span class="text-amber-400">0.7</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">tight_layout</span>()
+
+<span class="text-purple-400"># Save and show the plot</span>
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">savefig</span>(<span class="text-green-400">'nigerian_states.png'</span>, <span class="text-blue-400">dpi</span>=<span class="text-amber-400">300</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">show</span>()</pre>
+                            </div>
+                        </div>
+                        <!-- Button 1 -->
+  <button class="ula-dropdown-btn" onclick="toggleUlaExplain(0)">📌 Code Explain : Plotting State Population & GDP - Bar Chart</button>
+  <div class="ula-dropdown-content">
+    <p><strong>1. Importing Libraries:</strong><br>
+      <code>matplotlib.pyplot</code> is for plotting graphs.<br>
+      <code>numpy</code> helps handle numeric data like x-axis positions.</p>
+
+    <p><strong>2. State Data:</strong><br>
+      We define <code>states</code>, <code>population</code>, and <code>gdp</code> using Python lists.</p>
+
+    <p><strong>3. Bar Chart Setup:</strong><br>
+      <code>fig, ax = plt.subplots()</code> sets up the plotting canvas.<br>
+      <code>ax.bar()</code> creates the bar charts for both population and GDP.<br>
+      <code>np.arange</code> gives evenly spaced x-axis points.</p>
+
+    <p><strong>4. Chart Customization:</strong><br>
+      Titles, x/y axis labels, and <code>legend()</code> are added.<br>
+      <code>grid()</code> makes it easier to read the graph.<br>
+      <code>plt.tight_layout()</code> avoids label overlap.</p>
+
+    <p><strong>5. Save & Show:</strong><br>
+      <code>plt.savefig()</code> saves the image.<br>
+      <code>plt.show()</code> displays it on the screen.</p>
+  </div>
+
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Output Visualization</h4>
+                        <div class="chart-container">
+                            <div class="chart-grid"></div>
+                            <!-- Population bars -->
+                            <div class="chart-bar" style="left: 10%; height: 80%; background-color: #006b3f;">
+                                <div class="chart-label">Lagos</div>
+                            </div>
+                            <div class="chart-bar" style="left: 30%; height: 25%; background-color: #006b3f;">
+                                <div class="chart-label">Kano</div>
+                            </div>
+                            <div class="chart-bar" style="left: 50%; height: 22%; background-color: #006b3f;">
+                                <div class="chart-label">Abuja</div>
+                            </div>
+                            <div class="chart-bar" style="left: 70%; height: 20%; background-color: #006b3f;">
+                                <div class="chart-label">Rivers</div>
+                            </div>
+                            <div class="chart-bar" style="left: 90%; height: 19%; background-color: #006b3f;">
+                                <div class="chart-label">Oyo</div>
+                            </div>
+                            
+                            <!-- GDP bars -->
+                            <div class="chart-bar" style="left: 15%; height: 60%; background-color: #fcd116;">
+                                <div class="chart-label">GDP</div>
+                            </div>
+                            <div class="chart-bar" style="left: 35%; height: 16%; background-color: #fcd116;">
+                                <div class="chart-label">GDP</div>
+                            </div>
+                            <div class="chart-bar" style="left: 55%; height: 20%; background-color: #fcd116;">
+                                <div class="chart-label">GDP</div>
+                            </div>
+                            <div class="chart-bar" style="left: 75%; height: 15%; background-color: #fcd116;">
+                                <div class="chart-label">GDP</div>
+                            </div>
+                            <div class="chart-bar" style="left: 95%; height: 11%; background-color: #fcd116;">
+                                <div class="chart-label">GDP</div>
+                            </div>
+                            
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #006b3f;"></div>
+                                    <span>Population</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #fcd116;"></div>
+                                    <span>GDP</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 class="font-bold text-yellow-700 mb-2 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i> Common Mistakes to Avoid
+                            </h4>
+                            <ul class="list-disc pl-5 text-gray-700">
+                                <li>Overcrowding the chart with too many elements</li>
+                                <li>Using misleading scales or axes</li>
+                                <li>Choosing inappropriate chart types</li>
+                                <li>Ignoring accessibility (color blindness considerations)</li>
+                                <li>Forgetting to label axes or provide context</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 3: Advanced Visualization -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">3</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Advanced Visualization</h3>
+                        <p class="text-gray-600">Seaborn, Plotly, and geographic visualizations</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Advanced visualization libraries help create more sophisticated and interactive visuals. 
+                        Seaborn provides statistical visualizations, Plotly enables interactivity, and geographic 
+                        visualizations help understand spatial patterns - crucial for analyzing Nigeria's diverse regions.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-chart-area text-blue-500"></i>
+                                <h4 class="font-bold">Area Chart</h4>
+                                <p>Economic growth by region</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-thermometer-half text-red-500"></i>
+                                <h4 class="font-bold">Heatmap</h4>
+                                <p>Population density by state</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-map-marked-alt text-green-500"></i>
+                                <h4 class="font-bold">Geographic Map</h4>
+                                <p>Economic activity across Nigeria</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="text-gray-300 text-sm">
+                                advanced_visualization.py
+                            </div>
+                            <div>
+                                <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                    <i class="fas fa-copy mr-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Import libraries</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">seaborn</span> <span class="text-pink-400">as</span> <span class="text-blue-400">sns</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">plotly.express</span> <span class="text-pink-400">as</span> <span class="text-blue-400">px</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">pandas</span> <span class="text-pink-400">as</span> <span class="text-blue-400">pd</span>
+
+<span class="text-purple-400"># Load Nigerian economic data</span>
+<span class="text-blue-400">df</span> = <span class="text-blue-400">pd</span>.<span class="text-blue-400">read_csv</span>(<span class="text-green-400">'nigerian_economy.csv'</span>)
+
+<span class="text-purple-400"># Set Nigerian color palette</span>
+<span class="text-blue-400">nigerian_palette</span> = [<span class="text-green-400">'#006b3f'</span>, <span class="text-green-400">'#fcd116'</span>, <span class="text-green-400">'#1e40af'</span>]
+<span class="text-blue-400">sns</span>.<span class="text-blue-400">set_palette</span>(<span class="text-blue-400">nigerian_palette</span>)
+
+<span class="text-purple-400"># Create a Seaborn pairplot</span>
+<span class="text-blue-400">sns</span>.<span class="text-blue-400">pairplot</span>(<span class="text-blue-400">df</span>, <span class="text-blue-400">hue</span>=<span class="text-green-400">'Region'</span>, <span class="text-blue-400">diag_kind</span>=<span class="text-green-400">'kde'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">title</span>(<span class="text-green-400">'Nigerian Economic Indicators by Region'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">tight_layout</span>()
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">show</span>()
+
+<span class="text-purple-400"># Create an interactive Plotly chart</span>
+<span class="text-blue-400">fig</span> = <span class="text-blue-400">px</span>.<span class="text-blue-400">scatter</span>(
+    <span class="text-blue-400">df</span>, 
+    <span class="text-blue-400">x</span>=<span class="text-green-400">'Population'</span>, 
+    <span class="text-blue-400">y</span>=<span class="text-green-400">'GDP'</span>, 
+    <span class="text-blue-400">size</span>=<span class="text-green-400">'GDP_per_capita'</span>, 
+    <span class="text-blue-400">color</span>=<span class="text-green-400">'Region'</span>,
+    <span class="text-blue-400">hover_name</span>=<span class="text-green-400">'State'</span>,
+    <span class="text-blue-400">title</span>=<span class="text-green-400">'Nigeria: GDP vs Population by State'</span>
+)
+
+<span class="text-blue-400">fig</span>.<span class="text-blue-400">update_layout</span>(
+    <span class="text-blue-400">xaxis_title</span>=<span class="text-green-400">'Population (Millions)'</span>,
+    <span class="text-blue-400">yaxis_title</span>=<span class="text-green-400">'GDP (Billions USD)'</span>,
+    <span class="text-blue-400">legend_title</span>=<span class="text-green-400">'Region'</span>
+)
+
+<span class="text-blue-400">fig</span>.<span class="text-blue-400">show</span>()
+
+<span class="text-purple-400"># Create a geographic visualization</span>
+<span class="text-blue-400">fig</span> = <span class="text-blue-400">px</span>.<span class="text-blue-400">choropleth</span>(
+    <span class="text-blue-400">df</span>,
+    <span class="text-blue-400">geojson</span>=<span class="text-green-400">'nigeria_states.geojson'</span>,
+    <span class="text-blue-400">locations</span>=<span class="text-green-400">'State'</span>,
+    <span class="text-blue-400">featureidkey</span>=<span class="text-green-400">"properties.name"</span>,
+    <span class="text-blue-400">color</span>=<span class="text-green-400">"GDP"</span>,
+    <span class="text-blue-400">color_continuous_scale</span>=<span class="text-green-400">"Viridis"</span>,
+    <span class="text-blue-400">title</span>=<span class="text-green-400">'GDP Distribution Across Nigerian States'</span>
+)
+
+<span class="text-blue-400">fig</span>.<span class="text-blue-400">update_geos</span>(<span class="text-blue-400">fitbounds</span>=<span class="text-green-400">"locations"</span>, <span class="text-blue-400">visible</span>=<span class="text-blue-400">False</span>)
+<span class="text-blue-400">fig</span>.<span class="text-blue-400">update_layout</span>(<span class="text-blue-400">margin</span>=<span class="text-blue-400">{"r"</span>:<span class="text-amber-400">0</span>,<span class="text-blue-400">"t"</span>:<span class="text-amber-400">30</span>,<span class="text-blue-400">"l"</span>:<span class="text-amber-400">0</span>,<span class="text-blue-400">"b"</span>:<span class="text-amber-400">0</span>})
+<span class="text-blue-400">fig</span>.<span class="text-blue-400">show</span>()</pre>
+                        </div>
+                    </div>
+                    <!-- Button 2 -->
+  <button class="ula-dropdown-btn" onclick="toggleUlaExplain(1)">📌Code Explain :  Pairplot + Scatter + Choropleth using seaborn & Plotly</button>
+  <div class="ula-dropdown-content">
+    <p><strong>1. Import Libraries:</strong><br>
+      <code>seaborn</code> is for advanced plots.<br>
+      <code>plotly.express</code> is for interactive charts.<br>
+      <code>pandas</code> helps read and manipulate CSV data.</p>
+
+    <p><strong>2. Load CSV:</strong><br>
+      <code>pd.read_csv()</code> loads Nigerian economic data from a file.</p>
+
+    <p><strong>3. Color Styling:</strong><br>
+      <code>sns.set_palette()</code> sets green/yellow/blue colors based on Nigeria’s flag.</p>
+
+    <p><strong>4. Pairplot:</strong><br>
+      Shows correlation between multiple indicators using <code>sns.pairplot()</code>, colored by region.</p>
+
+    <p><strong>5. Plotly Scatter:</strong><br>
+      <code>px.scatter()</code> creates an interactive bubble chart.<br>
+      Each state shows its GDP and population.<br>
+      <code>size='GDP_per_capita'</code> scales the bubble sizes.</p>
+
+    <p><strong>6. Plotly Choropleth:</strong><br>
+      Visualizes GDP by state on the Nigerian map.<br>
+      <code>geojson</code> file contains Nigeria’s state borders.<br>
+      <code>featureidkey</code> matches state names with shapes.</p>
+  </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div class="bg-gradient-to-r from-dspurple to-dspink text-white rounded-xl shadow-lg p-8 text-center mb-16">
+            <div class="max-w-2xl mx-auto">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-trophy text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Master the Art of Visual Storytelling</h2>
+                <p class="text-xl mb-6">You've learned to transform data into compelling visual narratives</p>
+                
+                <div class="bg-white bg-opacity-20 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">What's Next in Your Learning Trail</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-brain text-2xl mb-2"></i>
+                            <p>Statistical Analysis</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-robot text-2xl mb-2"></i>
+                            <p>Machine Learning Fundamentals</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-database text-2xl mb-2"></i>
+                            <p>Big Data Technologies</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="./index4.html" class="bg-white text-purple-700 hover:bg-gray-100 px-6 py-3 rounded-full text-lg font-bold shadow-lg transform transition hover:scale-105">
+                    Continue to Statistical Analysis
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home</span>
+  </button>
+</a>
+
+
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">5IRE ULA</h3>
+                    <p class="text-sm opacity-80">
+                        The Universal Learning Archive is a flagship project of the 5th Industrial Revelution, designed to democratize technology education across Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Cohort 27 Learning Trail</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">Python Fundamentals</a></li>
+                        <li><a href="#" class="hover:underline">Data Analysis with Pandas</a></li>
+                        <li><a href="#" class="hover:underline">Data Visualization</a></li>
+                        <li><a href="#" class="hover:underline">Machine Learning Essentials</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>5IRE Headquarters, Abuja</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white border-opacity-20 mt-8 pt-6 text-center text-sm opacity-80">
+                <p>© 2025 Universal Learning Archive. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy code functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('pre');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Update progress
+        function updateProgress(percent) {
+            document.documentElement.style.setProperty('--progress', percent + '%');
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(65);
+            
+            // Animate chart bars
+            setTimeout(() => {
+                document.querySelectorAll('.chart-bar').forEach(bar => {
+                    const height = bar.style.height;
+                    bar.style.height = '0';
+                    setTimeout(() => {
+                        bar.style.height = height;
+                    }, 300);
+                });
+            }, 500);
+        });
+         function toggleUlaExplain(index) {
+    const dropdowns = document.querySelectorAll('.ula-dropdown-content');
+    dropdowns.forEach((el, i) => {
+      if (i === index) {
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+    </script>
+</body>
+</html>

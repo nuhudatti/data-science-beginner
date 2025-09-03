@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundational Data Literacy | MindScreen Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: #f1f5f9;
+            scroll-behavior: smooth;
+        }
+        
+        .neuro-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.5),
+                        inset 0 0 15px rgba(56, 189, 248, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .neuro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(2, 6, 23, 0.6),
+                        inset 0 0 20px rgba(56, 189, 248, 0.3);
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .code-block {
+            background: #0c1220;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #64748b;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .code-comment { color: #64748b; }
+        .code-keyword { color: #f472b6; }
+        .code-function { color: #60a5fa; }
+        .code-string { color: #34d399; }
+        .code-var { color: #fbbf24; }
+        .code-number { color: #a78bfa; }
+        
+        .explanation-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.2);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .concept-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .concept-card:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .concept-card.active {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-slate-900 bg-opacity-90 backdrop-blur-md border-b border-cyan-500/30 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-slate-300">Progress: <span id="progress-value">0</span>%</span>
+                        <div class="w-32 h-2 bg-slate-700 rounded-full">
+                            <div id="progress-bar" class="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Learning Trail Container -->
+    <div class="pt-20 pb-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 slide-in">
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+                    <span class="block bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500 mb-3">Foundational Data Literacy</span>
+                    <span class="block text-slate-200 text-xl md:text-2xl font-light">Master the core concepts of data analysis</span>
+                </h1>
+                <p class="text-slate-400 max-w-2xl mx-auto mt-4">
+                    A comprehensive learning trail covering data collection, cleaning, and exploration - no prior experience needed.
+                </p>
+            </div>
+            
+            <!-- Concept Navigation -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div id="concept1" class="concept-card neuro-card p-6 cursor-pointer active">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-600 to-emerald-500 flex items-center justify-center">
+                            <span class="text-white font-bold">1</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white ml-4">Data Collection Methods</h3>
+                    </div>
+                    <div class="mt-4 text-slate-400 text-sm">
+                        Learn how to gather reliable data from various sources
+                    </div>
+                </div>
+                
+                <div id="concept2" class="concept-card neuro-card p-6 cursor-pointer">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-500 flex items-center justify-center">
+                            <span class="text-white font-bold">2</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white ml-4">Data Cleaning Techniques</h3>
+                    </div>
+                    <div class="mt-4 text-slate-400 text-sm">
+                        Master techniques to prepare your data for analysis
+                    </div>
+                </div>
+                
+                <div id="concept3" class="concept-card neuro-card p-6 cursor-pointer">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-600 flex items-center justify-center">
+                            <span class="text-white font-bold">3</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white ml-4">Exploratory Data Analysis</h3>
+                    </div>
+                    <div class="mt-4 text-slate-400 text-sm">
+                        Discover patterns and insights in your data
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Concept Content -->
+            <div class="neuro-card p-8">
+                <!-- Data Collection -->
+                <div id="section1" class="concept-section">
+                    <div class="flex items-center mb-8">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-600 to-emerald-500 flex items-center justify-center">
+                            <i class="fas fa-database text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white ml-4">Data Collection Methods</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-cyan-300 mb-4">Understanding Data Sources</h3>
+                            <p class="text-slate-400 mb-6">
+                                Data collection is the foundation of any analysis. It involves gathering information from various sources to answer specific questions. The quality of your analysis depends on the quality of your data collection.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-cyan-900 flex items-center justify-center">
+                                            <i class="fas fa-check text-cyan-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Primary Data Collection</h4>
+                                        <p class="text-slate-400">
+                                            Collecting data directly from original sources. Examples include surveys, interviews, and experiments.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">
+                                            <i class="fas fa-check text-emerald-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Secondary Data Collection</h4>
+                                        <p class="text-slate-400">
+                                            Using existing data collected by others. Examples include government reports, research papers, and public datasets.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center">
+                                            <i class="fas fa-check text-violet-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Data Sampling</h4>
+                                        <p class="text-slate-400">
+                                            Techniques for selecting a representative subset of data when collecting full data isn't feasible.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-bold text-emerald-300 mb-4">Data Collection in Practice</h3>
+                            <div class="neuro-card p-6 mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-bold text-cyan-300">Survey Data Collection</h4>
+                                    <button class="px-3 py-1 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity" onclick="runExample(1)">
+                                        Run Example
+                                    </button>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <p class="text-slate-400 mb-3">Sample Survey Questions:</p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center mr-3">
+                                                <span class="text-xs text-cyan-400">1</span>
+                                            </div>
+                                            <span class="text-slate-300">How many hours do you spend on social media daily?</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center mr-3">
+                                                <span class="text-xs text-emerald-400">2</span>
+                                            </div>
+                                            <span class="text-slate-300">How would you rate your sleep quality? (1-10)</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center mr-3">
+                                                <span class="text-xs text-violet-400">3</span>
+                                            </div>
+                                            <span class="text-slate-300">How often do you feel stressed? (Rarely, Sometimes, Often)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="survey-results" class="hidden">
+                                    <p class="text-slate-400 mb-3">Collected Data:</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-slate-700">
+                                                    <th class="py-2 px-3 text-left text-cyan-300">Participant</th>
+                                                    <th class="py-2 px-3 text-left text-emerald-300">Social Media</th>
+                                                    <th class="py-2 px-3 text-left text-violet-300">Sleep Quality</th>
+                                                    <th class="py-2 px-3 text-left text-amber-300">Stress Level</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">P001</td>
+                                                    <td class="py-2 px-3">3.2 hours</td>
+                                                    <td class="py-2 px-3">7</td>
+                                                    <td class="py-2 px-3">Sometimes</td>
+                                                </tr>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">P002</td>
+                                                    <td class="py-2 px-3">1.5 hours</td>
+                                                    <td class="py-2 px-3">8</td>
+                                                    <td class="py-2 px-3">Rarely</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-2 px-3">P003</td>
+                                                    <td class="py-2 px-3">4.8 hours</td>
+                                                    <td class="py-2 px-3">5</td>
+                                                    <td class="py-2 px-3">Often</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-br from-slate-900 to-cyan-900 border border-cyan-500 rounded-xl p-6">
+                                <h4 class="text-lg font-bold text-cyan-300 mb-3">Key Considerations</h4>
+                                <ul class="space-y-2 text-slate-300">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Define clear objectives before collecting data</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-emerald-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Ensure data collection methods are ethical and private</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Collect data consistently using standardized methods</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-amber-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Document your collection process for reproducibility</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 pt-8 border-t border-slate-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-bold text-emerald-300">Knowledge Check</h3>
+                                <p class="text-slate-400 mt-1">What is the main advantage of primary data collection?</p>
+                            </div>
+                            <button class="px-4 py-2 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg font-medium hover:opacity-90 transition-opacity" onclick="checkAnswer(1)">
+                                Show Answer
+                            </button>
+                        </div>
+                        <div id="answer1" class="mt-4 neuro-card p-4 hidden">
+                            <p class="text-slate-300">Primary data collection allows you to gather data specifically tailored to your research question, ensuring relevance and control over data quality. It also enables you to collect current information that may not be available elsewhere.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Cleaning -->
+                <div id="section2" class="concept-section hidden">
+                    <div class="flex items-center mb-8">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-broom text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white ml-4">Data Cleaning Techniques</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-cyan-300 mb-4">The Importance of Clean Data</h3>
+                            <p class="text-slate-400 mb-6">
+                                Data cleaning is the process of detecting and correcting errors and inconsistencies in data. It's a crucial step before analysis because "garbage in, garbage out" - poor quality data leads to unreliable results.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-cyan-900 flex items-center justify-center">
+                                            <i class="fas fa-1 text-cyan-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Handling Missing Values</h4>
+                                        <p class="text-slate-400">
+                                            Techniques for dealing with incomplete data: deletion, imputation, or model-based methods.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">
+                                            <i class="fas fa-2 text-emerald-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Removing Duplicates</h4>
+                                        <p class="text-slate-400">
+                                            Identifying and eliminating duplicate records to prevent skewed results.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center">
+                                            <i class="fas fa-3 text-violet-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Correcting Errors</h4>
+                                        <p class="text-slate-400">
+                                            Fixing inconsistencies, typos, and invalid values in the dataset.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-amber-900 flex items-center justify-center">
+                                            <i class="fas fa-4 text-amber-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Standardization</h4>
+                                        <p class="text-slate-400">
+                                            Ensuring consistent formats and units across your dataset.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-bold text-emerald-300 mb-4">Data Cleaning in Action</h3>
+                            <div class="neuro-card p-6 mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-bold text-cyan-300">Cleaning Raw Data</h4>
+                                    <button class="px-3 py-1 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity" onclick="runExample(2)">
+                                        Clean Data
+                                    </button>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <p class="text-slate-400 mb-3">Raw Data with Issues:</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-slate-700">
+                                                    <th class="py-2 px-3 text-left text-cyan-300">ID</th>
+                                                    <th class="py-2 px-3 text-left text-emerald-300">Screen Time</th>
+                                                    <th class="py-2 px-3 text-left text-violet-300">Well-being</th>
+                                                    <th class="py-2 px-3 text-left text-amber-300">Age</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">001</td>
+                                                    <td class="py-2 px-3">3.5 hours</td>
+                                                    <td class="py-2 px-3">8</td>
+                                                    <td class="py-2 px-3">25</td>
+                                                </tr>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">002</td>
+                                                    <td class="py-2 px-3">missing</td>
+                                                    <td class="py-2 px-3">7</td>
+                                                    <td class="py-2 px-3">32</td>
+                                                </tr>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">003</td>
+                                                    <td class="py-2 px-3">6.2 hours</td>
+                                                    <td class="py-2 px-3">high</td>
+                                                    <td class="py-2 px-3">19</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-2 px-3">004</td>
+                                                    <td class="py-2 px-3">4.1 hours</td>
+                                                    <td class="py-2 px-3">6</td>
+                                                    <td class="py-2 px-3">28</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div id="cleaned-results" class="hidden">
+                                    <p class="text-slate-400 mb-3">Cleaned Data:</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-slate-700">
+                                                    <th class="py-2 px-3 text-left text-cyan-300">ID</th>
+                                                    <th class="py-2 px-3 text-left text-emerald-300">Screen Time</th>
+                                                    <th class="py-2 px-3 text-left text-violet-300">Well-being</th>
+                                                    <th class="py-2 px-3 text-left text-amber-300">Age</th>
+                                                    <th class="py-2 px-3 text-left text-green-300">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">001</td>
+                                                    <td class="py-2 px-3">3.5</td>
+                                                    <td class="py-2 px-3">8</td>
+                                                    <td class="py-2 px-3">25</td>
+                                                    <td class="py-2 px-3"><i class="fas fa-check text-green-400"></i> Clean</td>
+                                                </tr>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">002</td>
+                                                    <td class="py-2 px-3">4.2*</td>
+                                                    <td class="py-2 px-3">7</td>
+                                                    <td class="py-2 px-3">32</td>
+                                                    <td class="py-2 px-3"><i class="fas fa-sync text-cyan-400"></i> Imputed</td>
+                                                </tr>
+                                                <tr class="border-b border-slate-800">
+                                                    <td class="py-2 px-3">003</td>
+                                                    <td class="py-2 px-3">6.2</td>
+                                                    <td class="py-2 px-3">7*</td>
+                                                    <td class="py-2 px-3">19</td>
+                                                    <td class="py-2 px-3"><i class="fas fa-redo text-amber-400"></i> Corrected</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-2 px-3">004</td>
+                                                    <td class="py-2 px-3">4.1</td>
+                                                    <td class="py-2 px-3">6</td>
+                                                    <td class="py-2 px-3">28</td>
+                                                    <td class="py-2 px-3"><i class="fas fa-check text-green-400"></i> Clean</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="text-slate-400 text-sm mt-3">* Missing value replaced with average | * Invalid value corrected</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-br from-slate-900 to-emerald-900 border border-emerald-500 rounded-xl p-6">
+                                <h4 class="text-lg font-bold text-emerald-300 mb-3">Cleaning Checklist</h4>
+                                <ul class="space-y-2 text-slate-300">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Identify and handle missing values</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-emerald-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Remove duplicate entries</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Correct data entry errors</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-amber-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Standardize formats and units</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-rose-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Filter irrelevant data</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 pt-8 border-t border-slate-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-bold text-emerald-300">Knowledge Check</h3>
+                                <p class="text-slate-400 mt-1">Why is it important to document your data cleaning process?</p>
+                            </div>
+                            <button class="px-4 py-2 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg font-medium hover:opacity-90 transition-opacity" onclick="checkAnswer(2)">
+                                Show Answer
+                            </button>
+                        </div>
+                        <div id="answer2" class="mt-4 neuro-card p-4 hidden">
+                            <p class="text-slate-300">Documenting your data cleaning process ensures transparency and reproducibility. It allows others to understand and verify your work, helps maintain consistency if the data needs to be updated, and provides context for why certain decisions were made during analysis.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Exploratory Data Analysis -->
+                <div id="section3" class="concept-section hidden">
+                    <div class="flex items-center mb-8">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-600 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white ml-4">Exploratory Data Analysis (EDA)</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-cyan-300 mb-4">Understanding Your Data</h3>
+                            <p class="text-slate-400 mb-6">
+                                Exploratory Data Analysis is the process of analyzing datasets to summarize their main characteristics, often using visual methods. It helps you understand patterns, spot anomalies, test hypotheses, and check assumptions.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-cyan-900 flex items-center justify-center">
+                                            <i class="fas fa-chart-bar text-cyan-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Summary Statistics</h4>
+                                        <p class="text-slate-400">
+                                            Calculate mean, median, mode, standard deviation, and range to understand data distribution.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">
+                                            <i class="fas fa-chart-pie text-emerald-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Data Visualization</h4>
+                                        <p class="text-slate-400">
+                                            Use charts and graphs to identify patterns, trends, and relationships.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center">
+                                            <i class="fas fa-search text-violet-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Pattern Recognition</h4>
+                                        <p class="text-slate-400">
+                                            Identify correlations, clusters, and outliers in the data.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1 mr-4">
+                                        <div class="w-8 h-8 rounded-full bg-amber-900 flex items-center justify-center">
+                                            <i class="fas fa-lightbulb text-amber-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white mb-2">Hypothesis Generation</h4>
+                                        <p class="text-slate-400">
+                                            Formulate questions and hypotheses for further analysis.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-bold text-emerald-300 mb-4">EDA in Practice</h3>
+                            <div class="neuro-card p-6 mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-bold text-cyan-300">Visualizing Relationships</h4>
+                                    <button class="px-3 py-1 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity" onclick="runExample(3)">
+                                        Analyze Data
+                                    </button>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div class="bg-slate-800 rounded-lg p-4 h-40 flex items-center justify-center">
+                                        <canvas id="histogramChart"></canvas>
+                                    </div>
+                                    <div class="bg-slate-800 rounded-lg p-4 h-40 flex items-center justify-center">
+                                        <canvas id="boxplotChart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div id="eda-results" class="hidden">
+                                    <div class="bg-slate-800 rounded-lg p-4 h-80 flex items-center justify-center">
+                                        <canvas id="scatterChart"></canvas>
+                                    </div>
+                                    <div class="mt-4 text-center">
+                                        <p class="text-emerald-400 font-medium">Analysis shows a negative correlation between screen time and well-being</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-br from-slate-900 to-violet-900 border border-violet-500 rounded-xl p-6">
+                                <h4 class="text-lg font-bold text-violet-300 mb-3">EDA Best Practices</h4>
+                                <ul class="space-y-2 text-slate-300">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Start with simple visualizations before complex ones</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-emerald-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Look for patterns, trends, and outliers</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Compare different segments of your data</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-amber-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Document your observations and insights</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-rose-400 text-xs mt-1.5 mr-2"></i>
+                                        <span>Generate questions for further investigation</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 pt-8 border-t border-slate-800">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-bold text-emerald-300">Knowledge Check</h3>
+                                <p class="text-slate-400 mt-1">What is the primary purpose of exploratory data analysis?</p>
+                            </div>
+                            <button class="px-4 py-2 bg-gradient-to-r from-cyan-700 to-emerald-700 rounded-lg font-medium hover:opacity-90 transition-opacity" onclick="checkAnswer(3)">
+                                Show Answer
+                            </button>
+                        </div>
+                        <div id="answer3" class="mt-4 neuro-card p-4 hidden">
+                            <p class="text-slate-300">The primary purpose of EDA is to understand the main characteristics of a dataset, identify patterns, detect anomalies, test assumptions, and generate hypotheses for further analysis. It helps analysts become familiar with the data before applying more complex statistical techniques.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-12">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-800 border border-cyan-500 rounded-lg font-medium hover:bg-slate-700/50 transition-colors opacity-0 cursor-not-allowed">
+                    <i class="fas fa-arrow-left mr-2"></i>Previous
+                </button>
+                <button id="next-btn" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-emerald-600 rounded-lg font-medium hover:opacity-90 transition-opacity">
+                    Next<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="complete-btn" class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg font-medium hover:opacity-90 transition-opacity hidden">
+                    Complete Trail<i class="fas fa-check ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="neuro-card p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 floating">
+                    <i class="fas fa-trophy text-white text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-3">Trail Completed!</h2>
+                <p class="text-slate-400 mb-6">
+                    Congratulations on completing the Foundational Data Literacy trail. You've mastered essential concepts in data collection, cleaning, and analysis.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <button class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-emerald-600 rounded-lg font-medium hover:opacity-90 transition-opacity" onclick="location.reload()">
+                        Restart Trail
+                    </button>
+                    <button class="px-6 py-3 bg-slate-800 border border-emerald-500 rounded-lg font-medium hover:bg-slate-700/50 transition-colors" onclick="document.getElementById('completion-modal').classList.add('hidden')">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+  .back-button {
+    position: fixed;
+    bottom: 20px; /* stays visible at bottom */
+    left: 20px;
+ /* NITDA deep green */
+    /* color: #ffffff; */
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    display: none; /* hidden by default */
+  }
+
+  .back-button:hover {
+    background: #00a859; /* NCIAIR lighter green */
+    transform: translateY(-3px);
+  }
+
+  .back-button:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<a href="./index.html" class="back-button bg-emerald-500" onclick="history.back()">← Back</a>
+
+<script>
+  window.addEventListener("scroll", function() {
+    const backButton = document.querySelector(".back-button");
+    if (window.scrollY > 100) { 
+      backButton.style.display = "block"; // show after scroll
+    } else {
+      backButton.style.display = "none"; // hide at top
+    }
+  });
+</script>
+
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-brain text-white"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">
+                            MindScreen<span class="font-light">Analytics</span>
+                        </span>
+                    </div>
+                    <p class="mt-4 text-slate-400 text-sm">
+                        A ULA approved platform advancing data literacy and digital wellness research in Nigeria.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Platform</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Learning Trails</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Research Library</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Data Tools</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-cyan-400 text-sm">Policy Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Research Papers</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Tutorials & Guides</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">Case Studies</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 text-sm">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-envelope mr-2 text-cyan-400"></i> 
+                            nuhumuhammaddatti@gmail.com
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-phone-alt mr-2 text-emerald-400"></i> 
+                            +234 808 884 0095
+                        </li>
+                        <li class="flex items-center text-slate-400 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-violet-400"></i> 
+                            Abuja, Nigeria
+                        </li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-slate-400 hover:text-cyan-400">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-emerald-400">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-violet-400">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-rose-500">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-sm">
+                    © 2025 MindScreen Analytics. A National Data Literacy Initiative. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Track current section
+        let currentSection = 1;
+        let progress = 0;
+        
+        // Update progress bar
+        function updateProgress() {
+            progress = Math.min(100, (currentSection - 1) * 33);
+            document.getElementById('progress-value').textContent = progress;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+        
+        // Update navigation
+        function updateNavigation() {
+            document.querySelectorAll('.concept-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById('concept' + currentSection).classList.add('active');
+            
+            document.querySelectorAll('.concept-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById('section' + currentSection).classList.remove('hidden');
+            
+            document.getElementById('prev-btn').classList.toggle('opacity-0', currentSection === 1);
+            document.getElementById('prev-btn').classList.toggle('cursor-not-allowed', currentSection === 1);
+            
+            if(currentSection === 3) {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('complete-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('complete-btn').classList.add('hidden');
+            }
+            
+            updateProgress();
+        }
+        
+        // Navigation event handlers
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if(currentSection > 1) {
+                currentSection--;
+                updateNavigation();
+            }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if(currentSection < 3) {
+                currentSection++;
+                updateNavigation();
+            }
+        });
+        
+        document.getElementById('complete-btn').addEventListener('click', () => {
+            progress = 100;
+            updateProgress();
+            document.getElementById('completion-modal').classList.remove('hidden');
+        });
+        
+        // Concept card navigation
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('click', function() {
+                currentSection = parseInt(this.id.replace('concept', ''));
+                updateNavigation();
+            });
+        });
+        
+        // Example runners
+        function runExample(exampleId) {
+            if(exampleId === 1) {
+                document.getElementById('survey-results').classList.remove('hidden');
+            } else if(exampleId === 2) {
+                document.getElementById('cleaned-results').classList.remove('hidden');
+            } else if(exampleId === 3) {
+                document.getElementById('eda-results').classList.remove('hidden');
+                initCharts();
+            }
+        }
+        
+        // Knowledge check
+        function checkAnswer(questionId) {
+            document.getElementById('answer' + questionId).classList.remove('hidden');
+        }
+        
+        // Initialize charts
+        function initCharts() {
+            // Histogram
+            const histCtx = document.getElementById('histogramChart').getContext('2d');
+            new Chart(histCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-2', '2-4', '4-6', '6-8', '8+'],
+                    datasets: [{
+                        label: 'Hours of Screen Time',
+                        data: [12, 19, 8, 5, 3],
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: 'rgb(56, 189, 248)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Screen Time Distribution',
+                            color: '#e2e8f0'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Box plot
+            const boxCtx = document.getElementById('boxplotChart').getContext('2d');
+            new Chart(boxCtx, {
+                type: 'boxplot',
+                data: {
+                    labels: ['Well-being'],
+                    datasets: [{
+                        label: 'Scores',
+                        backgroundColor: 'rgba(110, 231, 183, 0.5)',
+                        borderColor: 'rgb(110, 231, 183)',
+                        borderWidth: 1,
+                        itemRadius: 0,
+                        data: [
+                            [3, 5, 6, 7.5, 9] // min, q1, median, q3, max
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Well-being Scores',
+                            color: '#e2e8f0'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 1,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Scatter plot
+            const scatterCtx = document.getElementById('scatterChart').getContext('2d');
+            new Chart(scatterCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Screen Time vs Well-being',
+                        data: [
+                            {x: 1.5, y: 8.5}, {x: 2.0, y: 8.2}, {x: 2.5, y: 8.0},
+                            {x: 3.0, y: 7.8}, {x: 3.5, y: 7.5}, {x: 4.0, y: 7.0},
+                            {x: 4.5, y: 6.8}, {x: 5.0, y: 6.5}, {x: 5.5, y: 6.0},
+                            {x: 6.0, y: 5.8}, {x: 6.5, y: 5.5}, {x: 7.0, y: 5.0}
+                        ],
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                        borderColor: 'rgb(139, 92, 246)',
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Screen Time vs Well-being',
+                            color: '#e2e8f0'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#38bdf8',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#1e293b',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Daily Screen Time (hours)',
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Well-being Score (1-10)',
+                                color: '#94a3b8'
+                            },
+                            min: 4,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(30, 41, 59, 0.8)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigation();
+            
+            // Add slide-in animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('slide-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.slide-in').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

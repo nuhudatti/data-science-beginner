@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic NumPy Knowledge Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .galaxy {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 42, 109, 0.1) 0%, 
+                rgba(74, 30, 109, 0.05) 40%, 
+                transparent 70%);
+            filter: blur(20px);
+            animation: rotateGalaxy var(--speed, 120s) linear infinite;
+        }
+        
+        @keyframes rotateGalaxy {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: #00c9ff;
+            background: rgba(0, 201, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 201, 255, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #00c9ff;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(0, 201, 255, 0.15);
+            border: 1px solid rgba(0, 201, 255, 0.3);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(10, 15, 46, 0.5);
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .section-tab {
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: center;
+            flex-grow: 1;
+            min-width: 180px;
+        }
+        
+        .section-tab:hover, .section-tab.active {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.3), rgba(0, 201, 255, 0.3));
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(74, 30, 109, 0.4), rgba(12, 20, 69, 0.6));
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 201, 255, 0.5);
+        }
+        
+        .achievement-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        @media (max-width: 768px) {
+            .section-tabs {
+                flex-direction: column;
+            }
+            
+            .section-tab {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .knowledge-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body x-data="quizApp()" x-init="init()">
+    
+    
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-6xl relative z-10">
+        
+        <!-- Header -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-stars mr-3"></i>Cosmic NumPy Knowledge Explorer
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                Journey through 150 expert Q&As organized across 5 cosmic knowledge domains
+            </p>
+            
+            <div class="flex flex-wrap justify-center mt-8 ">
+                <div class="badge">
+                    <i class="fas fa-check-circle mr-2 text-green-400"></i>Fundamental Principles
+                </div>
+                <div class="badge">
+                    <i class="fas fa-infinity mr-2 text-purple-400"></i>Timeless Knowledge
+                </div>
+                <div class="badge">
+                    <i class="fas fa-rocket mr-2 text-red-400"></i>Revolutionary Design
+                </div>
+            </div>
+        </header>
+
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.4; color: #333333; border-collapse: collapse;">
+  <tr>
+     <!-- Logo Placeholder -->
+    <!-- <td valign="top" style="padding-right: 15px;">
+     
+      <img src="./logo.jpg" alt="NMD BESPOKE TECH" width="80" style="display: block; border: 0;">
+    </td> -->
+    <td style="border-left: 1px solid #cccccc; padding-left: 15px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td>
+            <strong style="font-size: 15px; color: #1a365d;">NUHU MUHAMMADDATTI</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 13px; color: #718096;">
+            Principal Consultant | NMD BESPOKE TECH
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 8px;">
+              <tr>
+                <td style="padding-right: 10px;">
+                    <i class="fas fa-globe" style="color: white; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td>
+                  <a href="https://www.nmdtech.io" style="color: #2b6cb0; text-decoration: none;">www.nmdtech.io</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                 <i class="fab fa-linkedin" style="color: white; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td style="padding-top: 3px;">
+                  <a href="https://linkedin.com/in/nuhudatti" style="color: #2b6cb0; text-decoration: none;">linkedin.com/in/nuhudatti</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                    <i class="fas fa-envelope" style="color: white; font-size: 12px; vertical-align: middle;"></i>
+                <td style="padding-top: 3px;">
+                  <a href="mailto:nuhu@nmdtech.io" style="color: #2b6cb0; text-decoration: none;">nuhumuhammaddatti@gmail.com</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 10px;">
+            <img src="./logo.jpg" 
+                width="100" 
+                height="100"
+                alt="NMD BESPOKE TECH | Custom Digital Solutions" 
+                style="display: block; border-radius: 50%; object-fit: cover;">
+
+                    </tr>
+                </table>
+                </td>
+            </tr>
+            </table>
+        
+        <!-- Knowledge Statistics -->
+        <div class="knowledge-stats">
+            <div class="stat-item">
+                <div class="stat-value" x-text="totalQuestions">150</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Cosmic Domains</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`">25%</div>
+                <div class="stat-label">Progress</div>
+            </div>
+        </div>
+        
+        <!-- Progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-medium">Your Cosmic Journey</span>
+                <span class="text-blue-300" x-text="`${answeredCount}/${totalQuestions} (${Math.round((answeredCount/totalQuestions)*100)}%)`">5/20 (25%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(answeredCount/totalQuestions)*100}%`"></div>
+            </div>
+        </div>
+
+           <div id="top"></div>
+        
+        <!-- Section Tabs -->
+        <div class="section-tabs flex flex-wrap justify-center mb-10">
+            <template x-for="(section, index) in sections" :key="index">
+                <div class="section-tab" :class="{ 'active': activeSection === index }" @click="activeSection = index">
+                    <i class="fas" :class="section.icon"></i>
+                    <span x-text="section.title"></span>
+                </div>
+            </template>
+        </div>
+
+        
+        
+        <!-- Quiz Content -->
+        <template x-if="!showResults">
+            <div>
+                <h2 class="section-title text-2xl mb-6" x-text="sections[activeSection].title"></h2>
+                
+                <div class="space-y-6">
+                    <template x-for="(question, qIndex) in sections[activeSection].questions" :key="qIndex">
+                        <div class="question-card p-6">
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                                <span x-text="`${qIndex + 1}. ${question.question}`"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[activeSection][qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[activeSection][qIndex] === oIndex && userAnswers[activeSection][qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(activeSection, qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers">
+                                <p class="font-semibold text-blue-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="getAnswerStatus(activeSection, qIndex)"></span>
+                                </p>
+                                <p x-text="question.explanation"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+             
+
+<!-- Section Tabs -->
+<div class="section-tabs flex flex-wrap justify-center mb-10 mt-10">
+    <template x-for="(section, index) in sections" :key="index">
+        <div class="section-tab cursor-pointer"
+            :class="{ 'active': activeSection === index }"
+            @click="
+                activeSection = index;
+                $nextTick(() => {
+                    document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+                })
+            ">
+            <i class="fas" :class="section.icon"></i>
+            <span x-text="section.title"></span>
+        </div>
+    </template>
+</div>
+
+      
+                
+                <div class="text-center mt-10">
+                    <button class="submit-btn" @click="submitQuiz">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Cosmic Answers
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Results Panel -->
+        <template x-if="showResults">
+            <div class="results-container">
+                <h2 class="section-title text-3xl text-center mb-8">Cosmic Quiz Results</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="stat-item bg-blue-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${score}/${totalQuestions}`"></div>
+                        <div class="stat-label">Correct Answers</div>
+                    </div>
+                    
+                    <div class="stat-item bg-purple-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${Math.round((score/totalQuestions)*100)}%`"></div>
+                        <div class="stat-label">Overall Score</div>
+                    </div>
+                    
+                    <div class="stat-item bg-pink-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`"></div>
+                        <div class="stat-label">Completion</div>
+                    </div>
+                </div>
+                
+                <div class="motivation-message mb-10">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-comment-dots text-yellow-400 mr-2"></i>
+                        Cosmic Feedback from NMDatti
+                    </h3>
+                    <p class="text-lg" x-text="getMotivationMessage()"></p>
+                </div>
+                
+                <div class="text-center">
+                    <button class="submit-btn" @click="resetQuiz">
+                        <i class="fas fa-redo mr-2"></i>Restart Cosmic Journey
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Achievement Badges -->
+        <div class="mt-16" x-show="!showResults">
+            <h2 class="section-title text-2xl mb-6">Your Cosmic Achievements</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 5 }">
+                    <div class="achievement-icon" :class="answeredCount >= 5 ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">First Array</h3>
+                    <p class="text-sm" :class="answeredCount >= 5 ? 'text-blue-200' : 'text-gray-500'">Created your first NumPy array</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 10 }">
+                    <div class="achievement-icon" :class="answeredCount >= 10 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Array Master</h3>
+                    <p class="text-sm" :class="answeredCount >= 10 ? 'text-blue-200' : 'text-gray-500'">Mastered array creation</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 15 }">
+                    <div class="achievement-icon" :class="answeredCount >= 15 ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Vectorization</h3>
+                    <p class="text-sm" :class="answeredCount >= 15 ? 'text-blue-200' : 'text-gray-500'">Understood vectorized ops</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 20 }">
+                    <div class="achievement-icon" :class="answeredCount >= 20 ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">NumPy Master</h3>
+                    <p class="text-sm" :class="answeredCount >= 20 ? 'text-blue-200' : 'text-gray-500'">Completed all sections</p>
+                </div>
+            </div>
+        </div>
+
+        
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+        
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-blue-800 text-center text-blue-300">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>Cosmic NumPy Knowledge Explorer &copy; 2023 | Revolutionizing how we learn scientific computing</p>
+            <p class="mt-2 text-sm">Crafted with <i class="fas fa-heart text-red-400"></i> by NMDatti</p>
+        </footer>
+    </div>
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(255, 42, 109, 0.4); --color2: rgba(255, 42, 109, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(0, 201, 255, 0.4); --color2: rgba(0, 201, 255, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+    
+    <script>
+        // Quiz data
+        const quizData = {
+            sections: [
+                {
+                    title: "Arrays vs Lists",
+                    icon: "fa-atom",
+                    questions: [
+                        {
+                            question: "What is a key advantage of NumPy arrays over Python lists?",
+                            options: [
+                                "Automatic garbage collection",
+                                "Built-in methods for string manipulation",
+                                "Memory efficiency and faster operations",
+                                "Dynamic resizing without performance cost"
+                            ],
+                            answer: 2,
+                            explanation: "NumPy arrays store homogeneous data contiguously in memory, enabling vectorized operations and significant performance gains."
+                        },
+                        {
+                            question: "When is a Python list preferable to a NumPy array?",
+                            options: [
+                                "Storing mixed data types (e.g., integers and strings)",
+                                "Performing matrix multiplication",
+                                "Handling large datasets",
+                                "Calculating statistical metrics"
+                            ],
+                            answer: 0,
+                            explanation: "Python lists support heterogeneous data types, while NumPy arrays require homogeneous data."
+                        },
+                        {
+                            question: "How does memory usage compare between a list and an array of 10,000 integers?",
+                            options: [
+                                "The array uses ~10× less memory",
+                                "The list uses ~2× less memory",
+                                "Memory usage is identical",
+                                "Arrays use more memory due to metadata"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy arrays avoid per-element type metadata, reducing memory overhead."
+                        },
+                        {
+                            question: "What happens when you multiply a NumPy array by 2?",
+                            options: [
+                                "Each element is doubled",
+                                "Array length doubles",
+                                "A type error occurs",
+                                "Only integer elements are doubled"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy supports vectorized operations, applying arithmetic element-wise without loops."
+                        },
+                        {
+                            "question": "Why do NumPy arrays require homogeneous data types?",
+                            "options": [
+                                "To enable vectorized CPU instructions",
+                                "For better visual formatting",
+                                "To support mixed-type indexing",
+                                "To simplify garbage collection"
+                            ],
+                            "answer": 0,
+                            "explanation": "Homogeneous data allows SIMD CPU optimizations and avoids per-element type checks during operations."
+                            },
+                            {
+                            "question": "What happens when you append a float to a NumPy array of integers?",
+                            "options": [
+                                "The array converts to float64 type",
+                                "The float is truncated to integer",
+                                "A new array with mixed types is created",
+                                "ValueError occurs"
+                            ],
+                            "answer": 0,
+                            "explanation": "NumPy arrays enforce homogeneity - adding a float promotes the entire array to float type."
+                            },
+                            {
+                            "question": "Which operation is typically slower with Python lists vs NumPy arrays?",
+                            "options": [
+                                "Element-wise mathematical operations",
+                                "Appending new items",
+                                "Nested list comprehensions",
+                                "String manipulation"
+                            ],
+                            "answer": 0,
+                            "explanation": "Element-wise math requires Python loops in lists but uses optimized C code in NumPy."
+                            },
+                            {
+                            "question": "How does cache utilization differ between lists and arrays?",
+                            "options": [
+                                "Arrays have better cache locality",
+                                "Lists optimize cache for heterogeneous data",
+                                "Both have identical cache performance",
+                                "Only lists use CPU cache effectively"
+                            ],
+                            "answer": 0,
+                            "explanation": "Contiguous memory blocks in arrays improve cache prefetching and reduce misses."
+                            },
+                            {
+                            "question": "What is the main advantage of Python lists for small datasets?",
+                            "options": [
+                                "Lower memory overhead for few elements",
+                                "Faster mathematical operations",
+                                "Better support for vectorization",
+                                "Automatic parallel processing"
+                            ],
+                            "answer": 0,
+                            "explanation": "Lists avoid NumPy's fixed overhead for small collections (<100 elements)."
+                            },
+                            {
+                            "question": "Why can't NumPy arrays store arbitrary Python objects efficiently?",
+                            "options": [
+                                "Requires boxing/unboxing operations",
+                                "Lacks pointer indirection",
+                                "Forces fixed-type storage",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Object arrays lose performance benefits by storing references instead of raw values."
+                            },
+                            {
+                            "question": "What happens when you slice a NumPy array?",
+                            "options": [
+                                "Creates a view referencing original data",
+                                "Copies all elements to new memory",
+                                "Converts it to a Python list",
+                                "Automatically resizes the original array"
+                            ],
+                            "answer": 0,
+                            "explanation": "Slicing creates views by default for memory efficiency (use .copy() for explicit copies)."
+                            },
+                            {
+                            "question": "Which method efficiently finds elements in sorted arrays?",
+                            "options": [
+                                "np.searchsorted()",
+                                "Python's in operator",
+                                "List comprehension filtering",
+                                "Built-in index() method"
+                            ],
+                            "answer": 0,
+                            "explanation": "Uses binary search (O(log n)) vs linear search (O(n)) in lists."
+                            },
+                            {
+                            "question": "Why are NumPy arrays unsuitable for graph structures?",
+                            "options": [
+                                "Lack native support for irregular relationships",
+                                "Cannot store edge weights",
+                                "Require rectangular data shapes",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Graphs need flexible connections better handled by dictionaries/objects."
+                            },
+                            {
+                            "question": "How does item access differ between lists and arrays?",
+                            "options": [
+                                "Arrays have O(1) access like lists",
+                                "Arrays require type coercion on each access",
+                                "Lists use pointer arithmetic internally",
+                                "Arrays are slower due to bounds checking"
+                            ],
+                            "answer": 0,
+                            "explanation": "Both support constant-time indexing but arrays add type safety checks."
+                            },
+                            {
+                            "question": "Which scenario favors Python lists?",
+                            "options": [
+                                "Storing variable-length strings",
+                                "Computing matrix products",
+                                "Processing 3D volumetric data",
+                                "Linear regression calculations"
+                            ],
+                            "answer": 0,
+                            "explanation": "NumPy has limited string support; lists handle jagged text data better."
+                            },
+                            {
+                            "question": "What is the byte overhead per element in Python lists?",
+                            "options": [
+                                "8 bytes for 64-bit systems",
+                                "16 bytes",
+                                "24 bytes",
+                                "32 bytes"
+                            ],
+                            "answer": 2,
+                            "explanation": "Lists require ~24 bytes/element for pointer, reference count, and object header."
+                            },
+                            {
+                            "question": "How to convert a list of numbers to a NumPy array?",
+                            "options": [
+                                "np.array(my_list)",
+                                "np.asarray(my_list)",
+                                "np.fromiter(my_list)",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All methods create arrays, with fromiter() being memory-efficient for large iterables."
+                            },
+                            {
+                            "question": "Why can't arrays replace lists in all scenarios?",
+                            "options": [
+                                "Lists support in-place size changes",
+                                "Arrays require fixed-size allocation",
+                                "Lists allow heterogeneous mutations",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Each has distinct strengths: lists for flexibility, arrays for numerical efficiency."
+                            },
+                            {
+                                "question": "What is the primary reason NumPy arrays outperform Python lists in numerical computations?",
+                                "options": [
+                                    "Built-in multithreading support",
+                                    "Contiguous memory allocation",
+                                    "Automatic GPU acceleration",
+                                    "Advanced garbage collection"
+                                ],
+                                "answer": 1,
+                                "explanation": "Contiguous memory blocks enable efficient CPU caching and vectorized operations."
+                                },
+                                {
+                                "question": "Which operation is faster with Python lists than NumPy arrays?",
+                                "options": [
+                                    "Element-wise addition",
+                                    "Appending elements dynamically",
+                                    "Matrix multiplication",
+                                    "Statistical calculations"
+                                ],
+                                "answer": 1,
+                                "explanation": "Lists have O(1) amortized time for append operations, while NumPy arrays require full copies for resizing."
+                                },
+                                {
+                                "question": "What is the memory overhead per element in a NumPy float64 array?",
+                                "options": [
+                                    "8 bytes",
+                                    "16 bytes",
+                                    "24 bytes",
+                                    "32 bytes"
+                                ],
+                                "answer": 0,
+                                "explanation": "Pure data storage without additional metadata (64 bits = 8 bytes)."
+                                },
+                                {
+                                "question": "How does NumPy handle boolean operations differently than Python lists?",
+                                "options": [
+                                    "Returns bitwise results instead of logical",
+                                    "Requires explicit type casting",
+                                    "Supports vectorized boolean indexing",
+                                    "Automatically converts to integers"
+                                ],
+                                "answer": 2,
+                                "explanation": "Boolean arrays enable efficient element selection without loops."
+                                },
+                                {
+                                "question": "Why are NumPy arrays unsuitable for queue operations?",
+                                "options": [
+                                    "Fixed size limitations",
+                                    "No FIFO support",
+                                    "Expensive pop operations",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Arrays aren't optimized for dynamic front/end modifications."
+                                },
+                                {
+                                "question": "What happens when you multiply two Python lists?",
+                                "options": [
+                                    "Element-wise multiplication",
+                                    "TypeError",
+                                    "List concatenation",
+                                    "Cartesian product"
+                                ],
+                                "answer": 1,
+                                "explanation": "Python lists don't support arithmetic operations between lists."
+                                },
+                                {
+                                "question": "Which method efficiently converts nested lists to multidimensional arrays?",
+                                "options": [
+                                    "np.asarray()",
+                                    "np.recarray()",
+                                    "np.frompyfunc()",
+                                    "np.stack()"
+                                ],
+                                "answer": 0,
+                                "explanation": "asarray() infers dimensions from nested list structures."
+                                },
+                                {
+                                "question": "What is the advantage of array strides over list pointers?",
+                                "options": [
+                                    "Enables regular memory access patterns",
+                                    "Supports jagged data structures",
+                                    "Allows heterogeneous elements",
+                                    "Reduces allocation overhead"
+                                ],
+                                "answer": 0,
+                                "explanation": "Strides enable efficient traversal of regular data grids."
+                                },
+                                {
+                                "question": "How to check if two arrays share memory?",
+                                "options": [
+                                    "np.shares_memory(a,b)",
+                                    "a.base is b",
+                                    "id(a) == id(b)",
+                                    "Both A and B"
+                                ],
+                                "answer": 3,
+                                "explanation": "Multiple methods detect memory sharing between arrays."
+                                },
+                                {
+                                "question": "Which NumPy feature compensates for fixed-size limitations?",
+                                "options": [
+                                    "np.resize()",
+                                    "np.pad()",
+                                    "Memory views",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Various tools help work around array size constraints."
+                                },
+                                {
+                                "question": "Why are arrays more secure than lists for numerical data?",
+                                "options": [
+                                    "Immutable data buffers",
+                                    "Type-safety guarantees",
+                                    "Bounds checking",
+                                    "No inherent security advantage"
+                                ],
+                                "answer": 2,
+                                "explanation": "Prevents buffer overflow vulnerabilities."
+                                },
+                                {
+                                "question": "What is the output of [1,2]*3 vs np.array([1,2])*3?",
+                                "options": [
+                                    "[1,2,1,2,1,2] vs [3,6]",
+                                    "TypeError vs [3,6]",
+                                    "[3,6] vs [3,6]",
+                                    "[1,2,3] vs [1,2,3]"
+                                ],
+                                "answer": 0,
+                                "explanation": "List repetition concatenates, array multiplication scales."
+                                }
+                    ]
+                },
+                {
+                    title: "Array Creation",
+                    icon: "fa-cogs",
+                    questions: [
+                        {
+                            question: "How do you create a 2×3 array of zeros?",
+                            options: [
+                                "np.array([[0, 0, 0], [0, 0, 0]])",
+                                "np.zeros((2, 3))",
+                                "np.empty((2, 3))",
+                                "np.ones((2, 3)) * 0"
+                            ],
+                            answer: 1,
+                            explanation: "np.zeros(shape) is the standard way to initialize arrays with zeros."
+                        },
+                        {
+                            question: "What does np.arange(1, 10, 2) return?",
+                            options: [
+                                "[1, 3, 5, 7, 9]",
+                                "[1, 2, 3, ..., 9]",
+                                "[2, 4, 6, 8]",
+                                "[10, 9, 8, ..., 1]"
+                            ],
+                            answer: 0,
+                            explanation: "np.arange(start, stop, step) generates values from 1 to 10 (exclusive) in steps of 2."
+                        },
+                        {
+                            question: "How do you reshape a 1D array of 12 elements into 3×4?",
+                            options: [
+                                "arr.reshape(4, 3)",
+                                "arr.reshape(3, 4)",
+                                "np.reshape(arr, (4, 3))",
+                                "arr.resize(3, 4)"
+                            ],
+                            answer: 1,
+                            explanation: "reshape(rows, cols) reorganizes data without altering it. Total elements must match (12=3×4)."
+                        },
+                        {
+                            question: "Which function creates an array of 5 evenly spaced values between 0 and 1?",
+                            options: [
+                                "np.linspace(0, 1, 5)",
+                                "np.arange(0, 1, 5)",
+                                "np.sequence(0, 1, 5)",
+                                "np.space(0, 1, 5)"
+                            ],
+                            answer: 0,
+                            explanation: "np.linspace(start, stop, num) divides the range into num equal intervals."
+                        },
+                        {
+                            "question": "How to create an array from a generator expression?",
+                            "options": [
+                                "np.fromiter((x for x in range(5)), dtype=int)",
+                                "np.array(x for x in range(5))",
+                                "np.generator(range(5))",
+                                "np.vectorize(range(5))"
+                            ],
+                            "answer": 0,
+                            "explanation": "fromiter() is memory-efficient for large sequences."
+                            },
+                            {
+                            "question": "What does np.random.choice([2,4,6], size=(2,2)) do?",
+                            "options": [
+                                "Creates diagonal matrix",
+                                "Samples values randomly",
+                                "Selects even numbers",
+                                "Generates arithmetic sequence"
+                            ],
+                            "answer": 1,
+                            "explanation": "Randomly selects values from given array with specified shape."
+                            },
+                            {
+                            "question": "How to create a 4x4 array with checkerboard pattern?",
+                            "options": [
+                                "np.indices((4,4)).sum(axis=0) % 2",
+                                "np.zeros((4,4)); arr[::2,::2]=1; arr[1::2,1::2]=1",
+                                "np.tile([[1,0],[0,1]], (2,2))",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Multiple approaches create checkerboard patterns."
+                            },
+                            {
+                            "question": "What is the purpose of np.meshgrid()?",
+                            "options": [
+                                "Generate coordinate matrices",
+                                "Create grid-shaped arrays",
+                                "Interpolate values on grids",
+                                "Both A and B"
+                            ],
+                            "answer": 3,
+                            "explanation": "Essential for spatial operations and function plotting."
+                            },
+                            {
+                            "question": "How to swap array axes without copying data?",
+                            "options": [
+                                "arr.swapaxes(0,1)",
+                                "np.transpose(arr)",
+                                "arr.T",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All create views for 2D+ arrays when possible."
+                            },
+                            {
+                            "question": "What does arr.byteswap() do?",
+                            "options": [
+                                "Changes byte order",
+                                "Swaps array dimensions",
+                                "Reverses element order",
+                                "Compresses data"
+                            ],
+                            "answer": 0,
+                            "explanation": "Converts between big-endian and little-endian representations."
+                            },
+                            {
+                            "question": "How to extract all diagonal elements?",
+                            "options": [
+                                "np.diag(arr)",
+                                "arr.diagonal()",
+                                "arr.ravel()[::arr.shape[1]+1]",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Various methods access diagonal elements."
+                            },
+                            {
+                            "question": "What is the effect of np.asfortranarray()?",
+                            "options": [
+                                "Column-major memory layout",
+                                "Fortran-compatible strides",
+                                "Optimized for column operations",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Improves performance for column-wise operations."
+                            },
+                            {
+                            "question": "How to split array along third dimension?",
+                            "options": [
+                                "np.dsplit(arr, n)",
+                                "np.split(arr, n, axis=2)",
+                                "Both A and B",
+                                "np.hsplit(arr, n)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Both handle higher-dimensional splitting."
+                            },
+                            {
+                            "question": "What does np.put(arr, indices, values) do?",
+                            "options": [
+                                "Replaces elements at indices",
+                                "Inserts new elements",
+                                "Appends values",
+                                "Deletes specified indices"
+                            ],
+                            "answer": 0,
+                            "explanation": "Modifies elements in-place at specified positions."
+                            },
+                            {
+                            "question": "How to find unique rows in 2D array?",
+                            "options": [
+                                "np.unique(arr, axis=0)",
+                                "set(tuple(row) for row in arr)",
+                                "Both A and B",
+                                "np.unique(arr.ravel())"
+                            ],
+                            "answer": 2,
+                            "explanation": "Both methods identify unique rows."
+                            },
+                            {
+                            "question": "What is np.roll() used for?",
+                            "options": [
+                                "Circular shifting elements",
+                                "Rotating arrays",
+                                "Creating spiral patterns",
+                                "Both A and B"
+                            ],
+                            "answer": 3,
+                            "explanation": "Cyclically shifts elements along specified axes."
+                            }
+                    ]
+                },
+                {
+                    title: "Vectorized Ops",
+                    icon: "fa-bolt",
+                    questions: [
+                        {
+                            question: "What is broadcasting in NumPy?",
+                            options: [
+                                "Converting arrays to broadcast format",
+                                "Transmitting data over networks",
+                                "Auto-expanding smaller arrays to match larger ones in operations",
+                                "A radio communication protocol"
+                            ],
+                            answer: 2,
+                            explanation: "Broadcasting allows arithmetic between arrays of different shapes by virtually 'stretching' smaller arrays."
+                        },
+                        {
+                            question: "What is the result of np.array([1, 2, 3]) * 2?",
+                            options: [
+                                "[2, 4, 6]",
+                                "[1, 2, 3, 1, 2, 3]",
+                                "TypeError",
+                                "[3, 4, 5]"
+                            ],
+                            answer: 0,
+                            explanation: "Scalar multiplication is applied element-wise."
+                        },
+                        {
+                            question: "What shape results from broadcasting arrays of shapes (3,1) and (1,4)?",
+                            options: [
+                                "(3, 4)",
+                                "(1, 1)",
+                                "(3, 1)",
+                                "(4, 3)"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy aligns dimensions from right to left and expands to the maximum size per dimension."
+                        },
+                        {
+                            question: "Why is np.array([1, 2]) + np.array([3, 4, 5]) invalid?",
+                            options: [
+                                "Incompatible shapes for broadcasting",
+                                "Data type mismatch",
+                                "Requires np.add()",
+                                "Arrays must be 2D"
+                            ],
+                            answer: 0,
+                            explanation: "Broadcasting requires trailing dimensions to be 1 or equal. Shapes (2,) and (3,) can't align."
+                        },
+                        {
+                            "question": "What does np.eye(3) create?",
+                            "options": [
+                                "3x3 identity matrix",
+                                "3-element diagonal vector",
+                                "3x3 random matrix",
+                                "3D identity cube"
+                            ],
+                            "answer": 0,
+                            "explanation": "np.eye(N) creates an NxN identity matrix with 1s on the diagonal and 0s elsewhere."
+                            },
+                            {
+                            "question": "How to create a 3D array of shape (2,2,2) with value 255?",
+                            "options": [
+                                "np.full((2,2,2), 255)",
+                                "np.ones((2,2,2)) * 255",
+                                "np.fill(255, (2,2,2))",
+                                "Both A and B"
+                            ],
+                            "answer": 3,
+                            "explanation": "np.full() directly fills values, while np.ones() * scalar achieves the same result."
+                            },
+                            {
+                            "question": "Which creates an uninitialized array?",
+                            "options": [
+                                "np.empty(5)",
+                                "np.zeros(5)",
+                                "np.nan(5)",
+                                "np.void(5)"
+                            ],
+                            "answer": 0,
+                            "explanation": "np.empty() allocates memory without initialization (contains garbage values)."
+                            },
+                            {
+                            "question": "How to create [1, 10, 100, 1000]?",
+                            "options": [
+                                "np.logspace(0, 3, 4)",
+                                "np.geomspace(1, 1000, 4)",
+                                "10**np.arange(0,4)",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All methods produce geometric sequences (logspace uses exponents of 10)."
+                            },
+                            {
+                            "question": "What does np.random.seed(42) do?",
+                            "options": [
+                                "Initializes RNG for reproducible results",
+                                "Creates 42 random numbers",
+                                "Samples from normal distribution",
+                                "Sets array size to 42"
+                            ],
+                            "answer": 0,
+                            "explanation": "Seeding ensures consistent pseudo-random sequences across executions."
+                            },
+                            {
+                            "question": "How to stack two 1D arrays vertically?",
+                            "options": [
+                                "np.vstack((a,b))",
+                                "np.row_stack((a,b))",
+                                "np.concatenate((a,b), axis=0)",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All methods create 2D arrays with arrays as rows."
+                            },
+                            {
+                            "question": "What is the output of np.tile([1,2], (2,3))?",
+                            "options": [
+                                "[[1,2,1,2,1,2], [1,2,1,2,1,2]]",
+                                "[1,2,1,2]",
+                                "[[1,1,1], [2,2,2]]",
+                                "ValueError"
+                            ],
+                            "answer": 0,
+                            "explanation": "Repeats the array 2 times row-wise and 3 times column-wise."
+                            },
+                            {
+                            "question": "How to reverse array dimensions?",
+                            "options": [
+                                "arr.T",
+                                "np.transpose(arr)",
+                                "arr.swapaxes(0,1) for 2D",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All transpose arrays (.T is shorthand for 2D transpose)."
+                            },
+                            {
+                            "question": "Which copies array data?",
+                            "options": [
+                                "arr.copy()",
+                                "np.copy(arr)",
+                                "arr[:] for mutable types",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Explicit copies prevent unintended mutation of original data."
+                            },
+                            {
+                            "question": "How to flatten a 3D array to 1D?",
+                            "options": [
+                                "arr.ravel()",
+                                "arr.flatten()",
+                                "arr.reshape(-1)",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All produce 1D views (ravel) or copies (flatten)."
+                            },
+                            {
+                            "question": "What does np.diag([4,5,6]) return?",
+                            "options": [
+                                "3x3 matrix with diagonal [4,5,6]",
+                                "1D array [4,5,6]",
+                                "Diagonal indices",
+                                "3-element vector"
+                            ],
+                            "answer": 0,
+                            "explanation": "Converts 1D array to diagonal matrix or extracts diagonal from 2D array."
+                            },
+                            {
+                            "question": "How to split an array into 3 equal parts?",
+                            "options": [
+                                "np.split(arr, 3)",
+                                "np.array_split(arr, 3)",
+                                "np.hsplit(arr, 3) for 1D",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "split() requires equal divisions; array_split() allows uneven."
+                            },
+                            {
+                            "question": "What does np.pad(arr, 1, mode='edge') do?",
+                            "options": [
+                                "Adds 1-pixel border using edge values",
+                                "Removes edge elements",
+                                "Rounds edge values",
+                                "Creates circular buffer"
+                            ],
+                            "answer": 0,
+                            "explanation": "Padding extends arrays with specified boundary conditions."
+                            },
+                            {
+                            "question": "How to change dtype without altering data?",
+                            "options": [
+                                "arr.view(new_dtype)",
+                                "arr.astype(new_dtype)",
+                                "np.reinterpret(arr, new_dtype)",
+                                "arr.convert(new_dtype)"
+                            ],
+                            "answer": 0,
+                            "explanation": "view() reinterprets memory buffer; astype() creates converted copy."
+                            },
+                            {
+                                "question": "What is the result of np.array([1,2]) + np.array([3])?",
+                                "options": [
+                                    "[4,5]",
+                                    "[1,2,3]",
+                                    "ValueError",
+                                    "[4,2]"
+                                ],
+                                "answer": 0,
+                                "explanation": "Broadcasting stretches [3] to [3,3] before element-wise addition."
+                                },
+                                {
+                                "question": "How to compute dot product of vectors A and B?",
+                                "options": [
+                                    "A @ B",
+                                    "np.dot(A,B)",
+                                    "np.sum(A * B)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All methods correctly compute the dot product for 1D arrays."
+                                },
+                                {
+                                "question": "What is the result of np.array([1,2,3]) * np.array([1,2])?",
+                                "options": [
+                                    "ValueError",
+                                    "[1,4,3]",
+                                    "[1,4]",
+                                    "Broadcast to [1,4,3]"
+                                ],
+                                "answer": 0,
+                                "explanation": "Incompatible shapes (3,) and (2,) cannot be broadcast together."
+                                },
+                                {
+                                "question": "How to apply sqrt element-wise?",
+                                "options": [
+                                    "np.sqrt(arr)",
+                                    "arr**0.5",
+                                    "np.power(arr, 1/2)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All methods perform element-wise square root operations."
+                                },
+                                {
+                                "question": "What is universal function (ufunc)?",
+                                "options": [
+                                    "Function operating element-wise",
+                                    "NumPy's C-based operation kernel",
+                                    "Broadcastable operator",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "ufuncs provide fast vectorized operations with broadcasting."
+                                },
+                                {
+                                "question": "How to compute Euclidean distance between vectors?",
+                                "options": [
+                                    "np.linalg.norm(a-b)",
+                                    "np.sqrt(np.sum((a-b)**2))",
+                                    "distance.euclidean(a,b)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All calculate √Σ(ai - bi)² efficiently."
+                                },
+                                {
+                                "question": "What does np.vectorize() do?",
+                                "options": [
+                                    "Converts Python functions to ufuncs",
+                                    "Optimizes C code automatically",
+                                    "Creates faster vector operations",
+                                    "Parallelizes array operations"
+                                ],
+                                "answer": 0,
+                                "explanation": "Wraps Python functions for vectorized calls (without performance gains)."
+                                },
+                                {
+                                "question": "Which broadcasts to shape (3,3)?",
+                                "options": [
+                                    "np.ones((3,1)) * np.ones((1,3))",
+                                    "np.ones(3) + np.ones((3,1))",
+                                    "np.ones((1,3)) + np.ones((3,1))",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All expand smaller dimensions to create 3x3 grids."
+                                },
+                                {
+                                "question": "How to compute outer product?",
+                                "options": [
+                                    "np.outer(a,b)",
+                                    "a[:, None] * b[None, :]",
+                                    "np.einsum('i,j->ij', a, b)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All methods compute a_i * b_j for all i,j combinations."
+                                },
+                                {
+                                "question": "What is the purpose of np.newaxis?",
+                                "options": [
+                                    "Adds singleton dimensions",
+                                    "Creates new arrays",
+                                    "Deletes dimensions",
+                                    "Reshapes without copy"
+                                ],
+                                "answer": 0,
+                                "explanation": "Used for dimension broadcasting (e.g., convert 1D to column vector)."
+                                },
+                                {
+                                "question": "How to compute element-wise max of two arrays?",
+                                "options": [
+                                    "np.maximum(a,b)",
+                                    "np.fmax(a,b)",
+                                    "np.where(a>b, a, b)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "All return element-wise maximum, ignoring NaNs (fmax) or propagating (maximum)."
+                                },
+                                {
+                                "question": "What does np.isclose(a,b) do?",
+                                "options": [
+                                    "Checks floating-point equality within tolerance",
+                                    "Tests array shapes match",
+                                    "Verifies broadcast compatibility",
+                                    "Checks memory locations"
+                                ],
+                                "answer": 0,
+                                "explanation": "Avoids precision issues in float comparisons with relative/absolute tolerances."
+                                },
+                                {
+                                "question": "How to apply custom function element-wise?",
+                                "options": [
+                                    "np.vectorize(my_func)(arr)",
+                                    "[my_func(x) for x in arr]",
+                                    "np.fromiter((my_func(x) for x in arr), dtype)",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Vectorize() is convenient but list comprehensions may be faster for small arrays."
+                                },
+                                {
+                                "question": "What is the result of np.array([True, False]) & np.array([True, True])?",
+                                "options": [
+                                    "[True, False]",
+                                    "ValueError",
+                                    "[True, True]",
+                                    "TypeError"
+                                ],
+                                "answer": 0,
+                                "explanation": "Logical AND is applied element-wise (use 'and' for scalar booleans)."
+                                },
+                                {
+                                    "question": "What is the result of np.array([1,2])[:,None] + np.array([3,4])?",
+                                    "options": [
+                                        "[[4,5],[5,6]]",
+                                        "[[4,5],[6,7]]",
+                                        "[4,6]",
+                                        "ValueError"
+                                    ],
+                                    "answer": 0,
+                                    "explanation": "Broadcasting with explicit dimensions creates grid."
+                                    },
+                                    {
+                                    "question": "How to compute matrix norms efficiently?",
+                                    "options": [
+                                        "np.linalg.norm(arr)",
+                                        "np.sqrt(np.sum(arr**2))",
+                                        "Both A and B",
+                                        "np.apply_along_axis(np.linalg.norm)"
+                                    ],
+                                    "answer": 2,
+                                    "explanation": "Both compute Frobenius norm for matrices."
+                                    },
+                                    {
+                                    "question": "What does np.einsum('ij,jk->ik', A, B) compute?",
+                                    "options": [
+                                        "Matrix multiplication",
+                                        "Element-wise product",
+                                        "Outer product",
+                                        "Diagonal extraction"
+                                    ],
+                                    "answer": 0,
+                                    "explanation": "Einstein summation implements matrix multiplication."
+                                    },
+                                    {
+                                    "question": "How to apply function to all array elements?",
+                                    "options": [
+                                        "np.vectorize(f)(arr)",
+                                        "np.frompyfunc(f,1,1)(arr)",
+                                        "Both A and B",
+                                        "np.apply_over_axes(f, arr)"
+                                    ],
+                                    "answer": 2,
+                                    "explanation": "Both create vectorized versions of functions."
+                                    },
+                                    {
+                                    "question": "What is the purpose of np.ufunc.reduce()?",
+                                    "options": [
+                                        "Apply operation cumulatively",
+                                        "Reduce dimensions with operation",
+                                        "Parallelize computation",
+                                        "Broadcast arrays"
+                                    ],
+                                    "answer": 1,
+                                    "explanation": "Performs reduction along specified axis."
+                                    },
+                                    {
+                                    "question": "How to compute pairwise distances?",
+                                    "options": [
+                                        "np.linalg.norm(arr[:,None]-arr, axis=-1)",
+                                        "scipy.spatial.distance.cdist",
+                                        "Both A and B",
+                                        "np.diff(arr)"
+                                    ],
+                                    "answer": 2,
+                                    "explanation": "Efficient methods for distance matrices."
+                                    },
+                                    {
+                                    "question": "What does np.cross(a,b) compute?",
+                                    "options": [
+                                        "Vector cross product",
+                                        "Element-wise multiplication",
+                                        "Matrix outer product",
+                                        "Statistical correlation"
+                                    ],
+                                    "answer": 0,
+                                    "explanation": "Vector cross product for 2D/3D arrays."
+                                    },
+                                    {
+                                    "question": "How to invert boolean array?",
+                                    "options": [
+                                        "~arr",
+                                        "np.invert(arr)",
+                                        "np.logical_not(arr)",
+                                        "All of the above"
+                                    ],
+                                    "answer": 3,
+                                    "explanation": "Multiple ways to flip boolean values."
+                                    },
+                                    {
+                                    "question": "What is the effect of np.ix_()?",
+                                    "options": [
+                                        "Creates open mesh for indexing",
+                                        "Broadcasts arrays for operations",
+                                        "Generates identity matrices",
+                                        "Computes outer products"
+                                    ],
+                                    "answer": 0,
+                                    "explanation": "Constructs index arrays for multidimensional indexing."
+                                    },
+                                    {
+                                    "question": "How to compute element-wise power?",
+                                    "options": [
+                                        "np.power(arr, n)",
+                                        "arr**n",
+                                        "np.exp(n*np.log(arr))",
+                                        "All of the above"
+                                    ],
+                                    "answer": 3,
+                                    "explanation": "Various methods for exponentiation."
+                                    },
+                                    {
+                                    "question": "What does np.signbit() detect?",
+                                    "options": [
+                                        "Negative numbers",
+                                        "Sign changes",
+                                        "Zero crossings",
+                                        "Positive values"
+                                    ],
+                                    "answer": 0,
+                                    "explanation": "Identifies negative floating-point values."
+                                    },
+                                    {
+                                    "question": "How to handle division by zero?",
+                                    "options": [
+                                        "np.seterr(divide='ignore')",
+                                        "np.divide(1, arr, where=arr!=0)",
+                                        "Both A and B",
+                                        "np.nan_to_num()"
+                                    ],
+                                    "answer": 2,
+                                    "explanation": "Methods to suppress or control warnings."
+                                    }
+                    ]
+                },
+                {
+                    title: "Statistics",
+                    icon: "fa-chart-line",
+                    questions: [
+                        {
+                            question: "How do you compute the mean of an array?",
+                            options: [
+                                "arr.mean()",
+                                "np.median(arr)",
+                                "np.average(arr)",
+                                "sum(arr)/len(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "arr.mean() is the standard method. np.average() supports weights."
+                        },
+                        {
+                            question: "Which function finds the standard deviation?",
+                            options: [
+                                "arr.std()",
+                                "np.var(arr)",
+                                "np.deviation(arr)",
+                                "np.spread(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "std() computes standard deviation; var() computes variance."
+                        },
+                        {
+                            question: "What does np.percentile(arr, 75) calculate?",
+                            options: [
+                                "Median",
+                                "Third quartile",
+                                "Mean",
+                                "Mode"
+                            ],
+                            answer: 1,
+                            explanation: "The 75th percentile is the third quartile (value below which 75% of data falls)."
+                        },
+                        {
+                            question: "How do you compute element-wise absolute values?",
+                            options: [
+                                "np.abs(arr)",
+                                "arr.absolute()",
+                                "np.positive(arr)",
+                                "np.modulus(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "np.abs() converts negative values to positive."
+                        },
+                        {
+                            "question": "What does np.median([5, 2, 8]) return?",
+                            "options": [
+                                "5",
+                                "4.5",
+                                "6",
+                                "2"
+                            ],
+                            "answer": 0,
+                            "explanation": "Sorted values [2,5,8] have median 5 (middle value)."
+                            },
+                            {
+                            "question": "How to find the 90th percentile?",
+                            "options": [
+                                "np.percentile(data, 90)",
+                                "np.quantile(data, 0.9)",
+                                "Both A and B",
+                                "np.top(data, 10)"
+                            ],
+                            "answer": 2,
+                            "explanation": "percentile() and quantile() are equivalent for this calculation."
+                            },
+                            {
+                            "question": "How to compute weighted average?",
+                            "options": [
+                                "np.average(values, weights=weights)",
+                                "np.sum(values * weights) / np.sum(weights)",
+                                "Both A and B",
+                                "np.mean(values * weights)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Both methods correctly calculate Σ(value_i × weight_i) / Σ(weight_i)."
+                            },
+                            {
+                            "question": "What does np.cov(matrix) return?",
+                            "options": [
+                                "Covariance matrix",
+                                "Correlation coefficients",
+                                "Variance vector",
+                                "Standard deviations"
+                            ],
+                            "answer": 0,
+                            "explanation": "Computes covariance matrix where diagonal is variance of each variable."
+                            },
+                            {
+                            "question": "How to compute Pearson correlation?",
+                            "options": [
+                                "np.corrcoef(a,b)[0,1]",
+                                "cov(a,b)/(std(a)*std(b))",
+                                "Both A and B",
+                                "np.correlate(a,b)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Both calculate normalized covariance between two variables."
+                            },
+                            {
+                            "question": "What is the interquartile range (IQR)?",
+                            "options": [
+                                "Q3 - Q1",
+                                "np.percentile(data,75) - np.percentile(data,25)",
+                                "Both A and B",
+                                "max - min"
+                            ],
+                            "answer": 2,
+                            "explanation": "IQR measures statistical dispersion between 25th and 75th percentiles."
+                            },
+                            {
+                            "question": "How to detect outliers using IQR?",
+                            "options": [
+                                "data[(data < Q1 - 1.5*IQR) | (data > Q3 + 1.5*IQR)]",
+                                "np.abs(data - median) > 2*std",
+                                "Both A and B",
+                                "data[data > 3*std]"
+                            ],
+                            "answer": 2,
+                            "explanation": "Common methods: IQR fences or standard deviation thresholds."
+                            },
+                            {
+                            "question": "What does np.histogram(data) return?",
+                            "options": [
+                                "(counts, bin_edges)",
+                                "Probability density function",
+                                "Cumulative distribution",
+                                "Sorted unique values"
+                            ],
+                            "answer": 0,
+                            "explanation": "Counts frequency of data points in automatically determined bins."
+                            },
+                            {
+                            "question": "How to compute moving average?",
+                            "options": [
+                                "np.convolve(data, np.ones(3)/3, 'valid')",
+                                "pd.Series(data).rolling(3).mean()",
+                                "Both A and B",
+                                "np.cumsum(data)/np.arange(1,len(data)+1)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Convolution and rolling window methods both compute moving averages."
+                            },
+                            {
+                            "question": "What is kurtosis?",
+                            "options": [
+                                "Measure of tail heaviness",
+                                "Fourth standardized moment",
+                                "Indicator of outlier presence",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "Quantifies whether data are heavy-tailed (positive) or light-tailed (negative)."
+                            },
+                            {
+                            "question": "How to compute mode?",
+                            "options": [
+                                "scipy.stats.mode(data)",
+                                "np.unique(data, return_counts=True)",
+                                "Both A and B",
+                                "np.argmax(np.bincount(data))"
+                            ],
+                            "answer": 2,
+                            "explanation": "All methods identify the most frequent value(s) in array."
+                            },
+                            {
+                            "question": "What does np.quantile(data, [0.25,0.75]) return?",
+                            "options": [
+                                "Array of quartiles",
+                                "Interquartile range",
+                                "Median values",
+                                "Sorted data boundaries"
+                            ],
+                            "answer": 0,
+                            "explanation": "Returns specified quantiles (here: first and third quartiles)."
+                            },
+                            {
+                            "question": "How to standardize data to mean=0, std=1?",
+                            "options": [
+                                "(data - data.mean()) / data.std()",
+                                "scipy.stats.zscore(data)",
+                                "Both A and B",
+                                "data / data.max()"
+                            ],
+                            "answer": 2,
+                            "explanation": "Standardization transforms data to standard normal distribution."
+                            },
+                            {
+                            "question": "What does np.argmax(data) return?",
+                            "options": [
+                                "Index of maximum value",
+                                "Maximum value itself",
+                                "Sorted indices",
+                                "Cumulative maximum"
+                            ],
+                            "answer": 0,
+                            "explanation": "Returns integer index of the first occurrence of the maximum value."
+                            },
+                            {
+                                "question": "How to compute trimmed mean?",
+                                "options": [
+                                    "scipy.stats.trim_mean",
+                                    "np.mean(sorted_arr[5:-5])",
+                                    "Both A and B",
+                                    "np.average()"
+                                ],
+                                "answer": 2,
+                                "explanation": "Removes outliers from mean calculation."
+                                },
+                                {
+                                "question": "What does np.quantile(arr, [0.1,0.9]) return?",
+                                "options": [
+                                    "10th and 90th percentiles",
+                                    "Decile ranges",
+                                    "Interquartile range",
+                                    "Confidence intervals"
+                                ],
+                                "answer": 0,
+                                "explanation": "Returns specified quantiles."
+                                },
+                                {
+                                "question": "How to compute geometric mean?",
+                                "options": [
+                                    "np.exp(np.mean(np.log(arr)))",
+                                    "scipy.stats.gmean",
+                                    "Both A and B",
+                                    "np.mean(arr)**0.5"
+                                ],
+                                "answer": 2,
+                                "explanation": "Appropriate for multiplicative datasets."
+                                },
+                                {
+                                "question": "What is the purpose of np.corrcoef()?",
+                                "options": [
+                                    "Compute correlation matrix",
+                                    "Calculate Pearson coefficients",
+                                    "Measure linear relationships",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Multi-purpose correlation analysis."
+                                },
+                                {
+                                "question": "How to detect statistical modes?",
+                                "options": [
+                                    "scipy.stats.mode",
+                                    "np.unique(arr, return_counts=True)",
+                                    "Both A and B",
+                                    "np.argmax(np.bincount(arr))"
+                                ],
+                                "answer": 2,
+                                "explanation": "Finds most frequent value(s)."
+                                },
+                                {
+                                "question": "What does np.histogram_bin_edges() provide?",
+                                "options": [
+                                    "Optimal bin boundaries",
+                                    "Probability densities",
+                                    "Cumulative counts",
+                                    "Kernel density estimates"
+                                ],
+                                "answer": 0,
+                                "explanation": "Automatically determines bin edges."
+                                },
+                                {
+                                "question": "How to compute entropy?",
+                                "options": [
+                                    "scipy.stats.entropy",
+                                    "-np.sum(p * np.log2(p))",
+                                    "Both A and B",
+                                    "np.info(arr)"
+                                ],
+                                "answer": 2,
+                                "explanation": "Measures information content in distributions."
+                                },
+                                {
+                                "question": "What is np.nanpercentile() used for?",
+                                "options": [
+                                    "Ignore NaN in calculations",
+                                    "Convert NaNs to percentiles",
+                                    "Handle missing data",
+                                    "Both A and C"
+                                ],
+                                "answer": 3,
+                                "explanation": "Robust quantile calculation with missing values."
+                                },
+                                {
+                                "question": "How to compute rank correlation?",
+                                "options": [
+                                    "scipy.stats.spearmanr",
+                                    "scipy.stats.kendalltau",
+                                    "Both A and B",
+                                    "np.correlate"
+                                ],
+                                "answer": 2,
+                                "explanation": "Non-parametric correlation measures."
+                                },
+                                {
+                                "question": "What does np.diff(arr, n=2) compute?",
+                                "options": [
+                                    "Second derivatives",
+                                    "Acceleration from position",
+                                    "Second-order differences",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Higher-order finite differences."
+                                },
+                                {
+                                "question": "How to compute moving median?",
+                                "options": [
+                                    "scipy.signal.medfilt",
+                                    "pd.Series(arr).rolling(5).median()",
+                                    "Both A and B",
+                                    "np.convolve(arr, np.ones(5)/5)"
+                                ],
+                                "answer": 2,
+                                "explanation": "Robust smoothing techniques."
+                                },
+                                {
+                                "question": "What is the purpose of np.ptp()?",
+                                "options": [
+                                    "Peak-to-peak range",
+                                    "Power transfer point",
+                                    "Probability density",
+                                    "Phase transition point"
+                                ],
+                                "answer": 0,
+                                "explanation": "Computes range (max - min) of values."
+                                }
+                    ]
+                },
+                {
+                    title: "Real Applications",
+                    icon: "fa-seedling",
+                    questions: [
+                        {
+                            question: "You have a yields array (crop kg/ha). How do you find fields with >5000 yield?",
+                            options: [
+                                "yields[yields > 5000]",
+                                "np.greater(yields, 5000)",
+                                "yields.max(axis=0)",
+                                "np.select(yields, 5000)"
+                            ],
+                            answer: 0,
+                            explanation: "Boolean indexing filters arrays based on conditions."
+                        },
+                        {
+                            question: "How do you calculate average yield per crop type (stored in crop_codes)?",
+                            options: [
+                                "[yields[crop_codes == code].mean() for code in np.unique(crop_codes)]",
+                                "yields.mean()",
+                                "np.average(yields, weights=crop_codes)",
+                                "np.median(yields, group=crop_codes)"
+                            ],
+                            answer: 0,
+                            explanation: "Iterate over unique crop codes, filter yields, and compute means."
+                        },
+                        {
+                            question: "What does np.diff(rainfall) compute?",
+                            options: [
+                                "Cumulative rainfall",
+                                "Daily rainfall differences",
+                                "Mean rainfall",
+                                "Rainfall variance"
+                            ],
+                            answer: 1,
+                            explanation: "np.diff() calculates differences between consecutive elements."
+                        },
+                        {
+                            question: "How do you normalize yield data to [0, 1]?",
+                            options: [
+                                "(yields - yields.min()) / (yields.max() - yields.min())",
+                                "yields / yields.max()",
+                                "np.log(yields)",
+                                "yields.standardize()"
+                            ],
+                            answer: 0,
+                            explanation: "Min-max normalization scales data to a specified range."
+                        },
+                        {
+                            "question": "How to replace negative yield values with 0?",
+                            "options": [
+                                "yields[yields < 0] = 0",
+                                "np.clip(yields, 0, None)",
+                                "np.where(yields < 0, 0, yields)",
+                                "All of the above"
+                            ],
+                            "answer": 3,
+                            "explanation": "All methods correctly handle negative value replacement."
+                            },
+                            {
+                            "question": "How to calculate cumulative rainfall from daily data?",
+                            "options": [
+                                "np.cumsum(rainfall)",
+                                "np.add.accumulate(rainfall)",
+                                "Both A and B",
+                                "np.sum(rainfall, axis=0)"
+                            ],
+                            "answer": 2,
+                            "explanation": "cumsum() and add.accumulate() both compute cumulative sums."
+                            },
+                            {
+                            "question": "How to find days with rainfall > 2 standard deviations?",
+                            "options": [
+                                "rainfall[rainfall > rainfall.mean() + 2*rainfall.std()]",
+                                "np.where(rainfall > np.percentile(rainfall, 95))",
+                                "Both A and B",
+                                "rainfall[rainfall > 2]"
+                            ],
+                            "answer": 2,
+                            "explanation": "Statistical outlier detection using standard deviations or percentiles."
+                            },
+                            {
+                            "question": "How to calculate rolling 7-day average?",
+                            "options": [
+                                "np.convolve(rainfall, np.ones(7)/7, 'valid')",
+                                "pd.Series(rainfall).rolling(7).mean().to_numpy()",
+                                "Both A and B",
+                                "np.cumsum(rainfall)[6:]/7"
+                            ],
+                            "answer": 2,
+                            "explanation": "Convolution and pandas rolling methods handle windowed averages."
+                            },
+                            {
+                            "question": "How to interpolate missing temperature values?",
+                            "options": [
+                                "np.interp(indices, valid_indices, valid_temps)",
+                                "scipy.interpolate.interp1d()",
+                                "Both A and B",
+                                "np.fillna(temps)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Linear interpolation methods estimate missing values between known points."
+                            },
+                            {
+                            "question": "How to find locations with yield > 5000 and rainfall < 100?",
+                            "options": [
+                                "mask = (yields > 5000) & (rainfall < 100)",
+                                "np.logical_and(yields > 5000, rainfall < 100)",
+                                "Both A and B",
+                                "np.select([yields>5000], [rainfall<100])"
+                            ],
+                            "answer": 2,
+                            "explanation": "Boolean masks combine multiple conditions for advanced filtering."
+                            },
+                            {
+                            "question": "How to calculate yield per region (region IDs in array)?",
+                            "options": [
+                                "[yields[regions == id].mean() for id in np.unique(regions)]",
+                                "np.bincount(regions, weights=yields)/np.bincount(regions)",
+                                "Both A and B",
+                                "yields.groupby(regions).mean()"
+                            ],
+                            "answer": 2,
+                            "explanation": "List comprehensions or bincount methods aggregate data by categories."
+                            },
+                            {
+                            "question": "How to sort yields while keeping corresponding dates aligned?",
+                            "options": [
+                                "sort_idx = np.argsort(yields); dates[sort_idx], yields[sort_idx]",
+                                "pd.DataFrame({'yield':yields, 'date':dates}).sort_values('yield')",
+                                "Both A and B",
+                                "np.lexsort((dates, yields))"
+                            ],
+                            "answer": 2,
+                            "explanation": "argsort() preserves relationships between parallel arrays."
+                            },
+                            {
+                            "question": "How to calculate year-over-year yield change?",
+                            "options": [
+                                "yields[1:] / yields[:-1] - 1",
+                                "np.diff(yields) / yields[:-1]",
+                                "Both A and B",
+                                "yields.pct_change()"
+                            ],
+                            "answer": 2,
+                            "explanation": "Element-wise operations compute percentage differences between consecutive years."
+                            },
+                            {
+                            "question": "How to find correlation between rainfall and yield?",
+                            "options": [
+                                "np.corrcoef(rainfall, yields)[0,1]",
+                                "np.cov(rainfall, yields)[0,1] / (np.std(rainfall)*np.std(yields))",
+                                "Both A and B",
+                                "np.dot(rainfall, yields)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Both calculate Pearson correlation coefficient (-1 to 1)."
+                            },
+                            {
+                            "question": "How to detect 3 consecutive dry days?",
+                            "options": [
+                                "np.convolve(rainfall < 1, [1,1,1], 'valid') == 3",
+                                "pd.Series(rainfall).rolling(3).sum() == 0",
+                                "Both A and B",
+                                "(rainfall[:-2] < 1) & (rainfall[1:-1] < 1) & (rainfall[2:] < 1)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Rolling window operations identify sequential patterns efficiently."
+                            },
+                            {
+                            "question": "How to normalize yields to z-scores?",
+                            "options": [
+                                "(yields - yields.mean()) / yields.std()",
+                                "scipy.stats.zscore(yields)",
+                                "Both A and B",
+                                "yields / np.linalg.norm(yields)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Z-score transformation standardizes data distribution."
+                            },
+                            {
+                            "question": "How to compute exponential moving average?",
+                            "options": [
+                                "pd.Series(yields).ewm(alpha=0.3).mean().to_numpy()",
+                                "scipy.signal.lfilter([alpha], [1, alpha-1], yields)",
+                                "Both A and B",
+                                "np.average(yields, weights=np.exp(np.arange(len(yields)))"
+                            ],
+                            "answer": 2,
+                            "explanation": "Specialized functions for EMA give more weight to recent observations."
+                            },
+                            {
+                            "question": "How to resample daily rainfall to monthly sums?",
+                            "options": [
+                                "pd.Series(rainfall).resample('M').sum().to_numpy()",
+                                "[rainfall[dates.month == m].sum() for m in range(1,13)]",
+                                "Both A and B",
+                                "np.bincount(dates.month, weights=rainfall)"
+                            ],
+                            "answer": 2,
+                            "explanation": "Pandas resampling or manual grouping by time periods."
+                            },
+                            {
+                                "question": "How to detect yield anomalies?",
+                                "options": [
+                                    "z = (yields - μ)/σ; |z|>3",
+                                    "yields < Q1 - 1.5*IQR",
+                                    "Machine learning models",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Multiple anomaly detection approaches."
+                                },
+                                {
+                                "question": "How to calculate growing degree days?",
+                                "options": [
+                                    "np.sum(np.maximum(tavg - tbase, 0))",
+                                    "np.cumsum(np.clip(tavg, tbase, None))",
+                                    "Both A and B",
+                                    "np.mean(tavg) * season_length"
+                                ],
+                                "answer": 2,
+                                "explanation": "Accumulated heat units for crop growth."
+                                },
+                                {
+                                "question": "How to fill missing weather data?",
+                                "options": [
+                                    "np.interp(times, valid_times, valid_data)",
+                                    "pd.Series(data).interpolate()",
+                                    "Both A and B",
+                                    "np.nanmean(data)"
+                                ],
+                                "answer": 2,
+                                "explanation": "Temporal interpolation methods."
+                                },
+                                {
+                                "question": "How to optimize irrigation scheduling?",
+                                "options": [
+                                    "np.cumsum(rainfall - evapotranspiration)",
+                                    "Soil moisture deficit modeling",
+                                    "Both A and B",
+                                    "Linear regression"
+                                ],
+                                "answer": 2,
+                                "explanation": "Water balance calculations."
+                                },
+                                {
+                                "question": "How to predict yield using climate data?",
+                                "options": [
+                                    "np.polyfit(temperature, yield, 2)",
+                                    "scipy.stats.linregress",
+                                    "Machine learning pipelines",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Various modeling approaches."
+                                },
+                                {
+                                "question": "How to compute water use efficiency?",
+                                "options": [
+                                    "yield / water_applied",
+                                    "np.divide(yield, irrigation, where=irrigation>0)",
+                                    "Both A and B",
+                                    "yield - evaporation"
+                                ],
+                                "answer": 2,
+                                "explanation": "Crop output per water unit."
+                                },
+                                {
+                                "question": "How to align sensor data with different timestamps?",
+                                "options": [
+                                    "np.interp(target_times, sensor_times, sensor_data)",
+                                    "pd.merge_asof()",
+                                    "Both A and B",
+                                    "np.hstack()"
+                                ],
+                                "answer": 2,
+                                "explanation": "Temporal alignment techniques."
+                                },
+                                {
+                                "question": "How to detect disease outbreaks?",
+                                "options": [
+                                    "np.diff(infection_count) > threshold",
+                                    "Moving average comparisons",
+                                    "Spatial clustering",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Multiple outbreak detection methods."
+                                },
+                                {
+                                "question": "How to optimize fertilizer application?",
+                                "options": [
+                                    "np.piecewise(yield, [soil_n<low, soil_n>high], [more_n, less_n])",
+                                    "Response surface methodology",
+                                    "Both A and B",
+                                    "Linear programming"
+                                ],
+                                "answer": 2,
+                                "explanation": "Precision agriculture techniques."
+                                },
+                                {
+                                "question": "How to compute phenology stages?",
+                                "options": [
+                                    "np.searchsorted(cum_gdd, stage_thresholds)",
+                                    "Day-length sensitive models",
+                                    "Both A and B",
+                                    "Kalman filtering"
+                                ],
+                                "answer": 2,
+                                "explanation": "Crop development stage modeling."
+                                },
+                                {
+                                "question": "How to create yield prediction maps?",
+                                "options": [
+                                    "Geospatial interpolation",
+                                    "Kriging with np.meshgrid",
+                                    "Both A and B",
+                                    "Histogram equalization"
+                                ],
+                                "answer": 2,
+                                "explanation": "Spatial data visualization techniques."
+                                },
+                                {
+                                "question": "How to analyze multi-year trends?",
+                                "options": [
+                                    "np.polyfit(years, yields, 1)[0]",
+                                    "Moving window regressions",
+                                    "Mann-Kendall test",
+                                    "All of the above"
+                                ],
+                                "answer": 3,
+                                "explanation": "Long-term trend analysis methods."
+                                }
+                    ]
+                }
+            ]
+        };
+
+        // Quiz app functionality
+        function quizApp() {
+            return {
+                // Quiz state
+                activeSection: 0,
+                showAnswers: false,
+                showResults: false,
+                score: 0,
+                answeredCount: 0,
+                userAnswers: Array(quizData.sections.length).fill().map(() => []),
+                
+                // Get total questions
+                get totalQuestions() {
+                    return quizData.sections.reduce((total, section) => total + section.questions.length, 0);
+                },
+                
+                // Get answer status text
+                getAnswerStatus(sectionIndex, questionIndex) {
+                    const userAnswer = this.userAnswers[sectionIndex][questionIndex];
+                    const question = this.sections[sectionIndex].questions[questionIndex];
+                    
+                    if (userAnswer === undefined) {
+                        return "Not answered. The correct answer is highlighted below.";
+                    } else if (userAnswer === question.answer) {
+                        return "Correct!";
+                    } else {
+                        return "Incorrect. The correct answer is highlighted below.";
+                    }
+                },
+                
+                // Select answer
+                selectAnswer(sectionIndex, questionIndex, optionIndex) {
+                    if (this.showAnswers) return; // Prevent changing after submission
+                    
+                    // Save answer
+                    this.userAnswers[sectionIndex][questionIndex] = optionIndex;
+                    
+                    // Update answered count
+                    this.calculateAnsweredCount();
+                },
+                
+                // Calculate how many questions have been answered
+                calculateAnsweredCount() {
+                    let count = 0;
+                    for (const section of this.userAnswers) {
+                        for (const answer of section) {
+                            if (answer !== undefined) count++;
+                        }
+                    }
+                    this.answeredCount = count;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    
+                    // Calculate score
+                    this.score = 0;
+                    quizData.sections.forEach((section, sIndex) => {
+                        section.questions.forEach((question, qIndex) => {
+                            if (this.userAnswers[sIndex][qIndex] === question.answer) {
+                                this.score++;
+                            }
+                        });
+                    });
+                    
+                    // Show results after a delay
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1000);
+                },
+                
+                // Reset quiz
+                resetQuiz() {
+                    this.userAnswers = Array(quizData.sections.length).fill().map(() => []);
+                    this.showAnswers = false;
+                    this.showResults = false;
+                    this.score = 0;
+                    this.answeredCount = 0;
+                    this.activeSection = 0;
+                },
+                
+                // Get motivation message based on score
+                getMotivationMessage() {
+                    const percentage = this.score / this.totalQuestions;
+                    
+                    if (percentage >= 0.9) {
+                        return "Cosmic mastery achieved! Your understanding of NumPy is stellar. NMDatti says: 'You're ready to tackle any data challenge!'";
+                    } else if (percentage >= 0.7) {
+                        return "Impressive cosmic knowledge! You've shown great understanding of NumPy concepts. NMDatti says: 'A few more orbits and you'll master the NumPy universe!'";
+                    } else if (percentage >= 0.5) {
+                        return "Solid cosmic progress! You've grasped the fundamentals. NMDatti says: 'Keep exploring - the stars of NumPy mastery are within your reach!'";
+                    } else {
+                        return "Beginning your cosmic journey! Every master was once a beginner. NMDatti says: 'Review the explanations and try again - the universe of NumPy awaits your discovery!'";
+                    }
+                },
+                
+                // Create cosmic background
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                    
+                    // Create nebulas
+                    for (let i = 0; i < 5; i++) {
+                        const nebula = document.createElement('div');
+                        nebula.classList.add('nebula');
+                        nebula.style.background = `radial-gradient(circle, 
+                            rgba(${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 50)}, ${Math.floor(Math.random() * 150 + 100)}, 0.3), 
+                            rgba(${Math.floor(Math.random() * 50)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 150 + 100)}, 0)`;
+                        nebula.style.width = `${Math.random() * 400 + 200}px`;
+                        nebula.style.height = `${Math.random() * 400 + 200}px`;
+                        nebula.style.left = `${Math.random() * 100}%`;
+                        nebula.style.top = `${Math.random() * 100}%`;
+                        container.appendChild(nebula);
+                    }
+                    
+                    // Create galaxies
+                    for (let i = 0; i < 3; i++) {
+                        const galaxy = document.createElement('div');
+                        galaxy.classList.add('galaxy');
+                        galaxy.style.left = `${Math.random() * 100}%`;
+                        galaxy.style.top = `${Math.random() * 100}%`;
+                        galaxy.style.setProperty('--speed', `${Math.random() * 100 + 80}s`);
+                        container.appendChild(galaxy);
+                    }
+                },
+                
+                // Initialize the quiz
+                init() {
+                    this.createCosmicBackground();
+                    this.calculateAnsweredCount();
+                }
+            }
+        }
+    </script>
+        <script>
+function quizApp() {
+    return {
+        sections: quizData.sections,
+        activeSection: 0,
+        userAnswers: quizData.sections.map(section => Array(section.questions.length).fill(undefined)),
+        answeredCount: 0,
+        showAnswers: false,
+        showResults: false,
+        score: 0,
+        totalQuestions: quizData.sections.reduce((sum, section) => sum + section.questions.length, 0),
+
+        selectAnswer(sectionIndex, questionIndex, optionIndex) {
+            if (this.showAnswers) return;
+            if (this.userAnswers[sectionIndex][questionIndex] === undefined) {
+                this.answeredCount++;
+            }
+            this.userAnswers[sectionIndex][questionIndex] = optionIndex;
+        },
+
+        submitQuiz() {
+            this.showAnswers = true;
+            this.score = this.userAnswers.reduce((total, sectionAnswers, sectionIndex) => {
+                return total + sectionAnswers.reduce((secTotal, answer, qIndex) => {
+                    return secTotal + (answer === this.sections[sectionIndex].questions[qIndex].answer ? 1 : 0);
+                }, 0);
+            }, 0);
+            this.showResults = true;
+        },
+
+        resetQuiz() {
+            this.userAnswers = quizData.sections.map(section => Array(section.questions.length).fill(undefined));
+            this.answeredCount = 0;
+            this.showAnswers = false;
+            this.score = 0;
+            this.showResults = false;
+            this.activeSection = 0;
+        },
+
+        getMotivationMessage() {
+            if (this.score / this.totalQuestions > 0.8) return "You're a Cosmic Champion! 🚀";
+            if (this.score / this.totalQuestions > 0.5) return "Great progress! Keep exploring the galaxy! 🌌";
+            return "The stars are aligning — keep learning! ✨";
+        }
+    };
+}
+</script>
+
+</body>
+</html>

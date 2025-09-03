@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Back Button</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Sticky Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+        }
+        
+        /* Content Styling */
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 80px 40px 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+        }
+        
+        h1 {
+            color: #1a365d;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #2b6cb0;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .page-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .page-card h3 {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .page-card p {
+            color: #4a5568;
+            font-size: 1rem;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .highlight h2 {
+            color: white;
+            border-bottom: none;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: white;
+            color: #2b6cb0;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #4a5568;
+            margin-top: 50px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        @media (max-width: 768px) {
+            .back-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .content {
+                padding: 70px 20px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <style>
+           
+        /* Sticky Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+        }
+        
+     
+    </style>
+    <!-- Sticky Back Button -->
+    <a href="./index.html" class="back-btn" id="backButton">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <script>
+          // Back button functionality
+        document.getElementById('backButton').addEventListener('click', function() {
+            // Use browser history to go back
+            window.history.back();
+        });
+    </script>
+
+    <div class="container">
+        <div class="content">
+            <h1>Website Title</h1>
+            
+            <p>This is a sample page demonstrating the sticky back button in the top-left corner. The button will remain fixed in position as you scroll down the page. Clicking it will take you back to the previous page in your browsing history.</p>
+            
+            <div class="highlight">
+                <h2>Universal Back Navigation</h2>
+                <p>This button works on all pages and provides consistent navigation experience across your website</p>
+                <a href="#" class="btn">Learn More</a>
+            </div>
+            
+            <h2>Page Content Sections</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
+            <p>Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio.</p>
+            
+            <h2>Website Features</h2>
+            
+            <div class="page-grid">
+                <div class="page-card">
+                    <h3>Responsive Design</h3>
+                    <p>Works perfectly on all devices from mobile phones to desktop computers with consistent styling and functionality.</p>
+                </div>
+                
+                <div class="page-card">
+                    <h3>Easy Implementation</h3>
+                    <p>Simply copy the HTML and CSS code to add this button to any page on your website without complex setup.</p>
+                </div>
+                
+                <div class="page-card">
+                    <h3>Modern Aesthetics</h3>
+                    <p>Clean design with subtle gradients, smooth animations, and professional styling that enhances user experience.</p>
+                </div>
+            </div>
+            
+            <h2>Additional Content</h2>
+            <p>Proin at libero sed erat venenatis imperdiet. Donec in velit vel ipsum auctor pulvinar. Vestibulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod consequat ante.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
+            <p>Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio.</p>
+            <p>Proin at libero sed erat venenatis imperdiet. Donec in velit vel ipsum auctor pulvinar. Vestibulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod consequat ante.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 Your Website. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Back button functionality
+        document.getElementById('backButton').addEventListener('click', function() {
+            // Use browser history to go back
+            window.history.back();
+        });
+        
+        // Optional: Add animation effect on page load
+        window.addEventListener('load', function() {
+            const backBtn = document.getElementById('backButton');
+            backBtn.style.transform = 'scale(0)';
+            backBtn.style.opacity = '0';
+            
+            setTimeout(() => {
+                backBtn.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                backBtn.style.transform = 'scale(1)';
+                backBtn.style.opacity = '1';
+            }, 500);
+        });
+    </script>
+</body>
+</html>

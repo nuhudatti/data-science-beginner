@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Machine Learning Fundamentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce',
+                        dspink: '#db2777',
+                        dsorange: '#ea580c',
+                        dsgreen: '#16a34a'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --progress: 85%;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .explanation-panel {
+            background: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            padding: 16px;
+        }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            width: var(--progress);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .highlight {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(56, 189, 248, 0.3);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+        
+        .update-ticker {
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .learning-path {
+            position: relative;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 24px;
+            height: calc(100% - 80px);
+            width: 4px;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .path-item::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item.active::before {
+            background: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
+        }
+        
+        .path-item.completed::before {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .path-item h3::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: -24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            z-index: -1;
+        }
+        
+        .algorithm-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .algorithm-header {
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-content {
+            padding: 16px;
+        }
+        
+        .algorithm-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .interactive-code {
+            min-height: 200px;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .interactive-output {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .python-keyword {
+            color: #f472b6;
+        }
+        
+        .python-function {
+            color: #38bdf8;
+        }
+        
+        .python-string {
+            color: #86efac;
+        }
+        
+        .python-comment {
+            color: #94a3b8;
+        }
+        
+        .python-operator {
+            color: #fbbf24;
+        }
+        
+        .confusion-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: #cbd5e1;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 200px;
+            margin: 16px auto;
+        }
+        
+        .matrix-cell {
+            background: white;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .matrix-header {
+            background: #334155;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .ml-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .ml-step {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 18%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ml-step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+            color: #3b82f6;
+        }
+        
+        .ml-connector {
+            position: absolute;
+            height: 2px;
+            background: #d1d5db;
+            width: 20%;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .ml-connector:nth-child(2) { left: 40%; }
+        .ml-connector:nth-child(3) { left: 60%; }
+        .ml-connector:nth-child(4) { left: 80%; }
+          /* NAV */
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+
+        /* DropShadow */
+            .ula-mlrf-wrap {
+      max-width: 800px;
+      margin: 30px auto;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.7;
+    }
+
+    .ula-mlrf-btn {
+      background-color: #1e40af;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .ula-mlrf-btn:hover {
+      background-color: #163197;
+    }
+
+    .ula-mlrf-content {
+      display: none;
+      background-color: #f8fafc;
+      border-left: 4px solid #1e40af;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .ula-mlrf-content code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                    <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Machine Learning Fundamentals</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Latest updates ticker -->
+    <div class="update-ticker">
+        <div class="ticker-content">
+            <span class="px-4"><i class="fas fa-bullhorn mr-2"></i>New: Added Nigerian crop prediction dataset</span>
+            <span class="px-4"><i class="fas fa-star mr-2"></i>Updated: Scikit-Learn 1.3 features added</span>
+            <span class="px-4"><i class="fas fa-book mr-2"></i>Now available: ML cheat sheet for beginners</span>
+        </div>
+    </div>
+            <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="./fundementals.html" class="nav-item text-nca-700 "><i class="fas fa-code mr-1"></i>Python</a>
+                <a href="./index2.html" class="nav-item hover:text-nca-700"><i class="fas fa-database mr-1"></i>Data</a>
+                <a href="./index3.html" class="nav-item hover:text-nca-700"><i class="fas fa-chart-line mr-1"></i>Plots</a>
+                <a href="#" class="nav-item hover:text-nca-700 font-medium active-nav"><i class="fas fa-robot mr-1"></i>ML</a>
+                <a href="./index5.html" class="nav-item hover:text-nca-700"><i class="fas fa-graduation-cap mr-1"></i>Project</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page header with progress -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Machine Learning Fundamentals</h1>
+                <p class="text-gray-600 mb-4">Learn to build predictive models and uncover insights from data</p>
+                
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-secondary mr-2"></i>
+                        <span>Estimated Time: 6-8 hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span>Prerequisite: Data Analysis & Visualization</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium">Your Progress</span>
+                        <span id="progress-text" class="text-sm font-medium">85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>5IRE Curriculum Compliant
+            </div>
+        </div>
+
+        <!-- Mission statement -->
+        <div class="bg-gradient-to-r from-dsblue to-dsgreen text-white rounded-xl shadow-md p-6 mb-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">From Data to Intelligent Systems</h2>
+            <p class="text-lg mb-4">
+                "Learn to build algorithms that can learn from data and make predictions - the foundation of artificial intelligence."
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <span>Understand core ML concepts</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <span>Build predictive models</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>Evaluate model performance</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Machine Learning Workflow -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-center">The Machine Learning Workflow</h2>
+            
+            <div class="ml-flow">
+                <div class="ml-step">
+                    <div class="ml-step-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="font-bold">Data Collection</h3>
+                    <p class="text-sm">Gather relevant datasets</p>
+                </div>
+                
+                <div class="ml-connector"></div>
+                
+                <div class="ml-step">
+                    <div class="ml-step-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <h3 class="font-bold">Preprocessing</h3>
+                    <p class="text-sm">Clean and prepare data</p>
+                </div>
+                
+                <div class="ml-connector"></div>
+                
+                <div class="ml-step">
+                    <div class="ml-step-icon">
+                        <i class="fas fa-shapes"></i>
+                    </div>
+                    <h3 class="font-bold">Feature Engineering</h3>
+                    <p class="text-sm">Create meaningful features</p>
+                </div>
+                
+                <div class="ml-connector"></div>
+                
+                <div class="ml-step">
+                    <div class="ml-step-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="font-bold">Model Training</h3>
+                    <p class="text-sm">Train ML algorithms</p>
+                </div>
+                
+                <div class="ml-connector"></div>
+                
+                <div class="ml-step">
+                    <div class="ml-step-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="font-bold">Evaluation</h3>
+                    <p class="text-sm">Measure model performance</p>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <!-- Complete Learning Trail -->
+        <h2 class="text-2xl font-bold mb-6 text-center">Learning Trail: Machine Learning Fundamentals</h2>
+        
+        <div class="learning-path bg-white rounded-xl shadow-lg p-6 mb-16">
+            <!-- Module 1: Introduction to ML -->
+            <div class="path-item completed active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-green-600">1</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Introduction to Machine Learning</h3>
+                        <p class="text-gray-600">Core concepts, types, and applications</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Machine learning enables computers to learn from data without explicit programming. 
+                        It powers recommendation systems, fraud detection, medical diagnoses, and more. 
+                        Understanding ML fundamentals is essential for building intelligent applications.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Types of Machine Learning</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <ul class="space-y-4">
+                                <li>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                            <i class="fas fa-eye text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold">Supervised Learning</h4>
+                                            <p class="text-sm">Learning from labeled data (e.g., classification, regression)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                            <i class="fas fa-eye-slash text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold">Unsupervised Learning</h4>
+                                            <p class="text-sm">Finding patterns in unlabeled data (e.g., clustering, dimensionality reduction)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                            <i class="fas fa-medal text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold">Reinforcement Learning</h4>
+                                            <p class="text-sm">Learning through rewards and penalties (e.g., game AI, robotics)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Real-World Applications in Nigeria</h4>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-seedling text-green-500 mt-1 mr-2"></i>
+                                    <span><strong>Agriculture:</strong> Crop yield prediction based on weather and soil data</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-heartbeat text-red-500 mt-1 mr-2"></i>
+                                    <span><strong>Healthcare:</strong> Disease outbreak prediction and diagnosis support</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-money-bill-wave text-yellow-500 mt-1 mr-2"></i>
+                                    <span><strong>Finance:</strong> Fraud detection in banking transactions</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-traffic-light text-blue-500 mt-1 mr-2"></i>
+                                    <span><strong>Urban Planning:</strong> Traffic prediction and optimization in Lagos</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-graduation-cap text-purple-500 mt-1 mr-2"></i>
+                                    <span><strong>Education:</strong> Predicting student performance and dropout risk</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-green-700 mb-2 flex items-center">
+                        <i class="fas fa-brain mr-2"></i> Analogy: Learning to Cook Nigerian Dishes
+                    </h4>
+                    <p class="text-gray-700">
+                        <strong>Supervised Learning</strong> is like following a recipe with step-by-step instructions. 
+                        <strong>Unsupervised Learning</strong> is like experimenting with ingredients to discover new flavor combinations. 
+                        <strong>Reinforcement Learning</strong> is like learning to cook through trial and error, adjusting based on taste feedback.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Module 2: Supervised Learning -->
+            <div class="path-item active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">2</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Supervised Learning</h3>
+                        <p class="text-gray-600">Regression and classification algorithms</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Supervised learning is the most common ML approach, used for predicting numerical values (regression) 
+                        and categorical outcomes (classification). Mastering these algorithms enables you to solve a wide range 
+                        of real-world prediction problems.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <!-- Linear Regression Card -->
+                    <div class="algorithm-card">
+                        <div class="algorithm-header" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">
+                            <div class="algorithm-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="font-bold">Linear Regression</h3>
+                        </div>
+                        <div class="algorithm-content">
+                            <p class="text-sm text-gray-600 mb-3">Predict continuous values (e.g., house prices, crop yields)</p>
+                            <div class="text-xs bg-blue-50 p-2 rounded">y = mx + b</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decision Tree Card -->
+                    <div class="algorithm-card">
+                        <div class="algorithm-header" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                            <div class="algorithm-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <h3 class="font-bold">Decision Tree</h3>
+                        </div>
+                        <div class="algorithm-content">
+                            <p class="text-sm text-gray-600 mb-3">Make decisions based on feature thresholds</p>
+                            <div class="text-xs bg-green-50 p-2 rounded">Classification & Regression</div>
+                        </div>
+                    </div>
+                    
+                    <!-- SVM Card -->
+                    <div class="algorithm-card">
+                        <div class="algorithm-header" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                            <div class="algorithm-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h3 class="font-bold">Support Vector Machine</h3>
+                        </div>
+                        <div class="algorithm-content">
+                            <p class="text-sm text-gray-600 mb-3">Find optimal boundary between classes</p>
+                            <div class="text-xs bg-purple-50 p-2 rounded">Effective for high-dimensional data</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Practical Example: Crop Prediction</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    crop_prediction.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Import libraries</span>
+<span class="text-pink-400">from</span> <span class="text-blue-400">sklearn.ensemble</span> <span class="text-pink-400">import</span> <span class="text-blue-400">RandomForestClassifier</span>
+<span class="text-pink-400">from</span> <span class="text-blue-400">sklearn.model_selection</span> <span class="text-pink-400">import</span> <span class="text-blue-400">train_test_split</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">pandas</span> <span class="text-pink-400">as</span> <span class="text-blue-400">pd</span>
+
+<span class="text-purple-400"># Load Nigerian agricultural dataset</span>
+<span class="text-blue-400">data</span> = <span class="text-blue-400">pd</span>.<span class="text-blue-400">read_csv</span>(<span class="text-green-400">'nigerian_crops.csv'</span>)
+<span class="text-blue-400">X</span> = <span class="text-blue-400">data</span>[[<span class="text-green-400">'rainfall'</span>, <span class="text-green-400">'temperature'</span>, <span class="text-green-400">'soil_ph'</span>, <span class="text-green-400">'nitrogen'</span>]]
+<span class="text-blue-400">y</span> = <span class="text-blue-400">data</span>[<span class="text-green-400">'crop'</span>]
+
+<span class="text-purple-400"># Split data into training and testing sets</span>
+<span class="text-blue-400">X_train</span>, <span class="text-blue-400">X_test</span>, <span class="text-blue-400">y_train</span>, <span class="text-blue-400">y_test</span> = <span class="text-blue-400">train_test_split</span>(<span class="text-blue-400">X</span>, <span class="text-blue-400">y</span>, <span class="text-blue-400">test_size</span>=<span class="text-amber-400">0.2</span>, <span class="text-blue-400">random_state</span>=<span class="text-amber-400">42</span>)
+
+<span class="text-purple-400"># Create and train the model</span>
+<span class="text-blue-400">model</span> = <span class="text-blue-400">RandomForestClassifier</span>(<span class="text-blue-400">n_estimators</span>=<span class="text-amber-400">100</span>)
+<span class="text-blue-400">model</span>.<span class="text-blue-400">fit</span>(<span class="text-blue-400">X_train</span>, <span class="text-blue-400">y_train</span>)
+
+<span class="text-purple-400"># Make predictions</span>
+<span class="text-blue-400">predictions</span> = <span class="text-blue-400">model</span>.<span class="text-blue-400">predict</span>(<span class="text-blue-400">X_test</span>)
+
+<span class="text-purple-400"># Evaluate model accuracy</span>
+<span class="text-blue-400">accuracy</span> = <span class="text-blue-400">model</span>.<span class="text-blue-400">score</span>(<span class="text-blue-400">X_test</span>, <span class="text-blue-400">y_test</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">f"Model Accuracy: {accuracy:.2f}"</span>)</pre>
+                            </div>
+                        </div>
+
+
+  <button class="ula-mlrf-btn" onclick="document.getElementById('mlrf').style.display = 
+  document.getElementById('mlrf').style.display === 'block' ? 'none' : 'block';">
+    📌 Click to Understand the Full Code Line by Line
+  </button>
+
+  <div id="mlrf" class="ula-mlrf-content">
+    <p><strong>1. Import Required Libraries:</strong><br>
+      <code>RandomForestClassifier</code>: ML model from scikit-learn.<br>
+      <code>train_test_split</code>: To split dataset for training/testing.<br>
+      <code>pandas</code>: For loading and manipulating CSV data.
+    </p>
+
+    <p><strong>2. Load Dataset:</strong><br>
+      <code>data = pd.read_csv('nigerian_crops.csv')</code><br>
+      Loads your crop dataset containing rainfall, temperature, soil pH, nitrogen, and the crop type.
+    </p>
+
+    <p><strong>3. Select Features and Target:</strong><br>
+      <code>X = data[['rainfall', 'temperature', 'soil_ph', 'nitrogen']]</code><br>
+      These are your input features.<br>
+      <code>y = data['crop']</code>: This is what the model will predict.
+    </p>
+
+    <p><strong>4. Split the Dataset:</strong><br>
+      <code>train_test_split(...)</code> splits data into 80% training and 20% testing. <br>
+      <code>random_state=42</code> ensures results are reproducible.
+    </p>
+
+    <p><strong>5. Create and Train the Model:</strong><br>
+      <code>model = RandomForestClassifier(n_estimators=100)</code><br>
+      Creates the model with 100 decision trees.<br>
+      <code>model.fit(X_train, y_train)</code> trains the model.
+    </p>
+
+    <p><strong>6. Make Predictions:</strong><br>
+      <code>predictions = model.predict(X_test)</code><br>
+      Uses the trained model to predict crops from test data.
+    </p>
+
+    <p><strong>7. Evaluate Accuracy:</strong><br>
+      <code>accuracy = model.score(X_test, y_test)</code><br>
+      Compares predictions with actual crops.<br>
+      <code>print(f"Model Accuracy: {accuracy:.2f}")</code> prints accuracy as a percentage.
+    </p>
+
+</div>
+
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Model Evaluation</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <h5 class="font-bold mb-2">Confusion Matrix</h5>
+                            <div class="confusion-matrix">
+                                <div class="matrix-cell matrix-header"></div>
+                                <div class="matrix-cell matrix-header">Predicted</div>
+                                <div class="matrix-cell matrix-header">Predicted</div>
+                                
+                                <div class="matrix-cell matrix-header">Actual</div>
+                                <div class="matrix-cell">TP</div>
+                                <div class="matrix-cell">FP</div>
+                                
+                                <div class="matrix-cell matrix-header">Actual</div>
+                                <div class="matrix-cell">FN</div>
+                                <div class="matrix-cell">TN</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div class="bg-green-50 p-3 rounded">
+                                    <p class="font-bold">Accuracy</p>
+                                    <p class="text-sm">(TP + TN) / Total</p>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded">
+                                    <p class="font-bold">Precision</p>
+                                    <p class="text-sm">TP / (TP + FP)</p>
+                                </div>
+                                <div class="bg-yellow-50 p-3 rounded">
+                                    <p class="font-bold">Recall</p>
+                                    <p class="text-sm">TP / (TP + FN)</p>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded">
+                                    <p class="font-bold">F1-Score</p>
+                                    <p class="text-sm">2*(Precision*Recall)/(Precision+Recall)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 3: Unsupervised Learning -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">3</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Unsupervised Learning</h3>
+                        <p class="text-gray-600">Clustering and dimensionality reduction</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Unsupervised learning helps discover hidden patterns in data without predefined labels. 
+                        It's essential for customer segmentation, anomaly detection, and data exploration. 
+                        These techniques reveal insights you might not have known to look for.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">K-Means Clustering</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <p class="text-sm text-gray-600 mb-3">Group similar data points together</p>
+                            <div class="flex justify-center mb-4">
+                                <div class="flex items-center mr-6">
+                                    <div class="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                                    <span class="text-sm">Cluster 1</span>
+                                </div>
+                                <div class="flex items-center mr-6">
+                                    <div class="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                                    <span class="text-sm">Cluster 2</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                                    <span class="text-sm">Cluster 3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="inline-block relative">
+                                    <!-- Cluster visualization dots -->
+                                    <div class="absolute top-10 left-10 w-3 h-3 rounded-full bg-blue-500"></div>
+                                    <div class="absolute top-15 left-15 w-3 h-3 rounded-full bg-blue-500"></div>
+                                    <div class="absolute top-20 left-12 w-3 h-3 rounded-full bg-blue-500"></div>
+                                    
+                                    <div class="absolute top-30 left-30 w-3 h-3 rounded-full bg-green-500"></div>
+                                    <div class="absolute top-35 left-35 w-3 h-3 rounded-full bg-green-500"></div>
+                                    <div class="absolute top-40 left-32 w-3 h-3 rounded-full bg-green-500"></div>
+                                    
+                                    <div class="absolute top-20 left-30 w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="absolute top-25 left-35 w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="absolute top-30 left-28 w-3 h-3 rounded-full bg-red-500"></div>
+                                    
+                                    <!-- Cluster centers -->
+                                    <div class="absolute top-15 left-12 w-6 h-6 rounded-full border-2 border-black"></div>
+                                    <div class="absolute top-35 left-32 w-6 h-6 rounded-full border-2 border-black"></div>
+                                    <div class="absolute top-25 left-31 w-6 h-6 rounded-full border-2 border-black"></div>
+                                    
+                                    <div class="w-48 h-48 border border-gray-300 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Principal Component Analysis (PCA)</h4>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <p class="text-sm text-gray-600 mb-3">Reduce dimensionality while preserving information</p>
+                            <div class="flex justify-center mb-4">
+                                <div class="text-center mr-8">
+                                    <div class="w-24 h-24 border border-gray-300 rounded-lg mb-2"></div>
+                                    <p class="text-sm">Original Data (3D)</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-24 h-24 border border-gray-300 rounded-lg mb-2"></div>
+                                    <p class="text-sm">PCA Projection (2D)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-sm bg-gray-50 p-3 rounded">
+                                <p class="font-bold">Applications:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>Visualizing high-dimensional data</li>
+                                    <li>Noise reduction</li>
+                                    <li>Speeding up ML algorithms</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div class="bg-gradient-to-r from-dspurple to-dspink text-white rounded-xl shadow-lg p-8 text-center mb-16">
+            <div class="max-w-2xl mx-auto">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-trophy text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">You've Built the Foundation!</h2>
+                <p class="text-xl mb-6">You now understand the core concepts of machine learning</p>
+                
+                <div class="bg-white bg-opacity-20 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">What's Next in Your Data Science Journey</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-network-wired text-2xl mb-2"></i>
+                            <p>Neural Networks & Deep Learning</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-language text-2xl mb-2"></i>
+                            <p>Natural Language Processing</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-chart-line text-2xl mb-2"></i>
+                            <p>Time Series Analysis</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="./index5.html" class="bg-white text-purple-700 hover:bg-gray-100 px-6 py-3 rounded-full text-lg font-bold shadow-lg transform transition hover:scale-105">
+                    Continue to Advanced ML
+                </a >
+            </div>
+        </div>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home </span>
+  </button>
+</a>
+
+ <!-- Footer -->
+    <footer class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">5IRE ULA</h3>
+                    <p class="text-sm opacity-80">
+                        The Universal Learning Archive is a flagship project of the 5th Industrial Revelution, designed to democratize technology education across Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Cohort 27 Learning Trail</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">Python Fundamentals</a></li>
+                        <li><a href="#" class="hover:underline">Data Analysis with Pandas</a></li>
+                        <li><a href="#" class="hover:underline">Data Visualization</a></li>
+                        <li><a href="#" class="hover:underline">Machine Learning Essentials</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>5IRE Headquarters, Abuja</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white border-opacity-20 mt-8 pt-6 text-center text-sm opacity-80">
+                <p>© 2025 Universal Learning Archive. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Copy code functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('pre');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Update progress
+        function updateProgress(percent) {
+            document.documentElement.style.setProperty('--progress', percent + '%');
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(85);
+        });
+    </script>
+</body>
+</html>

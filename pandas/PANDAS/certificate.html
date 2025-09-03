@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR Certificate Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            primary: '#1d4ed8',
+                            secondary: '#0f172a',
+                            accent: '#0ea5e9',
+                        },
+                        certificate: {
+                            gold: '#d4af37',
+                            accent: '#1a365d'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .certificate {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="white"/><path d="M0,0 Q200,150 400,0 L400,400 Q200,250 0,400 Z" fill="%23f8fafc"/><path d="M0,400 Q200,250 400,400 L400,0 Q200,150 0,0 Z" fill="%23f8fafc"/></svg>');
+            background-size: cover;
+            border: 20px solid transparent;
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%23d4af37" stroke-width="3" stroke-dasharray="10,5" rx="10" ry="10"/></svg>') 30 round;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        
+        .gold-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid #d4af37;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .watermark {
+            position: absolute;
+            opacity: 0.03;
+            font-size: 180px;
+            transform: rotate(-30deg);
+            z-index: 0;
+        }
+        
+        .seal {
+            border: 3px solid #d4af37;
+            background: radial-gradient(circle, #f8fafc 0%, #e2e8f0 100%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .security-pattern {
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 20%),
+                linear-gradient(45deg, transparent 49%, rgba(212, 175, 55, 0.05) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(212, 175, 55, 0.05) 50%, transparent 51%);
+            background-size: 100px 100px;
+        }
+        
+        .qr-code {
+            border: 1px solid #e2e8f0;
+            background: white;
+            padding: 5px;
+        }
+        
+        .signature {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        .cert-id {
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+            border-color: #d4af37;
+        }
+        
+        .gold-btn {
+            background: linear-gradient(to bottom, #d4af37, #b8860b);
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .gold-btn:hover {
+            background: linear-gradient(to bottom, #b8860b, #9c7009);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .gold-text {
+            color: #d4af37;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen">
+    <!-- Header -->
+    <header class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <div class="bg-certificate-gold p-3 rounded-full">
+                    <i class="fas fa-award text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">NITDA/NCAIR Universal Learning Archive</h1>
+                    <p class="text-certificate-gold text-sm">Professional Certificate Generator</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-center md:text-right">
+                    <p class="text-sm">Official Certificate System</p>
+                    <div class="text-xs bg-certificate-accent px-2 py-1 rounded-full inline-block mt-1">
+                        <i class="fas fa-shield-alt mr-1"></i> Secure & Verifiable
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Generate Your Professional Certificate</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Create a world-class, verifiable certificate for your achievements with the NITDA/NCAIR Universal Learning Archive</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Form -->
+            <div class="lg:col-span-1 bg-white rounded-xl shadow-lg p-6 h-fit">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Certificate Details</h2>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Full Name</label>
+                        <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-field focus:outline-none" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Program/Course</label>
+                        <select id="course" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-field focus:outline-none">
+                            <option value="Data Science Cohort 27">Data Science Cohort 27</option>
+                            <option value="AI & Machine Learning">AI & Machine Learning</option>
+                            <option value="Cybersecurity Professional">Cybersecurity Professional</option>
+                            <option value="Cloud Computing">Cloud Computing</option>
+                            <option value="Blockchain Technology">Blockchain Technology</option>
+                            <option value="Digital Transformation">Digital Transformation</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Completion Date</label>
+                        <input type="date" id="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-field focus:outline-none" value="">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Certificate ID</label>
+                        <div class="flex">
+                            <input type="text" id="certId" class="w-full px-4 py-3 border border-gray-300 rounded-l-lg input-field focus:outline-none" placeholder="Will be auto-generated" readonly>
+                            <button id="generateId" class="bg-gray-200 hover:bg-gray-300 px-4 rounded-r-lg">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button id="generateCert" class="w-full py-3 rounded-lg gold-btn text-lg font-semibold">
+                            <i class="fas fa-certificate mr-2"></i> Generate Certificate
+                        </button>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-gray-200">
+                        <h3 class="font-bold text-gray-800 mb-3">Security Features</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Unique Certificate ID
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Verifiable QR Code
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Digital Seal & Signatures
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Security Patterns & Watermarks
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Blockchain Verification (optional)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificate Preview -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Certificate Preview</h2>
+                    
+                    <div class="flex justify-center">
+                        <div id="certificate" class="certificate w-full max-w-2xl aspect-[4/3] bg-white security-pattern">
+                            <div class="gold-border"></div>
+                            
+                            <div class="watermark text-certificate-accent font-serif font-bold" style="top: 150px; left: 50px;">NITDA</div>
+                            <div class="watermark text-certificate-accent font-serif font-bold" style="top: 350px; right: 50px;">NCAIR</div>
+                            
+                            <div class="relative z-10 h-full flex flex-col items-center justify-center p-12 text-center">
+                                <!-- Header -->
+                                <div class="mb-2">
+                                    <div class="text-sm text-gray-500 tracking-widest">REPUBLIC OF NIGERIA</div>
+                                    <div class="flex items-center justify-center my-3">
+                                        <div class="h-1 w-16 bg-certificate-gold mx-2"></div>
+                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='60' height='60'><circle cx='50' cy='50' r='45' fill='%231d4ed8'/><path d='M30,40 L50,60 L70,40' stroke='white' stroke-width='8' fill='none'/><circle cx='50' cy='50' r='15' stroke='white' stroke-width='5' fill='none'/></svg>" alt="Seal">
+                                        <div class="h-1 w-16 bg-certificate-gold mx-2"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 tracking-widest">NATIONAL INFORMATION TECHNOLOGY DEVELOPMENT AGENCY</div>
+                                </div>
+                                
+                                <!-- Title -->
+                                <h1 class="text-4xl md:text-5xl font-serif font-bold text-certificate-accent mt-6 mb-2">CERTIFICATE</h1>
+                                <div class="text-lg text-gray-600 mb-8">OF ACHIEVEMENT</div>
+                                
+                                <!-- Main Content -->
+                                <div class="my-6">
+                                    <div class="text-gray-600 mb-8 text-lg">
+                                        This is to certify that
+                                    </div>
+                                    <div id="previewName" class="text-3xl md:text-4xl font-serif font-bold text-certificate-accent border-b-2 border-certificate-gold pb-4 px-12 mb-8">
+                                        [Your Name]
+                                    </div>
+                                    <div class="text-gray-600 text-lg max-w-2xl leading-relaxed">
+                                        has successfully completed the requirements for the
+                                    </div>
+                                    <div id="previewCourse" class="text-xl font-semibold text-certificate-gold my-4">
+                                        [Program Name]
+                                    </div>
+                                    <div class="text-gray-600 text-lg">
+                                        and is awarded this certificate on
+                                    </div>
+                                    <div id="previewDate" class="font-semibold text-lg text-gray-700 mt-4">
+                                        [Date]
+                                    </div>
+                                </div>
+                                
+                                <!-- Signatures -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 w-full">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 80' width='120' height='40'><path d='M10,40 Q50,10 90,40 T170,40' stroke='%230f172a' stroke-width='2' fill='none'/></svg>" alt="Signature" class="mx-auto">
+                                        </div>
+                                        <div class="h-0.5 w-24 bg-certificate-gold mx-auto mb-2"></div>
+                                        <div class="text-sm font-semibold text-gray-700">Dr. Kashifu Inuwa Abdullahi</div>
+                                        <div class="text-xs text-gray-500">Director General, NITDA</div>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <div class="seal w-16 h-16 rounded-full mx-auto flex items-center justify-center">
+                                                <i class="fas fa-certificate text-certificate-gold text-2xl"></i>
+                                            </div>
+                                        </div>
+                                        <div class="h-0.5 w-24 bg-certificate-gold mx-auto mb-2"></div>
+                                        <div class="text-sm font-semibold text-gray-700">Dr. Ya'u Garba</div>
+                                        <div class="text-xs text-gray-500">National Centre for AI & Robotics</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Verification -->
+                                <div class="mt-8 flex flex-col md:flex-row items-center justify-between w-full text-xs">
+                                    <div id="previewId" class="cert-id font-mono">ID: 0000-0000-0000-0000</div>
+                                    <div id="qrCode" class="qr-code mt-4 md:mt-0"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center mt-8 space-x-4">
+                        <button id="downloadPdf" class="px-6 py-3 bg-gray-800 text-white rounded-lg font-medium flex items-center disabled:opacity-50" disabled>
+                            <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                        </button>
+                        <button id="downloadPng" class="px-6 py-3 bg-gray-800 text-white rounded-lg font-medium flex items-center disabled:opacity-50" disabled>
+                            <i class="fas fa-image mr-2"></i> Download Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Verification Section -->
+    <div class="bg-gray-100 py-12 mt-12">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Certificate Verification</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Verify the authenticity of any NITDA/NCAIR certificate using our secure verification system</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Online Verification</h3>
+                        <div class="flex">
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none" placeholder="Enter Certificate ID">
+                            <button class="bg-certificate-accent text-white px-6 py-3 rounded-r-lg font-medium">
+                                Verify
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-4">Enter the Certificate ID found at the bottom of your certificate</p>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-bold text-gray-800 mb-3">Verification Features</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-shield-alt text-certificate-gold mt-1 mr-2"></i>
+                                    <span>Blockchain-secured verification system</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-qrcode text-certificate-gold mt-1 mr-2"></i>
+                                    <span>QR code scanning for instant validation</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-database text-certificate-gold mt-1 mr-2"></i>
+                                    <span>Secure database with encrypted records</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl text-certificate-gold mb-4">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">Verify Certificate Authenticity</h3>
+                        </div>
+                        <p class="text-gray-600 text-center">Scan the QR code on any certificate using the NITDA mobile app to instantly verify its authenticity and validity.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h3>
+                    <p class="text-gray-400">Universal Learning Archive - Transforming digital education in Nigeria through accessible, world-class learning resources.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Programs</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Data Science</li>
+                        <li>Artificial Intelligence</li>
+                        <li>Cybersecurity</li>
+                        <li>Cloud Computing</li>
+                        <li>Digital Literacy</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Learning Materials</li>
+                        <li>Certification</li>
+                        <li>Career Pathways</li>
+                        <li>Research Publications</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>certificates@ntida-ula.ng</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+234 800 0000 000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Abuja, Nigeria</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2023 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('date').value = formattedDate;
+            
+            // Generate initial certificate ID
+            generateCertificateId();
+            
+            // Generate ID button
+            document.getElementById('generateId').addEventListener('click', generateCertificateId);
+            
+            // Generate certificate button
+            document.getElementById('generateCert').addEventListener('click', generateCertificate);
+            
+            // Download buttons
+            document.getElementById('downloadPdf').addEventListener('click', downloadPDF);
+            document.getElementById('downloadPng').addEventListener('click', downloadPNG);
+            
+            // Generate random certificate ID
+            function generateCertificateId() {
+                const id = 'NCA-' + Date.now().toString().slice(-6) + '-' + 
+                           Math.random().toString(36).substring(2, 6).toUpperCase();
+                document.getElementById('certId').value = id;
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            // Generate the certificate
+            function generateCertificate() {
+                const name = document.getElementById('name').value || '[Your Name]';
+                const course = document.getElementById('course').value || '[Program Name]';
+                const date = document.getElementById('date').value ? 
+                             formatDate(document.getElementById('date').value) : '[Date]';
+                const certId = document.getElementById('certId').value || '0000-0000-0000-0000';
+                
+                // Update preview
+                document.getElementById('previewName').textContent = name;
+                document.getElementById('previewCourse').textContent = course;
+                document.getElementById('previewDate').textContent = date;
+                document.getElementById('previewId').textContent = 'ID: ' + certId;
+                
+                // Generate QR Code
+                const qrElement = document.getElementById('qrCode');
+                qrElement.innerHTML = '';
+                
+                // In a real system, this would link to a verification page with the cert ID
+                const verificationUrl = `https://ntida-ula.ng/verify?id=${certId}`;
+                
+                new QRCode(qrElement, {
+                    text: verificationUrl,
+                    width: 80,
+                    height: 80,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Enable download buttons
+                document.getElementById('downloadPdf').disabled = false;
+                document.getElementById('downloadPng').disabled = false;
+            }
+            
+            // Download as PDF
+            function downloadPDF() {
+                const certificate = document.getElementById('certificate');
+                const { jsPDF } = window.jspdf;
+                
+                html2canvas(certificate, {
+                    scale: 2,
+                    useCORS: true
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('landscape', 'mm', 'a4');
+                    const imgWidth = 297; // A4 width in mm
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save('ntida-certificate.pdf');
+                });
+            }
+            
+            // Download as PNG
+            function downloadPNG() {
+                const certificate = document.getElementById('certificate');
+                
+                html2canvas(certificate, {
+                    scale: 2,
+                    useCORS: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'ntida-certificate.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

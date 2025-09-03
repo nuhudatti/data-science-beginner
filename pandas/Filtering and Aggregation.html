@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Filtering, Grouping & Aggregation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            primary: '#1d4ed8',
+                            secondary: '#0f172a',
+                            accent: '#0ea5e9',
+                        },
+                        aggregation: {
+                            primary: '#8b5cf6',
+                            secondary: '#7c3aed',
+                            accent: '#a78bfa',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            position: relative;
+        }
+        .explanation {
+            background: #f8fafc;
+            border-left: 4px solid #8b5cf6;
+        }
+        .hl-keyword { color: #c792ea; }
+        .hl-function { color: #82aaff; }
+        .hl-string { color: #c3e88d; }
+        .hl-comment { color: #546e7a; }
+        .hl-var { color: #f07178; }
+        .hl-param { color: #ffcb6b; }
+        .hl-operator { color: #89ddff; }
+        .hl-number { color: #f78c6c; }
+        .hl-builtin { color: #ff5370; }
+        .hl-tag { color: #ff5370; }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #8b5cf6;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .active-section {
+            border-left: 4px solid #8b5cf6;
+            background: #f5f3ff;
+        }
+        
+        .data-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grouping-vis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .group-item {
+            background: #ede9fe;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .aggregation-bar {
+            height: 20px;
+            border-radius: 4px;
+            margin: 8px 0;
+            background: linear-gradient(90deg, #c4b5fd, #8b5cf6);
+            transition: width 0.8s ease;
+        }
+        
+        .filter-item {
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .filter-item:hover {
+            background: #ddd6fe;
+        }
+        
+        .summary-card {
+            border-left: 4px solid #8b5cf6;
+            background: #f5f3ff;
+        }
+        
+        .viz-container {
+            background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        /* code */
+        .code-block code {
+    color: #e5e7eb; /* light gray for visibility */
+}
+
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-aggregation-accent rounded-lg p-2">
+                    <i class="fas fa-filter text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">NITDA/NCAIR Universal Learning Archive</h1>
+                    <p class="text-aggregation-accent text-sm">Data Science Cohort 27 - Data Analysis Techniques</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- <div class="text-right">
+                    <p class="text-sm">Learning Progress</p>
+                    <div class="progress-bar w-48 mt-1">
+                        <div class="progress-fill w-3/4"></div>
+                    </div>
+                </div> -->
+                <button class="bg-aggregation-primary hover:bg-violet-700 px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-user-graduate mr-2"></i> DATTI
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Module Header -->
+    <div class="bg-gradient-to-r from-violet-600 to-purple-700 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
+                <span>Module 2 - Section 3</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-4">Filtering, Grouping & Aggregation</h1>
+            <p class="text-xl max-w-3xl mx-auto mb-8">Master techniques to extract insights from data through filtering, grouping, and summary calculations</p>
+            
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="far fa-clock mr-2"></i> Estimated: 5-7 hours
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-medal mr-2"></i> Core Analysis Skill
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-tasks mr-2"></i> 4 Lessons, 2 Projects
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-search"></i></div>
+                    <h3 class="font-semibold">Filtering</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="font-semibold">Grouping</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-calculator"></i></div>
+                    <h3 class="font-semibold">Aggregation</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-table"></i></div>
+                    <h3 class="font-semibold">Pivot Tables</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                <h2 class="text-xl font-bold mb-4 text-nca-secondary">Learning Trail</h2>
+                
+                <div class="space-y-2">
+                    <a href="./Pandas Foundations.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 1: pandas Foundations
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Series & DataFrame structures</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Data Cleaning.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 2: Data Cleaning
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Preprocessing & handling missing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Filtering and Aggregation.html">
+                    <div class="section-card active-section p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-play-circle text-violet-600 mr-2"></i>
+                            Section 3: Filtering & Aggregation
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Grouping, filtering and summarizing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Merging and Time Series.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 4: Merging & Time Series
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Combining datasets and time-based analysis</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Nigerian Economic Analysis.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 5: Nigerian Economic Analysis
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Real-world data application</p>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Analysis Resources</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                            <span>Aggregation Cheat Sheet</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-video text-purple-500 mr-2"></i>
+                            <span>Grouping Techniques</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-database text-blue-500 mr-2"></i>
+                            <span>Nigeria GDP Dataset</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-book text-violet-500 mr-2"></i>
+                            <span>Pivot Table Guide</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Key Concepts</h3>
+                    <div class="space-y-2">
+                        <div class="bg-violet-50 p-3 rounded-lg">
+                            <p class="text-sm font-medium">Boolean Indexing</p>
+                        </div>
+                        <div class="bg-violet-50 p-3 rounded-lg">
+                            <p class="text-sm font-medium">GroupBy Operations</p>
+                        </div>
+                        <div class="bg-violet-50 p-3 rounded-lg">
+                            <p class="text-sm font-medium">Aggregate Functions</p>
+                        </div>
+                        <div class="bg-violet-50 p-3 rounded-lg">
+                            <p class="text-sm font-medium">Multi-level Grouping</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="lg:w-3/4">
+            <!-- Section Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="text-violet-600 font-semibold">Section 3</span>
+                        <h2 class="text-2xl font-bold text-gray-800">Filtering, Grouping & Aggregation</h2>
+                    </div>
+                    <!-- <div class="flex items-center space-x-4">
+                        <button class="flex items-center text-violet-600">
+                            <i class="fas fa-download mr-2"></i> Download Notebook
+                        </button>
+                        <button class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-chart-bar mr-2"></i> Start Analysis Lab
+                        </button>
+                    </div> -->
+                </div>
+                <p class="text-gray-600">Learn how to extract meaningful insights from your data by filtering relevant subsets, grouping by categories, and calculating summary statistics through aggregation.</p>
+                
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="bg-violet-100 text-violet-800 px-3 py-1 rounded-full text-sm">Core Skill</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Data Analysis</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Practical Exercises</span>
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">40-50 mins</span>
+                </div>
+            </div>
+            
+            <!-- Concept Visualization -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="data-card bg-white rounded-xl shadow-lg p-6">
+                    <div class="text-violet-600 text-3xl mb-4">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Filtering</h3>
+                    <p class="text-gray-600 mb-4">Select subsets of data based on specific conditions to focus on relevant information.</p>
+                    <div class="flex flex-wrap overflow-x-auto">
+                        <div class="filter-item">GDP > $10B</div>
+                        <div class="filter-item">Population > 5M</div>
+                        <div class="filter-item active">Oil Region</div>
+                        <div class="filter-item">After 2015</div>
+                    </div>
+                </div>
+                
+                <div class="data-card bg-white rounded-xl shadow-lg p-6">
+                    <div class="text-violet-600 text-3xl mb-4">
+                        <i class="fas fa-object-group"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Grouping</h3>
+                    <p class="text-gray-600 mb-4">Organize data into groups based on categorical variables for comparative analysis.</p>
+                    <div class="grouping-vis overflow-x-auto">
+                        <div class="group-item">North West</div>
+                        <div class="group-item">South South</div>
+                        <div class="group-item">North Central</div>
+                        <div class="group-item">South West</div>
+                        <div class="group-item">North East</div>
+                        <div class="group-item">South East</div>
+                    </div>
+                </div>
+                
+                <div class="data-card bg-white rounded-xl shadow-lg p-6">
+                    <div class="text-violet-600 text-3xl mb-4">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Aggregation</h3>
+                    <p class="text-gray-600 mb-4">Compute summary statistics (sum, average, count) for each group of data.</p>
+                    <div class="mt-2 overflow-x-auto">
+                        <div class="flex justify-between text-sm">
+                            <span>North West</span>
+                            <span>$42.8B</span>
+                        </div>
+                        <div class="aggregation-bar w-3/4"></div>
+                        
+                        <div class="flex justify-between text-sm mt-3">
+                            <span>South South</span>
+                            <span>$98.3B</span>
+                        </div>
+                        <div class="aggregation-bar w-full"></div>
+                        
+                        <div class="flex justify-between text-sm mt-3">
+                            <span>South West</span>
+                            <span>$76.2B</span>
+                        </div>
+                        <div class="aggregation-bar w-5/6"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson Content -->
+            <div class="space-y-6">
+                <!-- Lesson 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">3.1 Data Filtering Techniques</h3>
+                                <p class="text-gray-600 mt-2">Learn how to select specific subsets of your data using conditional filtering.</p>
+                            </div>
+                            <span class="bg-violet-600 text-white px-3 py-1 rounded-full text-sm">Essential</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="viz-container">
+                                <h4 class="font-bold text-gray-800 mb-4">Filtering Nigerian States by GDP</h4>
+                                <div class="space-y-4 overflow-x-auto">
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Lagos</span>
+                                            <span>$102.3B</span>
+                                        </div>
+                                        <div class="aggregation-bar w-full"></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Rivers</span>
+                                            <span>$68.7B</span>
+                                        </div>
+                                        <div class="aggregation-bar w-2/3"></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Delta</span>
+                                            <span>$54.2B</span>
+                                        </div>
+                                        <div class="aggregation-bar w-1/2"></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Kano</span>
+                                            <span>$28.7B</span>
+                                        </div>
+                                        <div class="aggregation-bar w-1/4"></div>
+                                    </div>
+                                    <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                                        <p class="text-sm"><i class="fas fa-info-circle text-yellow-500 mr-2"></i> Showing states with GDP > $25B</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="code-block p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-gray-300 font-mono text-sm">Python</div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-white">
+                                            <i class="fas fa-expand"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Load cleaned Nigerian economic dataset</span>
+<span class="hl-keyword">import</span> pandas <span class="hl-keyword">as</span> pd
+df = pd.read_csv(<span class="hl-string">"cleaned_nigeria_economy.csv"</span>)
+
+<span class="hl-comment"># Simple filtering: States with population > 5 million</span>
+large_states = df[df[<span class="hl-string">'Population'</span>] > <span class="hl-number">5</span>]
+
+<span class="hl-comment"># Multiple conditions: Oil-producing states with GDP > $30B</span>
+oil_rich = df[(df[<span class="hl-string">'Oil_Producing'</span>] == <span class="hl-keyword">True</span>) & 
+              (df[<span class="hl-string">'GDP'</span>] > <span class="hl-number">30</span>)]
+
+<span class="hl-comment"># Using query() method</span>
+northern_states = df.query(<span class="hl-string">"Region in ['North West', 'North East', 'North Central']"</span>)
+
+<span class="hl-comment"># Filtering by text patterns</span>
+lagos_data = df[df[<span class="hl-string">'State'</span>].str.contains(<span class="hl-string">'Lagos'</span>)]
+
+<span class="hl-comment"># Filtering by dates</span>
+recent_data = df[df[<span class="hl-string">'Year'</span>] >= <span class="hl-number">2020</span>]</code></pre>
+                            </div>
+                        </div>
+                    
+                        <!-- Explanation -->
+                        <div class="explanation mt-6 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-gray-800">Filtering Techniques Explained</h4>
+                                <button class="text-violet-600">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-semibold">Boolean Indexing</p>
+                                    <p class="text-gray-700">The primary filtering method in pandas uses boolean conditions inside square brackets. Each condition returns a True/False series, and pandas returns rows where the condition is True.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Multiple Conditions</p>
+                                    <p class="text-gray-700">Combine conditions using & (and), | (or), and ~ (not). Always wrap each condition in parentheses for correct operator precedence.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">query() Method</p>
+                                    <p class="text-gray-700">Provides a more readable SQL-like syntax for filtering, especially useful with complex conditions or when column names contain spaces.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">String Operations</p>
+                                    <p class="text-gray-700">Use <code>.str.contains()</code>, <code>.str.startswith()</code>, and <code>.str.endswith()</code> for text-based filtering with partial matches.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">3.2 Grouping and Aggregation</h3>
+                                <p class="text-gray-600 mt-2">Discover how to group data by categories and compute summary statistics for each group.</p>
+                            </div>
+                            <span class="bg-violet-600 text-white px-3 py-1 rounded-full text-sm">Core Concept</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="code-block p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-gray-300 font-mono text-sm">Python</div>
+                                <div class="flex space-x-2">
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Basic grouping: Average GDP by region</span>
+region_gdp = df.groupby(<span class="hl-string">'Region'</span>)[<span class="hl-string">'GDP'</span>].mean()
+
+<span class="hl-comment"># Multiple aggregations</span>
+region_stats = df.groupby(<span class="hl-string">'Region'</span>).agg(
+    GDP_Total=('GDP', 'sum'),
+    GDP_Avg=('GDP', 'mean'),
+    Population_Avg=('Population', 'mean'),
+    State_Count=('State', 'count')
+)
+
+<span class="hl-comment"># Grouping by multiple columns</span>
+region_year_gdp = df.groupby(['Region', 'Year'])[['GDP', 'Population']].mean()
+
+<span class="hl-comment"># Custom aggregation functions</span>
+<span class="hl-keyword">def</span> <span class="hl-function">gdp_range</span>(series):
+    <span class="hl-keyword">return</span> series.max() - series.min()
+
+region_gdp_stats = df.groupby('Region')['GDP'].agg(
+    Mean='mean',
+    Median='median',
+    Range=gdp_range
+)
+
+<span class="hl-comment"># Resetting index after grouping</span>
+region_stats_reset = region_stats.reset_index()</code></pre>
+                        </div>
+                    
+                        <!-- Explanation -->
+                        <div class="explanation mt-6 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-gray-800">Grouping Concepts Explained</h4>
+                                <button class="text-violet-600">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-semibold">GroupBy Operation</p>
+                                    <p class="text-gray-700">The groupby-split-apply-combine pattern: Data is split into groups based on a key, a function is applied to each group, and results are combined into a new data structure.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Aggregation Methods</p>
+                                    <p class="text-gray-700">Common aggregation functions include mean(), sum(), count(), min(), max(), std(), and var(). You can apply different aggregations to different columns.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Multi-level Grouping</p>
+                                    <p class="text-gray-700">Group by multiple columns to analyze data across different dimensions (e.g., region and year). This creates a hierarchical index that can be reset with reset_index().</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Custom Aggregations</p>
+                                    <p class="text-gray-700">Define your own aggregation functions to compute specialized metrics like range, growth rate, or custom business metrics.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">3.3 Pivot Tables for Data Analysis</h3>
+                                <p class="text-gray-600 mt-2">Create powerful summary tables with pivot_table for multi-dimensional analysis.</p>
+                            </div>
+                            <span class="bg-violet-600 text-white px-3 py-1 rounded-full text-sm">Advanced</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="code-block p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-gray-300 font-mono text-sm">Python</div>
+                                <div class="flex space-x-2">
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Basic pivot table: Average GDP by Region and Year</span>
+pivot_gdp = pd.pivot_table(df, 
+                           values='GDP', 
+                           index='Region', 
+                           columns='Year', 
+                           aggfunc='mean')
+
+<span class="hl-comment"># Multi-value pivot table with multiple aggregations</span>
+pivot_multi = pd.pivot_table(df,
+                             values=['GDP', 'Population'],
+                             index='Region',
+                             columns='Oil_Producing',
+                             aggfunc={'GDP': 'mean', 'Population': 'sum'})
+
+<span class="hl-comment"># Pivot table with margins for grand totals</span>
+pivot_totals = pd.pivot_table(df,
+                              values='GDP',
+                              index='Region',
+                              columns='Year',
+                              aggfunc='sum',
+                              margins=<span class="hl-keyword">True</span>,
+                              margins_name='All Years')
+
+<span class="hl-comment"># Handling missing data in pivot tables</span>
+pivot_fillna = pd.pivot_table(df,
+                              values='GDP',
+                              index='Region',
+                              columns='Year',
+                              aggfunc='mean',
+                              fill_value=<span class="hl-number">0</span>)
+
+<span class="hl-comment"># Advanced: Pivot table with multiple indices</span>
+pivot_complex = pd.pivot_table(df,
+                               values='GDP',
+                               index=['Region', 'Oil_Producing'],
+                               columns='Year',
+                               aggfunc='mean')</code></pre>
+                        </div>
+                    
+                        <!-- Explanation -->
+                        <div class="explanation mt-6 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-gray-800">Pivot Table Concepts</h4>
+                                <button class="text-violet-600">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-semibold">Pivot Table Structure</p>
+                                    <p class="text-gray-700">Pivot tables create a multi-dimensional summary of data with rows, columns, and values. They're excellent for exploring relationships between categorical variables.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Multi-dimensional Analysis</p>
+                                    <p class="text-gray-700">By specifying multiple index and column parameters, you can analyze data across several dimensions simultaneously (e.g., region, year, and oil production status).</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Custom Aggregations</p>
+                                    <p class="text-gray-700">Apply different aggregation functions to different value columns, or use multiple functions on the same column for comprehensive analysis.</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Data Presentation</p>
+                                    <p class="text-gray-700">Pivot tables create presentation-ready summaries that can be exported directly to reports or visualized with libraries like Seaborn or Matplotlib.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-World Project -->
+                <div class="bg-gradient-to-r from-violet-50 to-purple-100 rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-6 bg-violet-700 text-white">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold">Project: Nigerian Economic Analysis</h3>
+                            <span class="bg-white text-violet-700 px-3 py-1 rounded-full text-sm">Practical Application</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <h4 class="font-bold text-gray-800 mb-3">Project Objectives</h4>
+                            <ol class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="bg-violet-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3">1</span>
+                                    <span>Analyze GDP trends across Nigerian regions from 2010-2023</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-violet-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3">2</span>
+                                    <span>Compare economic performance of oil-producing vs non-oil states</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-violet-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3">3</span>
+                                    <span>Calculate GDP per capita by state and region</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-violet-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3">4</span>
+                                    <span>Identify top performing states in each region</span>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="summary-card p-4">
+                                <h4 class="font-bold text-gray-800 mb-3">Required Skills</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-violet-600 mr-2"></i>
+                                        <span>Data filtering and selection</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-violet-600 mr-2"></i>
+                                        <span>Grouping by multiple columns</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-violet-600 mr-2"></i>
+                                        <span>Advanced aggregation techniques</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-violet-600 mr-2"></i>
+                                        <span>Pivot table creation</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="summary-card p-4">
+                                <h4 class="font-bold text-gray-800 mb-3">Dataset Columns</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-database text-violet-600 mr-2"></i>
+                                        <span>State (36 states + FCT)</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-database text-violet-600 mr-2"></i>
+                                        <span>Region (6 geopolitical zones)</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-database text-violet-600 mr-2"></i>
+                                        <span>Year (2010-2023)</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-database text-violet-600 mr-2"></i>
+                                        <span>GDP (in billions USD)</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-database text-violet-600 mr-2"></i>
+                                        <span>Population (in millions)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-center">
+                            <button class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-lg font-medium mr-4">
+                                <i class="fas fa-download mr-2"></i> Download Dataset
+                            </button>
+                            <button class="bg-white text-violet-600 border border-violet-600 hover:bg-violet-50 px-6 py-3 rounded-lg font-medium">
+                                <i class="fas fa-rocket mr-2"></i> Start Project
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="mt-8 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-6 border border-violet-200">
+                <div class="flex items-start">
+                    <div class="bg-violet-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-arrow-right text-violet-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Ready for the Next Level?</h3>
+                        <p class="text-gray-600 mb-4">Mastered filtering and aggregation? Next, learn how to combine datasets and analyze time series data.</p>
+                        <a href="./Merging and Time Series.html" class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-lg font-medium">
+                            Continue
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    /* Floating Home Button - NITDA/NCAIR Green Format */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #430064 0%, #33004d 100%); /* Dark green gradient */
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 27, 100, 0.4); /* Green shadow */
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 40, 100, 0.6); /* Darker green hover shadow */
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    
+    <!-- Footer -->
+    <footer class="bg-nca-secondary text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h3>
+                    <p class="text-gray-400">Universal Learning Archive - Transforming digital education in Nigeria through accessible, world-class learning resources.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Data Science Track</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Python Fundamentals</li>
+                        <li>pandas Mastery</li>
+                        <li>Data Visualization</li>
+                        <li>Machine Learning</li>
+                        <li>Big Data Technologies</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Learning Materials</li>
+                        <li>Practice Labs</li>
+                        <li>Community Forum</li>
+                        <li>Career Pathways</li>
+                        <li>Industry Partnerships</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>nuhumuhammaddatti@gmail.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+234 808 844 0095</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Abuja, Nigeria</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 flex space-x-4">
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-linkedin-in"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-github"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2025 Created by Nuhu Muhammad Datti during Internship at the National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to toggle code explanations
+        document.querySelectorAll('.explanation button').forEach(button => {
+            button.addEventListener('click', () => {
+                const explanation = button.closest('.explanation');
+                const content = explanation.querySelector('div:last-child');
+                
+                if (content.style.display === 'none' || !content.style.display) {
+                    content.style.display = 'block';
+                    button.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                } else {
+                    content.style.display = 'none';
+                    button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                }
+            });
+        });
+
+        // Filter item interaction
+        document.querySelectorAll('.filter-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+
+        // Animate aggregation bars
+        document.querySelectorAll('.aggregation-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+
+        // Simulate progress update
+        // setInterval(() => {
+        //     const progress = document.querySelector('.progress-fill');
+        //     const currentWidth = parseInt(progress.style.width) || 75;
+        //     if (currentWidth < 100) {
+        //         progress.style.width = (currentWidth + 1) + '%';
+        //     }
+        // }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🌱 Crop Prediction Model Explanation</title>
+  <style>
+    .ula-mlrf-wrap {
+      max-width: 800px;
+      margin: 30px auto;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.7;
+    }
+
+    .ula-mlrf-btn {
+      background-color: #1e40af;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .ula-mlrf-btn:hover {
+      background-color: #163197;
+    }
+
+    .ula-mlrf-content {
+      display: none;
+      background-color: #f8fafc;
+      border-left: 4px solid #1e40af;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .ula-mlrf-content code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<div class="ula-mlrf-wrap">
+  <h2>🤖 Random Forest Crop Prediction (Explained)</h2>
+
+  <button class="ula-mlrf-btn" onclick="document.getElementById('mlrf').style.display = 
+  document.getElementById('mlrf').style.display === 'block' ? 'none' : 'block';">
+    📌 Click to Understand the Full Code Line by Line
+  </button>
+
+  <div id="mlrf" class="ula-mlrf-content">
+    <p><strong>1. Import Required Libraries:</strong><br>
+      <code>RandomForestClassifier</code>: ML model from scikit-learn.<br>
+      <code>train_test_split</code>: To split dataset for training/testing.<br>
+      <code>pandas</code>: For loading and manipulating CSV data.
+    </p>
+
+    <p><strong>2. Load Dataset:</strong><br>
+      <code>data = pd.read_csv('nigerian_crops.csv')</code><br>
+      Loads your crop dataset containing rainfall, temperature, soil pH, nitrogen, and the crop type.
+    </p>
+
+    <p><strong>3. Select Features and Target:</strong><br>
+      <code>X = data[['rainfall', 'temperature', 'soil_ph', 'nitrogen']]</code><br>
+      These are your input features.<br>
+      <code>y = data['crop']</code>: This is what the model will predict.
+    </p>
+
+    <p><strong>4. Split the Dataset:</strong><br>
+      <code>train_test_split(...)</code> splits data into 80% training and 20% testing. <br>
+      <code>random_state=42</code> ensures results are reproducible.
+    </p>
+
+    <p><strong>5. Create and Train the Model:</strong><br>
+      <code>model = RandomForestClassifier(n_estimators=100)</code><br>
+      Creates the model with 100 decision trees.<br>
+      <code>model.fit(X_train, y_train)</code> trains the model.
+    </p>
+
+    <p><strong>6. Make Predictions:</strong><br>
+      <code>predictions = model.predict(X_test)</code><br>
+      Uses the trained model to predict crops from test data.
+    </p>
+
+    <p><strong>7. Evaluate Accuracy:</strong><br>
+      <code>accuracy = model.score(X_test, y_test)</code><br>
+      Compares predictions with actual crops.<br>
+      <code>print(f"Model Accuracy: {accuracy:.2f}")</code> prints accuracy as a percentage.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

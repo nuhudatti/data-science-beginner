@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Echo | Legacy Learning Trail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Montserrat:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --nitda-blue: #0a2e5a;
+            --nitda-gold: #d4af37;
+            --nitda-light: #e6f0fa;
+            --nitda-dark: #051a38;
+            --accent-purple: #8b5cf6;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--nitda-dark), #0c1e3e);
+            color: var(--nitda-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .hero-bg {
+            background: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070') no-repeat center center/cover;
+            position: relative;
+        }
+        
+        .hero-overlay {
+            background: linear-gradient(120deg, rgba(5, 26, 56, 0.95) 0%, rgba(10, 46, 90, 0.92) 100%);
+        }
+        
+        .legacy-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .modern-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(10, 46, 90, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--nitda-gold);
+            border: 4px solid var(--nitda-blue);
+            z-index: 2;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--nitda-gold), var(--accent-purple));
+            z-index: 1;
+        }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .floating {
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .trinity-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .trinity-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+        
+        .trinity-connector {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(to right, var(--nitda-gold), var(--accent-purple));
+            transform-origin: left center;
+        }
+        
+        .hover-grow {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-grow:hover {
+            transform: scale(1.05);
+        }
+        
+        .video-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 46, 90, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+        
+        .video-container:hover .video-overlay {
+            background: rgba(10, 46, 90, 0.2);
+        }
+        
+        .play-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+            background: rgba(212, 175, 55, 1);
+        }
+        
+        .gold-border {
+            border: 2px solid var(--nitda-gold);
+        }
+        
+        .learning-card {
+            transition: all 0.4s ease;
+            perspective: 1000px;
+        }
+        
+        .learning-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .learning-card:hover .card-inner {
+            transform: rotateY(5deg);
+        }
+        
+        .flourish {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.15);
+            z-index: 0;
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            transition: text-shadow 0.5s ease;
+        }
+        
+        .text-glow:hover {
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        
+        .future-vision {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        
+        .future-vision::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(10, 46, 90, 0.3));
+            z-index: 1;
+        }
+        
+        .echo-element {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            animation: ripple 8s infinite linear;
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        .generation-card {
+            transition: all 0.4s ease;
+            transform: translateY(0);
+        }
+        
+        .generation-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .discovery-path {
+            position: relative;
+        }
+        
+        .path-line {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(to right, var(--nitda-gold), var(--accent-purple));
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+        
+        .path-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--nitda-gold);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .innovation-pulse {
+            animation: pulse 2s infinite;
+            animation-delay: calc(var(--i) * 0.5s);
+        }
+        
+        .quote-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quote-card::before {
+            content: """;
+            position: absolute;
+            top: -30px;
+            left: 10px;
+            font-size: 120px;
+            font-family: 'Playfair Display', serif;
+            color: rgba(212, 175, 55, 0.1);
+            line-height: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .trinity-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .trinity-connector {
+                width: 4px;
+                height: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .timeline::before {
+                left: 28px;
+            }
+            
+            .timeline-item {
+                padding-left: 60px;
+            }
+            
+            .discovery-path {
+                flex-direction: column;
+            }
+            
+            .path-line {
+                width: 4px;
+                height: 100%;
+                left: 50%;
+                top: 0;
+                transform: translateX(-50%);
+            }
+            
+            .path-dot {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nitda-blue': '#0a2e5a',
+                        'nitda-gold': '#d4af37',
+                        'nitda-light': '#e6f0fa',
+                        'nitda-dark': '#051a38',
+                        'accent-purple': '#8b5cf6'
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                        'modern': ['Space Grotesk', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen relative">
+    <!-- Background elements -->
+    <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+    <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 floating"></div>
+    <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 floating" style="animation-delay: 2s;"></div>
+    
+    <!-- Floating decorative elements -->
+    <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 1s;"></div>
+    <div class="absolute top-1/3 right-15 w-16 h-16 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 3s;"></div>
+    <div class="absolute bottom-1/4 left-1/3 w-24 h-24 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 0.5s;"></div>
+
+    <!-- Hero Section -->
+    <header class="hero-bg py-32 px-4 md:px-8 relative overflow-hidden">
+        <div class="hero-overlay absolute inset-0 z-0"></div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-8">
+                    <div class="inline-block bg-nitda-blue/80 px-6 py-2 rounded-full mb-6 border border-nitda-gold">
+                        <span class="text-nitda-gold modern-font uppercase tracking-widest">Eternal Legacy</span>
+                    </div>
+                    <h1 class="legacy-font text-5xl md:text-7xl font-bold mb-6 text-white">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-nitda-gold to-nitda-light">
+                            The Eternal Echo
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-nitda-light max-w-3xl mx-auto">
+                        Where yesterday's innovation inspires tomorrow's pioneers
+                    </p>
+                </div>
+                
+                <div class="w-full max-w-4xl glass-card p-8 mt-8 animate-in">
+                    <p class="text-lg md:text-xl text-center italic text-nitda-light mb-8">
+                        "We stand on the shoulders of giants to see further into the future. Our legacy is the echo that resonates through generations, inspiring new voices to sing the song of progress."
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="#future" class="bg-gradient-to-r from-nitda-gold to-yellow-500 text-nitda-dark font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 hover:shadow-lg modern-font">
+                            Shape Tomorrow
+                        </a>
+                        <a href="#discovery" class="bg-transparent border-2 border-nitda-gold text-nitda-light font-bold py-3 px-8 rounded-full transition-all hover:bg-nitda-gold/10 modern-font">
+                            Explore Discovery
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Future Generations Section -->
+    <section id="future" class="py-20 px-4 md:px-8 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    Architects of Tomorrow
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    The legacy continues through those who dare to dream and build
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Generation Card 1 -->
+                <div class="generation-card glass-card p-8 animate-in">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="legacy-font text-2xl text-nitda-light mb-4">The Visionaries</h3>
+                    <p class="text-nitda-light mb-6">
+                        Those who see beyond the horizon, imagining what others cannot. They transform abstract ideas into tangible innovations.
+                    </p>
+                    <div class="mt-auto">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-nitda-blue flex items-center justify-center text-nitda-gold mr-4">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <p class="text-nitda-light italic">
+                                "The future belongs to those who believe in the beauty of their dreams."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generation Card 2 -->
+                <div class="generation-card glass-card p-8 animate-in">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3 class="legacy-font text-2xl text-nitda-light mb-4">The Builders</h3>
+                    <p class="text-nitda-light mb-6">
+                        Makers who turn vision into reality. With skillful hands and determined minds, they construct the foundations of tomorrow.
+                    </p>
+                    <div class="mt-auto">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-nitda-blue flex items-center justify-center text-nitda-gold mr-4">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <p class="text-nitda-light italic">
+                                "Innovation is the calling card of the future. Build it well."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generation Card 3 -->
+                <div class="generation-card glass-card p-8 animate-in">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="legacy-font text-2xl text-nitda-light mb-4">The Nurturers</h3>
+                    <p class="text-nitda-light mb-6">
+                        Educators and mentors who cultivate potential. They water the seeds of curiosity and watch them grow into mighty trees of knowledge.
+                    </p>
+                    <div class="mt-auto">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-nitda-blue flex items-center justify-center text-nitda-gold mr-4">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <p class="text-nitda-light italic">
+                                "A teacher plants the seeds of knowledge that grow forever."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Future Vision -->
+            <div class="future-vision glass-card p-12 mb-16 animate-in">
+                <div class="relative z-10">
+                    <h3 class="legacy-font text-3xl text-center text-nitda-light mb-8 text-glow">
+                        Our Future Horizon
+                    </h3>
+                    <p class="text-xl text-nitda-light text-center mb-8">
+                        By 2050, the seeds we plant today will have transformed our world in ways we can only imagine:
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="flex items-start">
+                            <div class="text-2xl text-nitda-gold mr-4">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div>
+                                <h4 class="modern-font text-xl text-nitda-light mb-2">Quantum Education</h4>
+                                <p class="text-nitda-light">
+                                    Learning systems that adapt in real-time to each student's cognitive patterns, creating personalized educational journeys.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-2xl text-nitda-gold mr-4">
+                                <i class="fas fa-globe-africa"></i>
+                            </div>
+                            <div>
+                                <h4 class="modern-font text-xl text-nitda-light mb-2">Digital Equality</h4>
+                                <p class="text-nitda-light">
+                                    Universal access to knowledge resources, erasing the digital divide and creating equal opportunities worldwide.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-2xl text-nitda-gold mr-4">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <h4 class="modern-font text-xl text-nitda-light mb-2">Ethical AI Integration</h4>
+                                <p class="text-nitda-light">
+                                    Artificial intelligence systems that enhance human capabilities while preserving ethical boundaries and human dignity.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-2xl text-nitda-gold mr-4">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div>
+                                <h4 class="modern-font text-xl text-nitda-light mb-2">Sustainable Innovation</h4>
+                                <p class="text-nitda-light">
+                                    Technological solutions that not only advance society but actively regenerate our planet's ecosystems.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 text-center">
+                        <div class="inline-block bg-nitda-blue px-6 py-2 rounded-full border border-nitda-gold">
+                            <span class="text-nitda-gold modern-font">This is our legacy. This is our promise.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Echo elements -->
+                <div class="echo-element" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
+                <div class="echo-element" style="top: 60%; left: 80%; animation-delay: 2s;"></div>
+                <div class="echo-element" style="top: 40%; left: 45%; animation-delay: 4s;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discovery Learning Path -->
+    <section id="discovery" class="py-20 px-4 md:px-8 bg-nitda-blue/20 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    The Discovery Trail
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    A journey of exploration that transforms learners into pioneers
+                </p>
+            </div>
+            
+            <div class="discovery-path flex justify-between relative mb-16 min-h-[300px]">
+                <div class="path-line w-full left-0"></div>
+                
+                <!-- Path Step 1 -->
+                <div class="relative z-10 glass-card p-6 w-64 hover-grow">
+                    <div class="path-dot left-0"></div>
+                    <div class="text-3xl text-nitda-gold mb-4">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3 class="modern-font text-xl text-nitda-light mb-2">Curiosity</h3>
+                    <p class="text-nitda-light text-sm">
+                        The spark that ignites the journey of discovery
+                    </p>
+                </div>
+                
+                <!-- Path Step 2 -->
+                <div class="relative z-10 glass-card p-6 w-64 hover-grow">
+                    <div class="path-dot left-1/2 transform -translate-x-1/2"></div>
+                    <div class="text-3xl text-nitda-gold mb-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="modern-font text-xl text-nitda-light mb-2">Exploration</h3>
+                    <p class="text-nitda-light text-sm">
+                        Venturing into the unknown with courage
+                    </p>
+                </div>
+                
+                <!-- Path Step 3 -->
+                <div class="relative z-10 glass-card p-6 w-64 hover-grow">
+                    <div class="path-dot right-0"></div>
+                    <div class="text-3xl text-nitda-gold mb-4">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="modern-font text-xl text-nitda-light mb-2">Insight</h3>
+                    <p class="text-nitda-light text-sm">
+                        The moment of revelation that changes everything
+                    </p>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 animate-in">
+                    <h3 class="legacy-font text-3xl text-nitda-light mb-6">Learning Through Discovery</h3>
+                    <p class="text-nitda-light mb-6">
+                        True learning happens not through passive reception but through active exploration. Our approach:
+                    </p>
+                    <ul class="space-y-4 text-nitda-light">
+                        <li class="flex items-start">
+                            <div class="text-nitda-gold text-xl mr-3 mt-1">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span><strong>Challenge-Based Learning:</strong> Real-world problems that demand innovative solutions</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-nitda-gold text-xl mr-3 mt-1">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span><strong>Collaborative Exploration:</strong> Diverse minds working together to uncover new possibilities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-nitda-gold text-xl mr-3 mt-1">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span><strong>Iterative Development:</strong> Embracing failure as a necessary step toward mastery</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-nitda-gold text-xl mr-3 mt-1">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span><strong>Ethical Framework:</strong> Ensuring innovation serves humanity's best interests</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card overflow-hidden animate-in">
+                    <div class="video-container">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070" alt="Future of Education" class="w-full h-auto">
+                        <div class="video-overlay">
+                            <div class="play-button pulse">
+                                <i class="fas fa-play text-nitda-blue text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <h3 class="legacy-font text-2xl text-nitda-light mb-4">The Future of Education</h3>
+                        <p class="text-nitda-light">
+                            "Discovery learning transforms education from information transfer to wisdom cultivation. It's not what we teach, but how we inspire students to learn."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Innovation Showcase -->
+    <section class="py-20 px-4 md:px-8 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    Tomorrow's Innovations Today
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    Pioneering projects that are shaping the future
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="glass-card p-8 animate-in innovation-pulse" style="--i:0">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="modern-font text-2xl text-nitda-light mb-4">Neural EdTech</h3>
+                    <p class="text-nitda-light mb-6">
+                        Adaptive learning platforms that evolve with each student's cognitive development
+                    </p>
+                    <div class="mt-4 text-nitda-gold text-sm modern-font">
+                        REVOLUTIONIZING EDUCATION
+                    </div>
+                </div>
+                
+                <div class="glass-card p-8 animate-in innovation-pulse" style="--i:1">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="modern-font text-2xl text-nitda-light mb-4">Bio-Digital Farming</h3>
+                    <p class="text-nitda-light mb-6">
+                        AI-powered agriculture that maximizes yield while regenerating ecosystems
+                    </p>
+                    <div class="mt-4 text-nitda-gold text-sm modern-font">
+                        SUSTAINABLE FUTURE
+                    </div>
+                </div>
+                
+                <div class="glass-card p-8 animate-in innovation-pulse" style="--i:2">
+                    <div class="text-5xl text-nitda-gold mb-6">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="modern-font text-2xl text-nitda-light mb-4">Ethical AI Guardians</h3>
+                    <p class="text-nitda-light mb-6">
+                        Frameworks ensuring artificial intelligence remains aligned with human values
+                    </p>
+                    <div class="mt-4 text-nitda-gold text-sm modern-font">
+                        RESPONSIBLE INNOVATION
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card p-12 text-center animate-in">
+                <h3 class="legacy-font text-3xl text-nitda-light mb-6 text-glow">
+                    The Innovation Continuum
+                </h3>
+                <p class="text-xl text-nitda-light mb-8 max-w-3xl mx-auto">
+                    "Each breakthrough is not an end but a beginning. Today's impossible becomes tomorrow's foundation. We innovate not for the present, but for generations yet to come."
+                </p>
+                <div class="flex justify-center">
+                    <div class="inline-flex items-center bg-nitda-blue px-6 py-3 rounded-full border border-nitda-gold">
+                        <div class="w-4 h-4 rounded-full bg-green-400 mr-3 pulse"></div>
+                        <span class="text-nitda-gold modern-font">ACTIVE INNOVATION PIPELINE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Legacy Continuation -->
+    <section class="py-20 px-4 md:px-8 bg-nitda-dark relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="glass-card p-12 text-center animate-in quote-card">
+                <div class="text-5xl text-nitda-gold mb-8">
+                    <i class="fas fa-infinity"></i>
+                </div>
+                <h2 class="legacy-font text-4xl text-nitda-light mb-8 text-glow">
+                    The Unbroken Chain
+                </h2>
+                <p class="text-xl text-nitda-light mb-8">
+                    "Great innovations are not solitary achievements but the culmination of generations of knowledge. What we build today stands on foundations laid centuries ago. Our responsibility is not just to create, but to build bridges to the future."
+                </p>
+                <div class="w-48 h-1 bg-nitda-gold mx-auto mb-8"></div>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#" class="bg-gradient-to-r from-nitda-gold to-yellow-500 text-nitda-dark font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 hover:shadow-lg modern-font">
+                        Join the Legacy
+                    </a>
+                    <a href="#" class="bg-transparent border-2 border-nitda-gold text-nitda-light font-bold py-3 px-8 rounded-full transition-all hover:bg-nitda-gold/10 modern-font">
+                        Share Your Vision
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-nitda-blue">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="legacy-font text-3xl text-nitda-gold mr-3">LLT</div>
+                        <div class="text-nitda-light">Legacy Learning Trail</div>
+                    </div>
+                    <div class="mt-4 text-nitda-light text-sm">
+                        An Eternal Digital Monument
+                    </div>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-nitda-blue mt-8 pt-8 text-center text-nitda-light text-sm">
+                <p>© 2025 NITDA/NCAIR/ONDI - This eternal legacy will continue to inspire for generations</p>
+                <p class="mt-2">"The echoes of our actions today will resonate through eternity"</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animate elements on scroll
+        gsap.utils.toArray('.animate-in').forEach(element => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+        
+        // Floating animation for decorative elements
+        gsap.to('.floating', {
+            y: 20,
+            duration: 4,
+            repeat: -1,
+            yoyo: true,
+            ease: 'power1.inOut'
+        });
+        
+        // Text glow effect
+        const glowText = document.querySelector('.text-glow');
+        if (glowText) {
+            glowText.addEventListener('mouseenter', () => {
+                gsap.to(glowText, {
+                    textShadow: '0 0 20px rgba(212, 175, 55, 0.8)',
+                    duration: 0.5
+                });
+            });
+            
+            glowText.addEventListener('mouseleave', () => {
+                gsap.to(glowText, {
+                    textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
+                    duration: 0.5
+                });
+            });
+        }
+        
+        // Play button animation
+        const playButton = document.querySelector('.play-button');
+        if (playButton) {
+            playButton.addEventListener('mouseenter', () => {
+                gsap.to(playButton, {
+                    scale: 1.1,
+                    backgroundColor: 'rgba(212, 175, 55, 1)',
+                    duration: 0.3
+                });
+            });
+            
+            playButton.addEventListener('mouseleave', () => {
+                gsap.to(playButton, {
+                    scale: 1,
+                    backgroundColor: 'rgba(212, 175, 55, 0.8)',
+                    duration: 0.3
+                });
+            });
+        }
+        
+        // Generation card animations
+        const generationCards = document.querySelectorAll('.generation-card');
+        generationCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    y: -10,
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                    duration: 0.4
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    y: 0,
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+                    duration: 0.4
+                });
+            });
+        });
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate hero elements
+            gsap.from('header h1', {
+                opacity: 0,
+                y: -30,
+                duration: 1,
+                delay: 0.3
+            });
+            
+            gsap.from('header p', {
+                opacity: 0,
+                y: -20,
+                duration: 1,
+                delay: 0.6
+            });
+            
+            gsap.from('header .glass-card', {
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                delay: 0.9
+            });
+            
+            // Create echo elements dynamically
+            const futureVision = document.querySelector('.future-vision');
+            if (futureVision) {
+                for (let i = 0; i < 5; i++) {
+                    const echo = document.createElement('div');
+                    echo.className = 'echo-element';
+                    echo.style.top = `${Math.random() * 80 + 10}%`;
+                    echo.style.left = `${Math.random() * 80 + 10}%`;
+                    echo.style.animationDelay = `${i * 1.5}s`;
+                    futureVision.appendChild(echo);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

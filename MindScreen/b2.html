@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Explanation Button</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6dd5ed;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(109, 213, 237, 0.4);
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .explain-btn {
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+        }
+        
+        .explain-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .explain-btn:active {
+            transform: translateY(0);
+        }
+        
+        .explain-btn i {
+            margin-right: 10px;
+        }
+        
+        .explanation-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+        }
+        
+        .explanation-panel.active {
+            max-height: 2000px;
+        }
+        
+        .explanation-content {
+            padding: 10px;
+        }
+        
+        .section-title {
+            color: #6dd5ed;
+            margin: 15px 0 10px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #6dd5ed;
+            padding-bottom: 5px;
+        }
+        
+        .code-line {
+            display: flex;
+            margin: 8px 0;
+            align-items: flex-start;
+        }
+        
+        .line-number-sm {
+            width: 30px;
+            color: #6a6a6a;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .line-explanation {
+            flex-grow: 1;
+        }
+        
+        .highlight {
+            background: rgba(109, 213, 237, 0.2);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .note-box {
+            background: rgba(253, 151, 31, 0.1);
+            border-left: 4px solid #fd971f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .concept-box {
+            background: rgba(166, 226, 46, 0.1);
+            border-left: 4px solid #a6e22e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .code-block {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .line-number {
+                width: 30px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Python Code Explanation</h1>
+        
+        <div class="code-block">
+            <div><span class="line-number">1</span><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd</div>
+            <div><span class="line-number">2</span><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+            <div><span class="line-number">3</span><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt</div>
+            <div><span class="line-number">4</span><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns</div>
+            <div><span class="line-number">5</span></div>
+            <div><span class="line-number">6</span>file_name = <span class="code-string">"screen_time.csv"</span></div>
+            <div><span class="line-number">7</span><span class="code-keyword">try</span>:</div>
+            <div><span class="line-number">8</span>    df = pd.read_csv(file_name)</div>
+            <div><span class="line-number">9</span>    print(<span class="code-string">f"✅ Successfully loaded '{file_name}'"</span>)</div>
+            <div><span class="line-number">10</span><span class="code-keyword">except</span> FileNotFoundError:</div>
+            <div><span class="line-number">11</span>    print(<span class="code-string">f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script."</span>)</div>
+            <div><span class="line-number">12</span>    exit()</div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="explain-btn" id="explain-btn">
+                <i class="fas fa-code"></i> Explain This Code
+            </button>
+        </div>
+        
+        <div class="explanation-panel" id="explanation-panel">
+            <div class="explanation-content">
+                <h2 class="section-title">Code Explanation</h2>
+                <p>This Python code imports necessary libraries and loads a CSV file for data analysis.</p>
+                
+                <h3 class="section-title">Line-by-Line Breakdown</h3>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">1</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import pandas as pd</span> - Imports the Pandas library and gives it the alias <span class="highlight">pd</span>.
+                        Pandas is used for data manipulation and analysis.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">2</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import numpy as np</span> - Imports the NumPy library with alias <span class="highlight">np</span>.
+                        NumPy provides support for large, multi-dimensional arrays and matrices.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">3</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import matplotlib.pyplot as plt</span> - Imports the pyplot module from Matplotlib with alias <span class="highlight">plt</span>.
+                        This is used for creating visualizations and plots.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">4</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import seaborn as sns</span> - Imports the Seaborn library with alias <span class="highlight">sns</span>.
+                        Seaborn is built on Matplotlib and provides high-level interface for statistical graphics.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">6</div>
+                    <div class="line-explanation">
+                        <span class="highlight">file_name = "screen_time.csv"</span> - Creates a variable called <span class="highlight">file_name</span> and assigns the string value "screen_time.csv" to it.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">7</div>
+                    <div class="line-explanation">
+                        <span class="highlight">try:</span> - Starts a try-except block. Code inside the try block will be attempted, and if an error occurs, the except block will handle it.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">8</div>
+                    <div class="line-explanation">
+                        <span class="highlight">df = pd.read_csv(file_name)</span> - Uses Pandas' <span class="highlight">read_csv()</span> function to read the CSV file and store it in a DataFrame called <span class="highlight">df</span>.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">9</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print(f"✅ Successfully loaded '{file_name}'")</span> - Prints a success message with a checkmark emoji if the file is loaded successfully.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">10</div>
+                    <div class="line-explanation">
+                        <span class="highlight">except FileNotFoundError:</span> - Catches the specific error when a file is not found.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">11</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print(f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script.")</span> - Prints an error message with a cross mark emoji if the file is not found.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">12</div>
+                    <div class="line-explanation">
+                        <span class="highlight">exit()</span> - Terminates the program execution if the file is not found.
+                    </div>
+                </div>
+                
+                <div class="concept-box">
+                    <h3><i class="fas fa-lightbulb"></i> Key Concepts</h3>
+                    <p><strong>Error Handling:</strong> The try-except block is used to handle potential errors gracefully instead of letting the program crash.</p>
+                    <p><strong>DataFrames:</strong> Pandas DataFrames are 2-dimensional labeled data structures with columns of potentially different types, similar to a spreadsheet.</p>
+                    <p><strong>Libraries:</strong> Python libraries are collections of functions and methods that allow you to perform many actions without writing your own code.</p>
+                </div>
+                
+                <div class="note-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> Important Notes</h3>
+                    <p>• The CSV file must be in the same directory as the Python script for this code to work</p>
+                    <p>• The code uses f-strings (formatted string literals) for printing messages</p>
+                    <p>• The emojis (✅ and ❌) are optional but make the output more user-friendly</p>
+                </div>
+                
+                <h3 class="section-title">Potential Questions & Answers</h3>
+                <div class="code-line">
+                    <div class="line-explanation">
+                        <p><strong>Q: Why use try-except instead of just loading the file?</strong></p>
+                        <p>A: This makes our code more robust. If the file is missing, we get a clear error message instead of the program crashing unexpectedly.</p>
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-explanation">
+                        <p><strong>Q: What is the advantage of using aliases (pd, np, plt, sns)?</strong></p>
+                        <p>A: Aliases make the code shorter and more readable. Instead of writing "pandas.read_csv()" we can write "pd.read_csv()".</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const explainBtn = document.getElementById('explain-btn');
+            const explanationPanel = document.getElementById('explanation-panel');
+            
+            explainBtn.addEventListener('click', function() {
+                explanationPanel.classList.toggle('active');
+                
+                if (explanationPanel.classList.contains('active')) {
+                    explainBtn.innerHTML = '<i class="fas fa-times"></i> Hide Explanation';
+                } else {
+                    explainBtn.innerHTML = '<i class="fas fa-code"></i> Explain This Code';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

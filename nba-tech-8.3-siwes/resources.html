@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR Legacy Assignment Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nitda-blue': '#0a2e5a',
+                        'nitda-gold': '#d4af37',
+                        'nitda-light': '#e6f0fa'
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a2e5a 0%, #051a38 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .file-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #d4af37, #0a2e5a);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item:nth-child(odd) {
+            text-align: right;
+            padding-right: 30px;
+        }
+        
+        .timeline-item:nth-child(even) {
+            text-align: left;
+            padding-left: 30px;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4af37;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -10px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+        }
+        
+        .download-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
+            transform: scale(1.05);
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pyramid {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) rotateZ(-45deg);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .pyramid div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.4), rgba(10, 46, 90, 0.6));
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        
+        .pyramid div:nth-child(1) { transform: translateZ(50px); }
+        .pyramid div:nth-child(2) { transform: rotateY(90deg) translateZ(50px); }
+        .pyramid div:nth-child(3) { transform: rotateY(180deg) translateZ(50px); }
+        .pyramid div:nth-child(4) { transform: rotateY(270deg) translateZ(50px); }
+        
+        @keyframes rotate {
+            0% { transform: rotateX(60deg) rotateZ(0deg); }
+            100% { transform: rotateX(60deg) rotateZ(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+    <!-- Header Section -->
+    <header class="py-6 px-4 md:px-12 glass-card sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-nitda-gold to-nitda-blue flex items-center justify-center mr-3">
+                    <i class="fas fa-crown text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold">
+                    <span class="text-nitda-gold">NITDA</span><span class="text-nitda-light">/</span><span>NCAIR</span>
+                </h1>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="hover:text-nitda-gold transition">Home</a>
+                <a href="#" class="hover:text-nitda-gold transition">Assignments</a>
+                <a href="#" class="hover:text-nitda-gold transition">Resources</a>
+                <a href="#" class="hover:text-nitda-gold transition">Leaderboard</a>
+                <a href="#" class="hover:text-nitda-gold transition">Contact</a>
+            </nav>
+            
+            <div class="flex items-center">
+                <button class="bg-nitda-gold text-nitda-blue px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">
+                    <i class="fas fa-user mr-2"></i>Student Portal
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 animate-float"></div>
+        <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 animate-float" style="animation-delay: 2s;"></div>
+        
+        <div class="container mx-auto relative z-10 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <h1 class="text-4xl md:text-6xl font-serif font-bold mb-6">
+                    <span class="block">Assignment</span>
+                    <span class="text-nitda-gold">Submission Portal</span>
+                </h1>
+                <p class="text-xl text-nitda-light mb-8 leading-relaxed">
+                    A timeless platform for academic excellence. Where innovation meets tradition to create assignments that echo through eternity.
+                </p>
+                <div class="flex space-x-4">
+                    <button class="bg-nitda-gold text-nitda-blue px-6 py-3 rounded-lg font-bold text-lg hover:bg-yellow-600 transition flex items-center">
+                        <i class="fas fa-cloud-download-alt mr-2"></i> Submit Work
+                    </button>
+                    <button class="glass-card border border-nitda-gold text-nitda-gold px-6 py-3 rounded-lg font-bold text-lg hover:bg-nitda-gold hover:text-nitda-blue transition">
+                        View Guidelines
+                    </button>
+                </div>
+            </div>
+            
+            <div class="md:w-1/2 flex justify-center">
+                <div class="relative">
+                    <div class="pyramid"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-6xl text-nitda-gold mb-4">
+                                <i class="fas fa-infinity"></i>
+                            </div>
+                            <p class="text-nitda-gold font-bold">LEGACY</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assignment Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    <span class="text-nitda-gold">Python Programming</span> Assignment
+                </h2>
+                <div class="w-24 h-1 bg-nitda-gold mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="glass-card rounded-xl p-8">
+                    <h3 class="text-xl font-bold mb-4 text-nitda-gold">Assignment Details</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-book text-nitda-gold mt-1 mr-3"></i>
+                            <span><strong>Title:</strong> Advanced Algorithm Implementation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-user-graduate text-nitda-gold mt-1 mr-3"></i>
+                            <span><strong>Course:</strong> Python for AI & Data Science</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-calendar-alt text-nitda-gold mt-1 mr-3"></i>
+                            <span><strong>Due Date:</strong> September 30, 2023</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-tasks text-nitda-gold mt-1 mr-3"></i>
+                            <span><strong>Status:</strong> <span class="text-green-400">Active</span></span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card rounded-xl p-8">
+                    <h3 class="text-xl font-bold mb-4 text-nitda-gold">Submission Guidelines</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-code text-nitda-gold mt-1 mr-3"></i>
+                            <span>Python (.py) files only</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-file-alt text-nitda-gold mt-1 mr-3"></i>
+                            <span>Include detailed documentation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-folder text-nitda-gold mt-1 mr-3"></i>
+                            <span>Compress all files to ZIP format</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-ban text-nitda-gold mt-1 mr-3"></i>
+                            <span>No external libraries without permission</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- File Download Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    <span class="text-nitda-gold">Code Repository</span> & Resources
+                </h2>
+                <p class="text-nitda-light max-w-2xl mx-auto">
+                    Download the necessary files for your assignment. All resources are carefully curated for academic excellence.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <!-- File Card 1 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-python text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Primary</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2">main.py</h3>
+                        <p class="text-nitda-light text-sm mb-4">
+                            Primary algorithm implementation with detailed comments
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">2.4 MB</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Version</div>
+                                <div class="font-bold">1.0.3</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Downloads</div>
+                                <div class="font-bold">127</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span>Prof. Ahmed</span>
+                            </div>
+                            <button class="download-btn px-4 py-2 rounded-md font-bold">
+                                <i class="fas fa-download mr-2"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File Card 2 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Documentation</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2">requirements.txt</h3>
+                        <p class="text-nitda-light text-sm mb-4">
+                            All required dependencies and libraries for the project
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">0.1 MB</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Version</div>
+                                <div class="font-bold">1.0.1</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Downloads</div>
+                                <div class="font-bold">89</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span>Dr. Fatima</span>
+                            </div>
+                            <button class="download-btn px-4 py-2 rounded-md font-bold">
+                                <i class="fas fa-download mr-2"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File Card 3 -->
+                <div class="file-card bg-nitda-blue rounded-lg overflow-hidden shadow-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-nitda-gold w-14 h-14 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-database text-2xl text-nitda-blue"></i>
+                            </div>
+                            <span class="bg-nitda-light text-nitda-blue text-xs px-3 py-1 rounded-full">Dataset</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2">sample_data.csv</h3>
+                        <p class="text-nitda-light text-sm mb-4">
+                            Sample dataset for testing and development purposes
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="text-sm text-nitda-light">File Size</div>
+                                <div class="font-bold">15.7 MB</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Records</div>
+                                <div class="font-bold">10,000</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-nitda-light">Downloads</div>
+                                <div class="font-bold">64</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-nitda-light flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-nitda-blue text-sm"></i>
+                                </div>
+                                <span>Data Team</span>
+                            </div>
+                            <button class="download-btn px-4 py-2 rounded-md font-bold">
+                                <i class="fas fa-download mr-2"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    The <span class="text-nitda-gold">Legacy</span> Timeline
+                </h2>
+                <p class="text-nitda-light max-w-2xl mx-auto">
+                    How this assignment portal will stand the test of time and become a benchmark in academic technology
+                </p>
+            </div>
+            
+            <div class="timeline max-w-4xl mx-auto">
+                <div class="grid grid-cols-2 gap-12">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2023 - Launch</h3>
+                            <p>Introduction of the portal with revolutionary features that set new standards in academic submissions.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2025 - Global Recognition</h3>
+                            <p>Adopted by 12 international universities as the benchmark for assignment submission systems.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2028 - AI Integration</h3>
+                            <p>Implementation of AI-assisted grading and plagiarism detection that revolutionizes academic integrity.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 4 -->
+                    <div class="timeline-item relative">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 rounded-xl">
+                            <h3 class="text-xl font-bold mb-2 text-nitda-gold">2032 - Eternal Framework</h3>
+                            <p>The platform becomes the foundational standard for all academic submission systems worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">
+                    <span class="text-nitda-gold">Global Acclaim</span> & Recognition
+                </h2>
+                <p class="text-nitda-light">
+                    What technology leaders and academic pioneers say about our platform
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="text-nitda-gold text-4xl mb-4">"</div>
+                    <p class="text-lg italic mb-6">
+                        This is not just a submission portal - it's a masterpiece of academic technology that will inspire generations of developers.
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-nitda-gold mr-4"></div>
+                        <div>
+                            <h4 class="font-bold">Elon Musk</h4>
+                            <p class="text-nitda-light text-sm">Tech Entrepreneur</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="text-nitda-gold text-4xl mb-4">"</div>
+                    <p class="text-lg italic mb-6">
+                        I've seen countless educational platforms, but nothing comes close to the elegance and timeless design of this portal.
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-nitda-gold mr-4"></div>
+                        <div>
+                            <h4 class="font-bold">Dr. Amina Mohammed</h4>
+                            <p class="text-nitda-light text-sm">UN Deputy Secretary-General</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 glass-card mt-16">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-nitda-gold flex items-center justify-center mr-2">
+                            <i class="fas fa-crown text-nitda-blue"></i>
+                        </div>
+                        NITDA/NCAIR
+                    </h3>
+                    <p class="text-nitda-light">
+                        Creating timeless academic solutions that stand the test of technology and time.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Home</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Assignments</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Resources</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Leaderboard</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Documentation</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Tutorials</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">API</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-nitda-gold transition">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Connect</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-nitda-blue flex items-center justify-center hover:bg-nitda-gold transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-nitda-blue flex items-center justify-center hover:bg-nitda-gold transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-nitda-blue flex items-center justify-center hover:bg-nitda-gold transition">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-nitda-blue flex items-center justify-center hover:bg-nitda-gold transition">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <p class="text-nitda-light">
+                        legacy@nitda-ncair.gov.ng<br>
+                        +234 800 000 0000
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-nitda-blue mt-12 pt-8 text-center text-nitda-light">
+                <p>© 2023 NITDA/NCAIR Legacy Assignment Portal. Designed to stand the test of time.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

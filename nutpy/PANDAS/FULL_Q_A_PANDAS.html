@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Head content same as original cosmic template -->
+         <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Arrays vs Python Lists Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: #00c9ff;
+            background: rgba(0, 201, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 201, 255, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #00c9ff;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        .question-counter {
+            background: rgba(0, 201, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+
+</head>
+<body x-data="nigeriaQuizApp()" x-init="init()">
+    <!-- Cosmic background same as original -->
+     <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- Header with Nigerian focus -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-chart-line mr-3"></i>Nigeria Data Analysis Mastery
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                100 questions on pandas for Nigerian economic analysis (NBS, NITDA, 5IRE)
+            </p>
+        </header>
+
+        <!-- Sections Navigation -->
+        <div class="grid grid-cols-5 gap-2 mb-8">
+            <template x-for="(section, index) in sections" :key="index">
+                <button 
+                    @click="currentSection = index"
+                    class="py-3 px-2 text-center rounded-lg transition-all"
+                    :class="{
+                        'bg-blue-800/50 border-blue-400': currentSection === index,
+                        'bg-gray-800/50 hover:bg-gray-700/50': currentSection !== index
+                    }"
+                >
+                    <div class="text-sm font-semibold" x-text="`Section ${index+1}`"></div>
+                    <div class="text-xs mt-1" x-text="section.title.split(' ')[0]"></div>
+                </button>
+            </template>
+        </div>
+
+        <!-- Current Section Title -->
+        <h2 class="text-2xl font-bold mb-6 section-title border-b border-blue-500/50 pb-2">
+            <i class="fas fa-caret-right mr-2"></i>
+            <span x-text="sections[currentSection].title"></span>
+        </h2>
+
+        <!-- Questions -->
+        <div class="space-y-6">
+            <template x-for="(question, qIndex) in sections[currentSection].questions" :key="qIndex">
+                <div class="question-card p-6">
+                    <!-- Question and options same as original -->
+                      <div class="question-counter">
+                                <span x-text="`Question ${qIndex + 1} of ${totalQuestions}`"></span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                                <span x-text="question.question"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[qIndex] === oIndex && userAnswers[qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers">
+                                <p class="font-semibold text-blue-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="getAnswerStatus(qIndex)"></span>
+                                </p>
+                                <p x-text="question.explanation"></p>
+                            </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between mt-10">
+            <button class="submit-btn" @click="currentSection = Math.max(0, currentSection - 1)"
+                    x-show="currentSection > 0">
+                <i class="fas fa-arrow-left mr-2"></i>Previous Section
+            </button>
+            <button class="submit-btn" @click="currentSection = Math.min(sections.length - 1, currentSection + 1)"
+                    x-show="currentSection < sections.length - 1">
+                Next Section<i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <button class="submit-btn" @click="submitQuiz" x-show="currentSection === sections.length - 1">
+                <i class="fas fa-paper-plane mr-2"></i>Submit All Answers
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const nigeriaQuizData = {
+            sections: [
+                {
+                    title: "pandas Foundations",
+                    questions: [
+                        {
+                            question: "Which pandas structure is ideal for Nigeria's single-variable economic indicators like state-by-state inflation?",
+                            options: [
+                                "DataFrame",
+                                "Series",
+                                "Numpy Array",
+                                "Python Dictionary"
+                            ],
+                            answer: 1,
+                            explanation: "Series handles 1D data like state-wise metrics efficiently - crucial for NCAIR regional analysis."
+                        },
+                        {
+                            question: "When initializing a DataFrame for 5IRE's sustainability index, which parameter ensures states are properly labeled?",
+                            options: [
+                                "columns=state_names",
+                                "index=nigeria_states",
+                                "dtype='string'",
+                                "copy=True"
+                            ],
+                            answer: 1,
+                            explanation: "The index parameter assigns proper state labels for NBS data alignment."
+                        },
+                        {
+                            question: "To load NITDA's tech adoption report CSV, which pandas function should you use?",
+                            options: [
+                                "pd.read_excel()",
+                                "pd.from_csv()",
+                                "pd.read_csv()",
+                                "pd.import_data()"
+                            ],
+                            answer: 2,
+                            explanation: "read_csv() is optimized for loading Nigeria's large statistical datasets."
+                        },
+                        {
+                            question: "Which attribute gives the dimensions of NBS's agricultural production DataFrame?",
+                            options: [
+                                ".size",
+                                ".shape",
+                                ".ndim",
+                                ".columns"
+                            ],
+                            answer: 1,
+                            explanation: "shape returns (rows, columns) - vital for validating NCAIR dataset integrity."
+                        },
+                        {
+                            question: "To view the first 3 records of Nigeria's import/export DataFrame, you'd use:",
+                            options: [
+                                "df.head(3)",
+                                "df.sample(3)",
+                                "df[:3]",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both head() and slicing work for quick data inspection of NBS trade reports."
+                        },
+                        {
+                            question: "Which method converts a Series of Nigerian state GDP values to a NumPy array?",
+                            options: [
+                                ".to_numpy()",
+                                ".values",
+                                ".array",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods enable conversion for high-performance calculations with 5IRE metrics."
+                        },
+                        {
+                            question: "To select 'Lagos' and 'Kano' from a Series of state populations, you'd use:",
+                            options: [
+                                "df.loc[['Lagos', 'Kano']]",
+                                "df.iloc[[0, 1]]",
+                                "df.filter(['Lagos', 'Kano'])",
+                                "df.select('Lagos', 'Kano')"
+                            ],
+                            answer: 0,
+                            explanation: "loc[] is ideal for label-based selection in NBS demographic datasets."
+                        },
+                        {
+                            question: "Which operation creates a DataFrame from a dictionary of NITDA state digital scores?",
+                            options: [
+                                "pd.DataFrame(dict)",
+                                "pd.from_dict(dict)",
+                                "pd.convert(dict)",
+                                "pd.create(dict)"
+                            ],
+                            answer: 0,
+                            explanation: "pd.DataFrame() constructor handles dictionary conversion for tech adoption metrics."
+                        },
+                        {
+                            question: "To rename 'FCT' to 'Abuja' in a Series index, use:",
+                            options: [
+                                ".rename({'FCT':'Abuja'})",
+                                ".reindex(['Abuja'])",
+                                ".replace('FCT','Abuja')",
+                                ".set_index('Abuja')"
+                            ],
+                            answer: 0,
+                            explanation: "rename() updates index labels while preserving NBS data integrity."
+                        },
+                        {
+                            question: "Which property lists all columns in Nigeria's economic dashboard DataFrame?",
+                            options: [
+                                ".index",
+                                ".columns",
+                                ".info()",
+                                ".describe()"
+                            ],
+                            answer: 1,
+                            explanation: "columns returns Index object containing DataFrame's column names."
+                        },
+                        {
+                            question: "To change the data type of 5IRE's blockchain transaction counts to integer, use:",
+                            options: [
+                                ".convert_dtypes()",
+                                ".astype('int')",
+                                ".to_numeric()",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All can convert dtypes, but astype() is most straightforward for integers."
+                        },
+                        {
+                            question: "Which method shows concise summary of a NCAIR dataset including dtypes?",
+                            options: [
+                                ".head()",
+                                ".info()",
+                                ".describe()",
+                                ".columns"
+                            ],
+                            answer: 1,
+                            explanation: "info() provides essential metadata for Nigerian agricultural datasets."
+                        },
+                        {
+                            question: "To get the number of non-null values in each column of NBS DataFrame, use:",
+                            options: [
+                                ".isna().sum()",
+                                ".count()",
+                                ".notnull().sum()",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "notnull().sum() and count() both return non-null counts per column."
+                        },
+                        {
+                            question: "Which operation selects both 'GDP' and 'Inflation' columns from Nigeria's economic DataFrame?",
+                            options: [
+                                "df[['GDP','Inflation']]",
+                                "df.loc[:, ['GDP','Inflation']]",
+                                "df.filter(items=['GDP','Inflation'])",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple pandas selection methods work for column subsets."
+                        },
+                        {
+                            question: "To create a DataFrame from a list of tuples containing state and population:",
+                            options: [
+                                "pd.DataFrame(list, columns=['State','Population'])",
+                                "pd.from_records(list)",
+                                "pd.Series(list).to_frame()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both DataFrame constructor and from_records handle tuple-based data."
+                        },
+                        {
+                            question: "Which function loads Nigeria's Excel-based CBN reports?",
+                            options: [
+                                "pd.read_xlsx()",
+                                "pd.read_excel()",
+                                "pd.import_excel()",
+                                "pd.from_excel()"
+                            ],
+                            answer: 1,
+                            explanation: "read_excel() imports Excel files commonly used by Nigerian agencies."
+                        },
+                        {
+                            question: "To reset the index of a NITDA DataFrame while keeping the original index, use:",
+                            options: [
+                                ".reset_index()",
+                                ".reindex()",
+                                ".set_index()",
+                                ".index_reset()"
+                            ],
+                            answer: 0,
+                            explanation: "reset_index() moves current index to a column and creates new integer index."
+                        },
+                        {
+                            question: "Which method returns statistical summary for Nigeria's economic indicators?",
+                            options: [
+                                ".info()",
+                                ".summarize()",
+                                ".describe()",
+                                ".stats()"
+                            ],
+                            answer: 2,
+                            explanation: "describe() shows count, mean, std, min, max, and quartiles."
+                        },
+                        {
+                            question: "To select rows where 'State' equals 'Lagos' in NBS DataFrame, use:",
+                            options: [
+                                "df[df['State'] == 'Lagos']",
+                                "df.loc[df['State'] == 'Lagos']",
+                                "df.query('State == \"Lagos\"')",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods correctly filter rows by state condition."
+                        },
+                        {
+                            question: "Which operation creates a Series from Nigeria's population dictionary?",
+                            options: [
+                                "pd.Series(dict)",
+                                "pd.DataFrame(dict).squeeze()",
+                                "pd.from_dict(dict, orient='index')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches can create Series from dictionary data."
+                        }
+                    ]
+                },
+                {
+                    title: "Data Cleaning",
+                    questions: [
+                        {
+                            question: "When cleaning Nigeria's agricultural dataset from NBS, which method correctly handles missing fertilizer usage values?",
+                            options: [
+                                "df.dropna()",
+                                "df.fillna(df.mean())",
+                                "df.interpolate()",
+                                "df.replace(0, np.nan)"
+                            ],
+                            answer: 2,
+                            explanation: "Interpolation estimates missing values contextually - vital for 5IRE's precision farming analytics."
+                        },
+                        {
+                            question: "To standardize state names in NCAIR dataset ('lagos', 'Lagos', 'LAGOS'), use:",
+                            options: [
+                                "df['State'].lower()",
+                                "df['State'].str.title()",
+                                "df['State'].str.upper()",
+                                "df['State'].apply(lambda x: x.capitalize())"
+                            ],
+                            answer: 1,
+                            explanation: "str.title() standardizes to 'Lagos' format for NBS consistency."
+                        },
+                        {
+                            question: "Which method removes duplicate entries in NITDA's state technology adoption reports?",
+                            options: [
+                                "df.deduplicate()",
+                                "df.drop_duplicates()",
+                                "df.unique()",
+                                "df.remove_duplicates()"
+                            ],
+                            answer: 1,
+                            explanation: "drop_duplicates() removes redundant entries in government datasets."
+                        },
+                        {
+                            question: "To convert '₦1,200.50' strings to floats in CBN financial data:",
+                            options: [
+                                "pd.to_numeric(df['Amount'])",
+                                "df['Amount'].str.replace('[₦, ]', '').astype(float)",
+                                "df['Amount'].convert(convert_numeric=True)",
+                                "df['Amount'].apply(float)"
+                            ],
+                            answer: 1,
+                            explanation: "String cleaning required before conversion to numeric for Nigerian currency."
+                        },
+                        {
+                            question: "Which approach detects outliers in Nigeria's state GDP growth rates?",
+                            options: [
+                                "df['GDP'].mean() ± 2*std",
+                                "df['GDP'].plot.box()",
+                                "df['GDP'].describe()",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All are valid outlier detection techniques for economic analysis."
+                        },
+                        {
+                            question: "To handle missing crop yield values in NCAIR dataset, which method is LEAST appropriate?",
+                            options: [
+                                "Drop rows with missing values",
+                                "Fill with state average yields",
+                                "Fill with last valid value",
+                                "Fill with 0"
+                            ],
+                            answer: 3,
+                            answer: "Filling with 0 distorts agricultural statistics."
+                        },
+                        {
+                            question: "Which function converts dates in 'dd/mm/yyyy' format to datetime in NBS datasets?",
+                            options: [
+                                "pd.to_datetime(df['Date'])",
+                                "pd.to_datetime(df['Date'], format='%d/%m/%Y')",
+                                "df['Date'].dt.parse()",
+                                "pd.convert_dates(df['Date'])"
+                            ],
+                            answer: 1,
+                            explanation: "Explicit format specification ensures correct parsing of Nigerian date formats."
+                        },
+                        {
+                            question: "To create a boolean mask for states with >50% internet penetration in NITDA data:",
+                            options: [
+                                "df['Internet'] > 50",
+                                "df.loc[df['Internet'] > 50]",
+                                "df.query('Internet > 50')",
+                                "df.filter(df['Internet'] > 50)"
+                            ],
+                            answer: 0,
+                            explanation: "Creates boolean Series for filtering high-penetration states."
+                        },
+                        {
+                            question: "Which method splits 'Kaduna North' into ['Kaduna','North'] for geo-analysis?",
+                            options: [
+                                "df['LGA'].str.partition(' ')",
+                                "df['LGA'].str.split(' ', expand=True)",
+                                "df['LGA'].apply(lambda x: x.split())",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches can split LGA names into components."
+                        },
+                        {
+                            question: "To convert NBS employment data from wide to long format:",
+                            options: [
+                                "pd.wide_to_long()",
+                                "df.melt()",
+                                "df.stack()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both melt() and wide_to_long() reshape data for time-series analysis."
+                        },
+                        {
+                            question: "Which operation replaces 'N/A' and 'missing' with np.nan in 5IRE dataset?",
+                            options: [
+                                "df.replace(['N/A','missing'], np.nan)",
+                                "df.fillna('missing')",
+                                "df.dropna()",
+                                "df.interpolate()"
+                            ],
+                            answer: 0,
+                            explanation: "replace() handles multiple missing value representations."
+                        },
+                        {
+                            question: "To validate that all Nigerian states are present in NCAIR dataset:",
+                            options: [
+                                "df['State'].unique()",
+                                "set(df['State']) == set(official_states)",
+                                "df['State'].is_complete()",
+                                "df['State'].value_counts()"
+                            ],
+                            answer: 1,
+                            explanation: "Set comparison verifies all 36 states + FCT are included."
+                        },
+                        {
+                            question: "Which method removes '%' signs from '75%' strings in literacy rate column?",
+                            options: [
+                                "df['Rate'].str.replace('%', '')",
+                                "df['Rate'].str.strip('%')",
+                                "df['Rate'].apply(lambda x: x.rstrip('%'))",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches remove trailing percentage signs."
+                        },
+                        {
+                            question: "To convert 5IRE's blockchain transaction volume from string '1.2K' to 1200:",
+                            options: [
+                                "df['Volume'].replace({'K': '*1e3', 'M': '*1e6'}, regex=True).map(pd.eval)",
+                                "Custom conversion function",
+                                "df['Volume'].apply(parse_volume)",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All are valid for handling abbreviated numerical values."
+                        },
+                        {
+                            question: "Which approach detects inconsistent state spellings in NBS data?",
+                            options: [
+                                "df['State'].unique()",
+                                "fuzzy string matching",
+                                "value_counts()",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Combination of methods ensures data consistency."
+                        },
+                        {
+                            question: "To extract year from datetime column in CBN financial reports:",
+                            options: [
+                                "df['Date'].dt.year",
+                                "df['Date'].str[:4]",
+                                "df['Date'].apply(lambda x: x.year)",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: ".dt accessor and apply both extract datetime components."
+                        },
+                        {
+                            question: "Which method converts YES/NO to True/False in NITDA survey data?",
+                            options: [
+                                "df.replace({'YES':True, 'NO':False})",
+                                "df.map({'YES':True, 'NO':False})",
+                                "df.applymap(lambda x: x == 'YES')",
+                                "All methods work"
+                            ],
+                            answer: 0,
+                            explanation: "replace() efficiently handles categorical conversions."
+                        },
+                        {
+                            question: "To filter rows where 'State' is not null in NCAIR dataset:",
+                            options: [
+                                "df.dropna(subset=['State'])",
+                                "df[df['State'].notnull()]",
+                                "df.query('State == State')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches correctly filter non-null state values."
+                        },
+                        {
+                            question: "Which operation converts categorical variables for 5IRE's state classifications?",
+                            options: [
+                                "pd.get_dummies()",
+                                "df['Category'].astype('category')",
+                                "LabelEncoder",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both one-hot encoding and category dtype handle categorical data."
+                        },
+                        {
+                            question: "To validate that all values in Nigeria's GDP column are positive:",
+                            options: [
+                                "(df['GDP'] > 0).all()",
+                                "df['GDP'].min() > 0",
+                                "df.query('GDP <= 0')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches verify positive GDP values."
+                        }
+                    ]
+                },
+                {
+                    title: "Filtering & Aggregation",
+                    questions: [
+                        {
+                            question: "To analyze 5IRE blockchain adoption across Nigerian states, which pandas operation is MOST efficient?",
+                            options: [
+                                "df.groupby('state')['blockchain_adoption'].sum()",
+                                "df[df['tech_sector'] == 'blockchain']",
+                                "df.pivot_table(index='state', values='blockchain_adoption')",
+                                "Nested for-loops"
+                            ],
+                            answer: 0,
+                            explanation: "Groupby enables state-wise aggregation of blockchain metrics for NITDA's national digital transformation index."
+                        },
+                        {
+                            question: "To find states with above-average agricultural output in NCAIR data:",
+                            options: [
+                                "df[df['Output'] > df['Output'].mean()]",
+                                "df.query('Output > @national_mean')",
+                                "df.filter(regex='Output').gt(df['Output'].mean())",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Boolean indexing and query() both filter based on aggregate conditions."
+                        },
+                        {
+                            question: "Which method calculates median broadband speeds by geopolitical zone?",
+                            options: [
+                                "df.groupby('Zone')['Broadband'].median()",
+                                "df.pivot_table(index='Zone', values='Broadband', aggfunc='median')",
+                                "df.agg({'Broadband':'median'}, by='Zone')",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Groupby and pivot_table both support median aggregation."
+                        },
+                        {
+                            question: "To get the top 5 states by fintech adoption in NITDA report:",
+                            options: [
+                                "df.sort_values('Fintech', ascending=False).head(5)",
+                                "df.nlargest(5, 'Fintech')",
+                                "df['Fintech'].top(5)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both sorting and nlargest return top values efficiently."
+                        },
+                        {
+                            question: "Which operation calculates total 5IRE investments by state and sector?",
+                            options: [
+                                "df.groupby(['State','Sector'])['Investment'].sum()",
+                                "df.pivot_table(index='State', columns='Sector', values='Investment', aggfunc='sum')",
+                                "pd.crosstab(index=df['State'], columns=df['Sector'], values=df['Investment'], aggfunc='sum')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All provide multi-dimensional aggregation of investment data."
+                        },
+                        {
+                            question: "To filter NBS data to Southwest states only:",
+                            options: [
+                                "df[df['Zone'] == 'Southwest']",
+                                "df.query('Zone in [\"Lagos\",\"Ogun\",\"Ondo\",\"Osun\",\"Oyo\",\"Ekiti\"]')",
+                                "df.filter(like='Southwest')",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Zone comparison and explicit state listing both work."
+                        },
+                        {
+                            question: "Which method counts fintech startups per state in NITDA dataset?",
+                            options: [
+                                "df['State'].value_counts()",
+                                "df.groupby('State').size()",
+                                "df.pivot_table(index='State', aggfunc='count')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All count records per state effectively."
+                        },
+                        {
+                            question: "To calculate percentage contribution of each state to national GDP:",
+                            options: [
+                                "(df['GDP'] / df['GDP'].sum()) * 100",
+                                "df['GDP'].transform(lambda x: x / x.sum() * 100)",
+                                "df.assign(Pct_GDP = lambda d: d['GDP']/d['GDP'].sum()*100)",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple pandas approaches compute percentage contributions."
+                        },
+                        {
+                            question: "Which operation finds the state with maximum 5IRE sustainability index?",
+                            options: [
+                                "df['Index'].idxmax()",
+                                "df.loc[df['Index'].argmax()]",
+                                "df.sort_values('Index').iloc[-1]",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All correctly identify the maximum value location."
+                        },
+                        {
+                            question: "To aggregate NCAIR crop data by state and crop type:",
+                            options: [
+                                "df.groupby(['State','Crop'])['Yield'].mean()",
+                                "df.pivot_table(index='State', columns='Crop', values='Yield')",
+                                "df.groupby('State')['Crop'].value_counts()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Groupby and pivot_table both support multi-dimensional aggregation."
+                        },
+                        {
+                            question: "Which method calculates cumulative broadband penetration by state?",
+                            options: [
+                                "df['Broadband'].cumsum()",
+                                "df.groupby('State')['Penetration'].cumsum()",
+                                "df.expanding().sum()",
+                                "None apply"
+                            ],
+                            answer: 1,
+                            explanation: "Group-specific cumulative calculations require groupby+cumsum."
+                        },
+                        {
+                            question: "To compare Lagos and Abuja across multiple NBS indicators:",
+                            options: [
+                                "df.loc[['Lagos','Abuja']]",
+                                "df.query('State in [\"Lagos\",\"Abuja\"]')",
+                                "df.filter(items=['Lagos','Abuja'], axis=0)",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All correctly select multiple rows by label."
+                        },
+                        {
+                            question: "Which operation calculates year-over-year GDP growth for each state?",
+                            options: [
+                                "df.groupby('State')['GDP'].pct_change()",
+                                "df.sort_values('Year').groupby('State')['GDP'].diff() / df.groupby('State')['GDP'].shift()",
+                                "Custom function with shift()",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All compute percentage growth with proper grouping."
+                        },
+                        {
+                            question: "To find states where fintech adoption exceeds blockchain adoption:",
+                            options: [
+                                "df.query('Fintech > Blockchain')",
+                                "df[df['Fintech'].gt(df['Blockchain'])",
+                                "df.filter(lambda x: x['Fintech'] > x['Blockchain'])",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Query and boolean indexing compare columns effectively."
+                        },
+                        {
+                            question: "Which method aggregates NCAIR data by geopolitical zone?",
+                            options: [
+                                "df.groupby('Zone').agg({'Yield':'mean', 'Area':'sum'})",
+                                "df.pivot_table(index='Zone', aggfunc={'Yield':'mean', 'Area':'sum'})",
+                                "df.groupby('Zone').mean()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "agg() and pivot_table support multiple aggregation functions."
+                        },
+                        {
+                            question: "To sample 10% of NBS records per state for auditing:",
+                            options: [
+                                "df.groupby('State').sample(frac=0.1)",
+                                "df.sample(frac=0.1)",
+                                "df.sample(n=len(df)//10)",
+                                "df.apply(lambda x: x.sample(frac=0.1))"
+                            ],
+                            answer: 0,
+                            explanation: "Groupby sampling ensures proportional representation."
+                        },
+                        {
+                            question: "Which operation ranks states by 5IRE sustainability index?",
+                            options: [
+                                "df['Index'].rank(ascending=False)",
+                                "df['Rank'] = df['Index'].rank(method='dense', ascending=False)",
+                                "df.sort_values('Index', ascending=False).assign(Rank=lambda d: range(1, len(d)+1))",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "rank() and manual ranking both create ordinal rankings."
+                        },
+                        {
+                            question: "To calculate rolling 3-year average GDP growth:",
+                            options: [
+                                "df.rolling(3).mean()",
+                                "df.groupby('State')['GDP'].rolling(3).mean()",
+                                "df.expanding().mean()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 1,
+                            explanation: "Requires grouping by state before rolling calculation."
+                        },
+                        {
+                            question: "Which method finds the most common crop in each state?",
+                            options: [
+                                "df.groupby('State')['Crop'].agg(pd.Series.mode)",
+                                "df.groupby('State')['Crop'].apply(lambda x: x.value_counts().idxmax())",
+                                "df.pivot_table(index='State', columns='Crop', aggfunc='size').idxmax(axis=1)",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All identify the modal crop per state."
+                        },
+                        {
+                            question: "To normalize 5IRE metrics between 0-1 by state:",
+                            options: [
+                                "df.groupby('State').transform(lambda x: (x - x.min()) / (x.max() - x.min()))",
+                                "from sklearn.preprocessing import MinMaxScaler",
+                                "df.apply(lambda x: (x - x.min()) / (x.max() - x.min()))",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Grouped transforms or scikit-learn both handle normalization."
+                        }
+                    ]
+                },
+                {
+                    title: "Merging & Time Series",
+                    questions: [
+                        {
+                            question: "When merging NBS unemployment data with NITDA tech training datasets, which merge type preserves all Nigerian states?",
+                            options: [
+                                "inner join",
+                                "left join",
+                                "right join",
+                                "outer join"
+                            ],
+                            answer: 3,
+                            explanation: "Outer join ensures no state data is lost - critical for nationwide 5IRE digital inclusion mapping."
+                        },
+                        {
+                            question: "To combine quarterly GDP reports into a single time series:",
+                            options: [
+                                "pd.concat([q1, q2, q3, q4])",
+                                "q1.append([q2, q3, q4])",
+                                "pd.merge(q1, q2, q3, q4)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "concat() and append() vertically combine quarterly datasets."
+                        },
+                        {
+                            question: "Which method aligns NBS inflation data with CBN interest rate data by date?",
+                            options: [
+                                "pd.merge(inflation, interest, on='Date')",
+                                "inflation.join(interest, how='outer')",
+                                "pd.concat([inflation, interest], axis=1)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "merge() and join() align on index/date for time-series analysis."
+                        },
+                        {
+                            question: "To fill missing dates in Nigeria's daily COVID-19 dataset:",
+                            options: [
+                                "df.asfreq('D')",
+                                "df.resample('D').asfreq()",
+                                "pd.date_range(start, end).difference(df.index)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 1,
+                            explanation: "resample().asfreq() ensures complete daily time series."
+                        },
+                        {
+                            question: "When merging state populations with NCAIR crop data, which key ensures accurate matching?",
+                            options: [
+                                "State name",
+                                "LGA code",
+                                "Geopolitical zone",
+                                "State abbreviation"
+                            ],
+                            answer: 1,
+                            explanation: "Standardized LGA codes prevent mismatches from state name variations."
+                        },
+                        {
+                            question: "To calculate 30-day moving average of Lagos COVID cases:",
+                            options: [
+                                "df['Lagos'].rolling(30).mean()",
+                                "df.rolling(window=30)['Lagos'].mean()",
+                                "df['Lagos'].expanding().mean()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "rolling() calculates moving averages on time-series data."
+                        },
+                        {
+                            question: "Which operation merges 5IRE sustainability data with NBS economic indicators?",
+                            options: [
+                                "pd.merge(sustainability, economics, on='State')",
+                                "sustainability.join(economics)",
+                                "pd.concat([sustainability, economics], axis=1)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 0,
+                            explanation: "merge() combines on common state column for cross-dataset analysis."
+                        },
+                        {
+                            question: "To shift Nigeria's GDP data forward by one quarter for forecasting:",
+                            options: [
+                                "df['GDP'].shift(1)",
+                                "df['GDP'].tshift(1)",
+                                "df['GDP'].diff()",
+                                "df['GDP'].pct_change()"
+                            ],
+                            answer: 0,
+                            explanation: "shift() moves values without changing index for lagged analysis."
+                        },
+                        {
+                            question: "Which method combines monthly oil production from multiple Niger Delta states?",
+                            options: [
+                                "pd.concat([delta_states], axis=1)",
+                                "pd.merge(delta_states, how='outer')",
+                                "reduce(lambda x,y: pd.merge(x,y), delta_states)",
+                                "None apply"
+                            ],
+                            answer: 0,
+                            explanation: "concat() horizontally combines state production data."
+                        },
+                        {
+                            question: "To calculate year-end totals from monthly NBS revenue data:",
+                            options: [
+                                "df.resample('Y').sum()",
+                                "df.groupby(df.index.year).sum()",
+                                "df.rolling(12).sum()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "resample() and groupby both aggregate to annual frequency."
+                        },
+                        {
+                            question: "When merging NITDA tech data with population data, which suffix strategy is best?",
+                            options: [
+                                "suffixes=('_tech', '_pop')",
+                                "suffixes=('', '_pop')",
+                                "No suffixes needed",
+                                "Rename columns before merge"
+                            ],
+                            answer: 0,
+                            explanation: "Explicit suffixes prevent column name conflicts."
+                        },
+                        {
+                            question: "To compare Q1 and Q2 2023 GDP growth for each state:",
+                            options: [
+                                "df.pivot(index='State', columns='Quarter', values='GDP')",
+                                "df.unstack('Quarter')",
+                                "pd.crosstab(index=df['State'], columns=df['Quarter'], values=df['GDP'])",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All reshape data for quarter-on-quarter comparison."
+                        },
+                        {
+                            question: "Which method fills missing values in 5IRE time series with previous value?",
+                            options: [
+                                "df.fillna(method='ffill')",
+                                "df.fillna(method='pad')",
+                                "df.interpolate(method='time')",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "ffill and pad both carry last valid observation forward."
+                        },
+                        {
+                            question: "To merge hierarchical indices of NBS and CBN datasets:",
+                            options: [
+                                "pd.concat([nbs, cbn], keys=['NBS','CBN'])",
+                                "nbs.merge(cbn, left_index=True, right_index=True)",
+                                "pd.merge(nbs, cbn, on=['State','Date'])",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple approaches handle multi-index merging."
+                        },
+                        {
+                            question: "Which operation calculates compound annual growth rate (CAGR) for state GDPs?",
+                            options: [
+                                "(df.iloc[-1]/df.iloc[0]) ** (1/years) - 1",
+                                "df.pct_change().mean() * periods",
+                                "Custom CAGR function",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Direct calculation or custom function compute CAGR."
+                        },
+                        {
+                            question: "To align daily fuel prices with monthly inflation data:",
+                            options: [
+                                "pd.merge_asof(fuel, inflation, on='Date')",
+                                "inflation.merge(fuel.resample('M').mean(), on='Date')",
+                                "pd.concat([fuel, inflation], axis=1)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 1,
+                            explanation: "merge_asof() and resampling both handle frequency mismatches."
+                        },
+                        {
+                            question: "Which method finds correlation between 5IRE index and state GDP?",
+                            options: [
+                                "df[['5IRE','GDP']].corr()",
+                                "df.corr().loc['5IRE','GDP']",
+                                "df['5IRE'].corr(df['GDP'])",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All compute Pearson correlation coefficient."
+                        },
+                        {
+                            question: "To create a DateTime index from separate columns in NBS dataset:",
+                            options: [
+                                "pd.to_datetime(df[['Year','Month','Day']])",
+                                "df.index = pd.to_datetime(df[['Year','Month','Day']])",
+                                "df['Date'] = pd.to_datetime(dict(year=df.Year, month=df.Month, day=df.Day))",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple approaches construct datetime from components."
+                        },
+                        {
+                            question: "Which operation calculates quarterly averages from monthly NCAIR data?",
+                            options: [
+                                "df.resample('Q').mean()",
+                                "df.groupby(pd.Grouper(freq='Q')).mean()",
+                                "df.rolling(3).mean()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "resample() and Grouper both aggregate to quarterly frequency."
+                        },
+                        {
+                            question: "To merge historical and current NITDA datasets with different schemas:",
+                            options: [
+                                "pd.concat(ignore_index=True)",
+                                "pd.merge(left, right, how='outer')",
+                                "df.combine_first()",
+                                "All methods work"
+                            ],
+                            answer: 0,
+                            explanation: "concat() handles schema variations when combining historical data."
+                        }
+                    ]
+                },
+                {
+                    title: "Nigerian Economic Analysis",
+                    questions: [
+                        {
+                            question: "For 5IRE's sustainability index, which pandas operation calculates state-wise CO2 reduction after clean energy adoption?",
+                            options: [
+                                "df.apply(lambda x: x['old_emissions'] - x['new_emissions'])",
+                                "df.eval('emission_reduction = old_emissions - new_emissions')",
+                                "Vectorized subtraction",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches efficiently compute sustainability metrics for NCAIR's environmental impact dashboard."
+                        },
+                        {
+                            question: "To analyze correlation between NITDA's digital skills index and state GDP growth:",
+                            options: [
+                                "df[['Skills','GDP_growth']].corr()",
+                                "sns.heatmap(df.corr()[['Skills','GDP_growth']])",
+                                "df.plot.scatter(x='Skills', y='GDP_growth')",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Combination of quantitative and visual methods reveals relationships."
+                        },
+                        {
+                            question: "Which approach predicts agricultural yields using NCAIR historical data?",
+                            options: [
+                                "from sklearn.linear_model import LinearRegression",
+                                "df.rolling(5).mean().shift(1)",
+                                "Seasonal ARIMA models",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple forecasting techniques apply to agricultural planning."
+                        },
+                        {
+                            question: "To identify states with accelerating 5IRE blockchain adoption:",
+                            options: [
+                                "df['Adoption'].pct_change().pct_change() > 0",
+                                "Second derivative of adoption curve",
+                                "df['Adoption'].diff().gt(df['Adoption'].diff().shift())",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All detect increasing adoption momentum."
+                        },
+                        {
+                            question: "Which visualization shows geopolitical disparities in NBS unemployment data?",
+                            options: [
+                                "df.groupby('Zone')['Unemployment'].mean().plot.bar()",
+                                "sns.boxplot(x='Zone', y='Unemployment', data=df)",
+                                "df.pivot_table(index='State', columns='Zone', values='Unemployment').plot.area()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Bar and box plots both highlight zonal differences effectively."
+                        },
+                        {
+                            question: "To calculate the Gini coefficient for state GDP using pandas:",
+                            options: [
+                                "from scipy.stats import gini",
+                                "Custom Gini calculation using sorted cumulative sums",
+                                "df['GDP'].sort_values().cumsum().div(total).pipe(lambda s: 0.5 - s.mean())",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All compute income inequality metrics for economic analysis."
+                        },
+                        {
+                            question: "Which method identifies key drivers of 5IRE sustainability scores?",
+                            options: [
+                                "df.corr()[['Sustainability']].sort_values(by='Sustainability', ascending=False)",
+                                "Random forest feature importance",
+                                "Principal component analysis",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Correlation and ML techniques reveal predictive factors."
+                        },
+                        {
+                            question: "To create a dashboard of key NBS economic indicators:",
+                            options: [
+                                "df.describe().loc[['mean','std']]",
+                                "Interactive Plotly visualizations",
+                                "Tableau integration",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Pandas integrates with various dashboarding tools."
+                        },
+                        {
+                            question: "Which approach forecasts Nigeria's oil revenue considering global prices?",
+                            options: [
+                                "Vector autoregression (VAR)",
+                                "Multivariate time series models",
+                                "Machine learning regressors",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All sophisticated techniques model complex economic relationships."
+                        },
+                        {
+                            question: "To calculate the economic impact of NITDA's digital initiatives:",
+                            options: [
+                                "Difference-in-differences analysis",
+                                "Pre-post implementation comparison",
+                                "Correlation with GDP growth",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple econometric techniques measure policy impacts."
+                        },
+                        {
+                            question: "Which visualization shows state clustering based on NCAIR metrics?",
+                            options: [
+                                "sns.clustermap(df.corr())",
+                                "PCA + scatter plot",
+                                "t-SNE visualization",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All reveal patterns in multidimensional agricultural data."
+                        },
+                        {
+                            question: "To optimize 5IRE's state allocation of green investments:",
+                            options: [
+                                "Linear programming with PuLP",
+                                "ROI maximization with constraints",
+                                "Pareto efficiency frontiers",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Operations research techniques optimize resource allocation."
+                        },
+                        {
+                            question: "Which method analyzes seasonal patterns in Nigerian inflation?",
+                            options: [
+                                "df['Inflation'].diff(12).plot()",
+                                "Seasonal decomposition (STL)",
+                                "Autocorrelation analysis",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All detect cyclical patterns in economic time series."
+                        },
+                        {
+                            question: "To create a digital divide index from NITDA metrics:",
+                            options: [
+                                "Z-score normalization + weighted average",
+                                "Principal component analysis",
+                                "Min-max scaling with thresholds",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple index construction techniques apply."
+                        },
+                        {
+                            question: "Which approach validates NBS data against independent sources?",
+                            options: [
+                                "pd.merge(nbs, independent, on=['State','Year'])",
+                                "Bland-Altman analysis",
+                                "Correlation heatmaps",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Statistical techniques verify data quality."
+                        },
+                        {
+                            question: "To model state poverty rates using NCAIR agricultural data:",
+                            options: [
+                                "Linear regression",
+                                "Random forest regression",
+                                "Gradient boosting machines",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Various ML techniques predict socioeconomic indicators."
+                        },
+                        {
+                            question: "Which method tracks progress on 5IRE's SDG goals by state?",
+                            options: [
+                                "df.groupby('State').agg(sdg_progress)",
+                                "Radar charts for multi-dimensional comparison",
+                                "Time-to-target calculations",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All monitor sustainable development goal achievement."
+                        },
+                        {
+                            question: "To identify outlier states in NITDA's tech adoption report:",
+                            options: [
+                                "Z-score analysis",
+                                "Isolation forests",
+                                "DBSCAN clustering",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple outlier detection techniques apply."
+                        },
+                        {
+                            question: "Which visualization compares pre/post-CBN policy economic indicators?",
+                            options: [
+                                "Paired bar charts",
+                                "Slope charts",
+                                "Difference heatmaps",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "All effectively show before/after policy impacts."
+                        },
+                        {
+                            question: "To recommend states for 5IRE's next sustainability initiative:",
+                            options: [
+                                "Multi-criteria decision analysis",
+                                "TOPSIS scoring",
+                                "K-means clustering",
+                                "All methods work"
+                            ],
+                            answer: 3,
+                            explanation: "Advanced analytics prioritize intervention targets."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function nigeriaQuizApp() {
+            return {
+                // Quiz state
+                sections: nigeriaQuizData.sections,
+                currentSection: 0,
+                userAnswers: Array(nigeriaQuizData.sections.length).fill().map(() => []),
+                showAnswers: false,
+                showResults: false,
+                
+                // Initialize answers structure
+                init() {
+                    this.sections.forEach((section, sIdx) => {
+                        this.userAnswers[sIdx] = Array(section.questions.length).fill(undefined);
+                    });
+                },
+                
+                // Select answer
+                selectAnswer(sectionIndex, qIndex, optionIndex) {
+                    if (this.showAnswers) return;
+                    this.userAnswers[sectionIndex][qIndex] = optionIndex;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1500);
+                },
+                
+                // Other methods same as original (progress, getAnswerStatus, etc.)
+            }
+        }
+    </script>
+     
+</body>
+</html>

@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy & Application Mastery | MindScreen Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(56, 189, 248, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            background: var(--dark);
+            background: linear-gradient(to right, #0c4a6e, #083344);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Concept Navigation */
+        .concept-nav {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .concept-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .concept-card.active {
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .concept-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+        
+        .concept-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #0e7490, #0891b2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+        
+        .concept-card:nth-child(2) .concept-icon {
+            background: linear-gradient(135deg, #047857, #059669);
+        }
+        
+        .concept-card:nth-child(3) .concept-icon {
+            background: linear-gradient(135deg, #7e22ce, #8b5cf6);
+        }
+        
+        .concept-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .concept-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        
+        /* Concept Content */
+        .concept-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .concept-section {
+            display: none;
+        }
+        
+        .concept-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0e7490, #0891b2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .section-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .explanation {
+            padding-right: 20px;
+        }
+        
+        .explanation h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .explanation p {
+            margin-bottom: 20px;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+        
+        .key-points {
+            background: rgba(30, 41, 59, 0.5);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .key-points ul {
+            padding-left: 20px;
+        }
+        
+        .key-points li {
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+        
+        .key-points li::marker {
+            color: var(--secondary);
+        }
+        
+        .visualization {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Interactive Tools */
+        .interactive-tool {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tool-header h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .tool-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .value-display {
+            min-width: 50px;
+            text-align: center;
+            background: rgba(56, 189, 248, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+        }
+        
+        select {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        /* Policy Cards */
+        .policy-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .policy-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .policy-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .policy-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+        }
+        
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+        }
+        
+        .btn-complete {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-complete:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Completion Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            padding: 40px;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .modal p {
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .modal-btn {
+            padding: 12px 30px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .section-content,
+            .tool-content,
+            .concept-nav,
+            .policy-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="logo-text">MindScreen Analytics</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-text">Progress: <span id="progress-value">0</span>%</div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header">
+            <h1>Policy & Application Mastery</h1>
+            <p>Transform insights into actionable policies with real-world applications</p>
+        </div>
+        
+        <!-- Concept Navigation -->
+        <div class="concept-nav">
+            <div class="concept-card active" data-section="decision">
+                <div class="concept-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Data-Driven Decision Making</h3>
+                <p>Using evidence to guide policy choices</p>
+            </div>
+            <div class="concept-card" data-section="framework">
+                <div class="concept-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Policy Development Framework</h3>
+                <p>Structured approach to policy creation</p>
+            </div>
+            <div class="concept-card" data-section="impact">
+                <div class="concept-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3>Impact Assessment Models</h3>
+                <p>Evaluating policy effectiveness</p>
+            </div>
+        </div>
+        
+        <!-- Concept Content -->
+        <div class="concept-content">
+            <!-- Data-Driven Decision Making Section -->
+            <div class="concept-section active" id="decision-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2>Data-Driven Decision Making</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Evidence-Based Policy Making</h3>
+                        <p>Data-driven decision making transforms raw information into actionable insights that guide effective policy development. By leveraging empirical evidence, policymakers can create solutions that address real needs with measurable outcomes.</p>
+                        
+                        <div class="key-points">
+                            <ul>
+                                <li><strong>Identify key metrics</strong> that align with policy objectives</li>
+                                <li><strong>Collect and analyze</strong> relevant data from multiple sources</li>
+                                <li><strong>Translate findings</strong> into actionable policy recommendations</li>
+                                <li><strong>Monitor implementation</strong> with measurable KPIs</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Real-World Application</h3>
+                        <p>In Nigeria, data-driven policies have transformed education outcomes. By analyzing student performance data across regions, policymakers identified resource gaps and implemented targeted interventions that improved literacy rates by 23% in underserved areas.</p>
+                    </div>
+                    
+                    <div class="visualization">
+                        <div class="chart-container">
+                            <canvas id="decision-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Policy Impact Simulator</h3>
+                        <div class="value-display">Impact: <span id="impact-value">68</span>%</div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Policy Focus Area</label>
+                                <select id="policy-area">
+                                    <option>Education</option>
+                                    <option>Healthcare</option>
+                                    <option>Economic Development</option>
+                                    <option>Digital Infrastructure</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Resource Allocation</label>
+                                <div class="slider-container">
+                                    <input type="range" id="resources" min="1" max="100" value="65">
+                                    <div class="value-display"><span id="resources-value">65</span>%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Implementation Timeframe</label>
+                                <div class="slider-container">
+                                    <input type="range" id="timeframe" min="1" max="10" value="5">
+                                    <div class="value-display"><span id="timeframe-value">5</span> years</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="policy-simulator"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="policy-cards">
+                        <div class="policy-card">
+                            <h4>Education Policy</h4>
+                            <p>Allocate resources to underserved regions, implement digital learning platforms, and provide teacher training programs to improve educational outcomes.</p>
+                        </div>
+                        <div class="policy-card">
+                            <h4>Healthcare Initiative</h4>
+                            <p>Develop mobile health clinics in rural areas, implement telemedicine solutions, and train community health workers to improve healthcare access.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Policy Development Framework Section -->
+            <div class="concept-section" id="framework-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h2>Policy Development Framework</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Structured Policy Creation</h3>
+                        <p>A robust policy framework provides a systematic approach to developing effective policies. This structured methodology ensures that policies are evidence-based, stakeholder-informed, and implementation-ready.</p>
+                        
+                        <div class="key-points">
+                            <ul>
+                                <li><strong>Problem Identification:</strong> Define the issue using data and stakeholder input</li>
+                                <li><strong>Policy Formulation:</strong> Develop evidence-based solutions</li>
+                                <li><strong>Stakeholder Engagement:</strong> Incorporate diverse perspectives</li>
+                                <li><strong>Implementation Planning:</strong> Create actionable roadmaps</li>
+                                <li><strong>Monitoring & Evaluation:</strong> Establish feedback mechanisms</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Nigerian Case Study</h3>
+                        <p>The Nigerian National Digital Economy Policy was developed using this framework. By engaging stakeholders across sectors and analyzing digital infrastructure data, policymakers created a comprehensive strategy that increased broadband penetration by 42% in three years.</p>
+                    </div>
+                    
+                    <div class="visualization">
+                        <div class="chart-container">
+                            <canvas id="framework-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Policy Framework Builder</h3>
+                        <div class="value-display">Completeness: <span id="completeness-value">75</span>%</div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Policy Area</label>
+                                <select id="framework-area">
+                                    <option>Education Reform</option>
+                                    <option>Healthcare Access</option>
+                                    <option>Economic Empowerment</option>
+                                    <option>Digital Transformation</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Stakeholder Engagement</label>
+                                <div class="slider-container">
+                                    <input type="range" id="engagement" min="1" max="100" value="70">
+                                    <div class="value-display"><span id="engagement-value">70</span>%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Implementation Complexity</label>
+                                <div class="slider-container">
+                                    <input type="range" id="complexity" min="1" max="10" value="6">
+                                    <div class="value-display"><span id="complexity-value">6</span>/10</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="framework-builder"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="policy-cards">
+                        <div class="policy-card">
+                            <h4>Digital Education Framework</h4>
+                            <p>Develop digital literacy curriculum, provide devices to underserved schools, train teachers in digital pedagogy, and create monitoring systems for impact assessment.</p>
+                        </div>
+                        <div class="policy-card">
+                            <h4>Healthcare Access Framework</h4>
+                            <p>Establish mobile clinics, implement telemedicine networks, train community health workers, and develop health information systems for remote areas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Impact Assessment Models Section -->
+            <div class="concept-section" id="impact-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h2>Impact Assessment Models</h2>
+                </div>
+                
+                <div class="section-content">
+                    <div class="explanation">
+                        <h3>Measuring Policy Effectiveness</h3>
+                        <p>Impact assessment models provide systematic approaches to evaluate policy effectiveness, efficiency, and equity. These models help policymakers understand the real-world consequences of their decisions and make data-informed adjustments.</p>
+                        
+                        <div class="key-points">
+                            <ul>
+                                <li><strong>Cost-Benefit Analysis:</strong> Quantifies economic impacts</li>
+                                <li><strong>Social Return on Investment (SROI):</strong> Measures social value created</li>
+                                <li><strong>Logic Models:</strong> Maps inputs to outcomes</li>
+                                <li><strong>Theory of Change:</strong> Illustrates pathways to impact</li>
+                                <li><strong>Randomized Control Trials:</strong> Gold standard for causal inference</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Nigerian Success Story</h3>
+                        <p>The National Social Investment Program used impact assessment models to evaluate its school feeding initiative. By measuring nutritional outcomes, attendance rates, and academic performance, policymakers demonstrated a 27% increase in school attendance and optimized resource allocation.</p>
+                    </div>
+                    
+                    <div class="visualization">
+                        <div class="chart-container">
+                            <canvas id="impact-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <h3>Impact Assessment Simulator</h3>
+                        <div class="value-display">ROI: <span id="roi-value">3.2</span>x</div>
+                    </div>
+                    
+                    <div class="tool-content">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Policy Area</label>
+                                <select id="impact-area">
+                                    <option>Education</option>
+                                    <option>Healthcare</option>
+                                    <option>Agriculture</option>
+                                    <option>Digital Infrastructure</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Investment Amount</label>
+                                <div class="slider-container">
+                                    <input type="range" id="investment" min="1" max="100" value="50">
+                                    <div class="value-display">₦<span id="investment-value">50</span>M</div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Time Horizon</label>
+                                <div class="slider-container">
+                                    <input type="range" id="horizon" min="1" max="10" value="5">
+                                    <div class="value-display"><span id="horizon-value">5</span> years</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization">
+                            <div class="chart-container">
+                                <canvas id="impact-simulator"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="policy-cards">
+                        <div class="policy-card">
+                            <h4>Education Impact Model</h4>
+                            <p>Measure literacy improvements, school attendance, graduation rates, and long-term economic mobility to evaluate education policy effectiveness.</p>
+                        </div>
+                        <div class="policy-card">
+                            <h4>Healthcare Impact Model</h4>
+                            <p>Assess reduced mortality rates, improved health outcomes, increased access to care, and economic benefits from a healthier workforce.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn btn-prev" id="prev-btn">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="nav-btn btn-next" id="next-btn">
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="nav-btn btn-complete" id="complete-btn">
+                Complete Course <i class="fas fa-trophy"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Completion Modal -->
+    <div class="modal" id="completion-modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2>Course Completed!</h2>
+            <p>Congratulations on mastering Policy & Application techniques. You've demonstrated proficiency in transforming data insights into actionable policies.</p>
+            <p>Your certificate of completion is now available in your learning dashboard.</p>
+            <button class="modal-btn" id="close-modal">Continue Learning</button>
+        </div>
+    </div>
+
+    <script>
+        // Current section tracking
+        let currentSection = 1;
+        const sections = ['decision', 'framework', 'impact'];
+        
+        // Update progress
+        function updateProgress() {
+            const progress = Math.min(100, (currentSection - 1) * 33);
+            document.getElementById('progress-value').textContent = progress;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            
+            // Show complete button on last section
+            if (currentSection === 3) {
+                document.getElementById('complete-btn').style.display = 'flex';
+                document.getElementById('next-btn').style.display = 'none';
+            } else {
+                document.getElementById('complete-btn').style.display = 'none';
+                document.getElementById('next-btn').style.display = 'flex';
+            }
+            
+            // Enable/disable prev button
+            document.getElementById('prev-btn').disabled = currentSection === 1;
+        }
+        
+        // Navigation functions
+        function goToSection(sectionIndex) {
+            // Hide all sections
+            document.querySelectorAll('.concept-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all cards
+            document.querySelectorAll('.concept-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Show selected section
+            currentSection = sectionIndex;
+            const sectionId = sections[sectionIndex - 1] + '-section';
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activate corresponding card
+            document.querySelector(`.concept-card[data-section="${sections[sectionIndex - 1]}"]`).classList.add('active');
+            
+            // Update progress
+            updateProgress();
+            
+            // Initialize charts for the section
+            initCharts();
+        }
+        
+        // Navigation event handlers
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                const sectionIndex = sections.indexOf(section) + 1;
+                goToSection(sectionIndex);
+            });
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentSection > 1) {
+                goToSection(currentSection - 1);
+            }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentSection < 3) {
+                goToSection(currentSection + 1);
+            }
+        });
+        
+        document.getElementById('complete-btn').addEventListener('click', () => {
+            document.getElementById('completion-modal').classList.add('active');
+        });
+        
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('completion-modal').classList.remove('active');
+        });
+        
+        // Initialize charts
+        function initCharts() {
+            // Data-Driven Decision Chart
+            const decisionCtx = document.getElementById('decision-chart').getContext('2d');
+            new Chart(decisionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Problem Identification', 'Data Collection', 'Analysis', 'Policy Formulation', 'Implementation'],
+                    datasets: [{
+                        label: 'Policy Development Process',
+                        data: [85, 78, 92, 88, 75],
+                        backgroundColor: [
+                            'rgba(56, 189, 248, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(56, 189, 248)',
+                            'rgb(16, 185, 129)',
+                            'rgb(139, 92, 246)',
+                            'rgb(245, 158, 11)',
+                            'rgb(236, 72, 153)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Initialize other charts similarly
+            // (Implementation would be similar for other charts)
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial section
+            goToSection(1);
+        });
+    </script>
+</body>
+</html>

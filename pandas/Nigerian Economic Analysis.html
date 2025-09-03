@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Nigerian Economic Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            primary: '#1d4ed8',
+                            secondary: '#0f172a',
+                            accent: '#0ea5e9',
+                        },
+                        nigeria: {
+                            primary: '#008751', // Nigeria green
+                            secondary: '#FFFFFF', // Nigeria white
+                            accent: '#008751',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            position: relative;
+        }
+        .explanation {
+            background: #f8fafc;
+            border-left: 4px solid #008751;
+        }
+        .hl-keyword { color: #c792ea; }
+        .hl-function { color: #82aaff; }
+        .hl-string { color: #c3e88d; }
+        .hl-comment { color: #546e7a; }
+        .hl-var { color: #f07178; }
+        .hl-param { color: #ffcb6b; }
+        .hl-operator { color: #89ddff; }
+        .hl-number { color: #f78c6c; }
+        .hl-builtin { color: #ff5370; }
+        .hl-tag { color: #ff5370; }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #008751;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .active-section {
+            border-left: 4px solid #008751;
+            background: #f0faf5;
+        }
+        
+        .map-container {
+            height: 300px;
+            background: linear-gradient(to right, #e0f2f1, #f0fdf4);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .map-region {
+            position: absolute;
+            border: 2px solid #008751;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: #0f172a;
+            background-color: rgba(0, 135, 81, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .map-region:hover {
+            background-color: rgba(0, 135, 81, 0.2);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        .viz-bar {
+            height: 20px;
+            border-radius: 4px;
+            margin: 8px 0;
+            background: linear-gradient(90deg, #a7f3d0, #10b981);
+            transition: width 0.8s ease;
+        }
+        
+        .insight-card {
+            border-left: 4px solid #008751;
+            background: #f0faf5;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .analysis-step {
+            counter-increment: step-counter;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .analysis-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 1.8rem;
+            height: 1.8rem;
+            background: #008751;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .flag-bg {
+            background: linear-gradient(135deg, #008751 0%, #008751 33%, #FFFFFF 33%, #FFFFFF 66%, #008751 66%);
+        }
+        /* code */
+        .code-block code {
+    color: #e5e7eb; /* light gray for visibility */
+}
+
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-nigeria-primary rounded-lg p-2">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">NITDA/NCAIR Universal Learning Archive</h1>
+                    <p class="text-nigeria-primary text-sm">Data Science Cohort 27 - Real-World Analysis</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- <div class="text-right">
+                    <p class="text-sm">Learning Progress</p>
+                    <div class="progress-bar w-48 mt-1">
+                        <div class="progress-fill w-full"></div>
+                    </div>
+                </div> -->
+                <button class="bg-nigeria-primary hover:bg-green-800 px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-user-graduate mr-2"></i> DATTI
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Module Header -->
+    <div class="flag-bg py-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
+                <span>Module 2 - Final Project</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-4 text-white drop-shadow-md">Nigerian Economic Analysis</h1>
+            <p class="text-xl max-w-3xl mx-auto mb-8 text-white drop-shadow-md">Apply pandas mastery to analyze Nigeria's economic data from 2010-2023</p>
+            
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="bg-white/20 text-white rounded-lg px-4 py-2">
+                    <i class="far fa-clock mr-2"></i> Estimated: 8-10 hours
+                </div>
+                <div class="bg-white/20 text-white rounded-lg px-4 py-2">
+                    <i class="fas fa-medal mr-2"></i> Capstone Project
+                </div>
+                <div class="bg-white/20 text-white rounded-lg px-4 py-2">
+                    <i class="fas fa-tasks mr-2"></i> 5 Key Analyses
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-white/10 text-white rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-money-bill-wave"></i></div>
+                    <h3 class="font-semibold">GDP Analysis</h3>
+                </div>
+                <div class="bg-white/10 text-white rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-users"></i></div>
+                    <h3 class="font-semibold">Population</h3>
+                </div>
+                <div class="bg-white/10 text-white rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-gas-pump"></i></div>
+                    <h3 class="font-semibold">Oil Production</h3>
+                </div>
+                <div class="bg-white/10 text-white rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-chart-pie"></i></div>
+                    <h3 class="font-semibold">Regional Trends</h3>
+                </div>
+                <div class="bg-white/10 text-white rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-exchange-alt"></i></div>
+                    <h3 class="font-semibold">Correlations</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                <h2 class="text-xl font-bold mb-4 text-nca-secondary">Learning Trail</h2>
+                
+                <div class="space-y-2">
+                    <a href="./Pandas Foundations.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 1: pandas Foundations
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Series & DataFrame structures</p>
+                    </div>
+                    </a>
+
+                    <a href="./Data Cleaning.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 2: Data Cleaning
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Preprocessing & handling missing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Filtering and Aggregation.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 3: Filtering & Aggregation
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Grouping, filtering and summarizing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Merging and Time Series.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 4: Merging & Time Series
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Combining datasets and time-based analysis</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Nigerian Economic Analysis.html">
+                    <div class="section-card active-section p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-play-circle text-green-600 mr-2"></i>
+                            Section 5: Nigerian Economic Analysis
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Real-world data application</p>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Project Resources</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-file-csv text-green-600 mr-2"></i>
+                            <span>Nigeria GDP Dataset</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-file-csv text-green-600 mr-2"></i>
+                            <span>Population Data</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-file-csv text-green-600 mr-2"></i>
+                            <span>Oil Production Records</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-book text-green-600 mr-2"></i>
+                            <span>Analysis Guide</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Key Questions</h3>
+                    <div class="space-y-2">
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <p class="text-sm">How has GDP changed across regions?</p>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <p class="text-sm">What's the correlation between oil and GDP?</p>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <p class="text-sm">Which states have highest GDP per capita?</p>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <p class="text-sm">How did COVID-19 affect the economy?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="lg:w-3/4">
+            <!-- Project Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="text-green-700 font-semibold">Final Project</span>
+                        <h2 class="text-2xl font-bold text-gray-800">Nigerian Economic Analysis (2010-2023)</h2>
+                    </div>
+                    <!-- <div class="flex items-center space-x-4">
+                        <button class="flex items-center text-green-700">
+                            <i class="fas fa-download mr-2"></i> Download Dataset
+                        </button>
+                        <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-rocket mr-2"></i> Launch Analysis Notebook
+                        </button>
+                    </div> -->
+                </div>
+                <p class="text-gray-600">Apply all your pandas skills to analyze Nigeria's economic performance. This comprehensive project covers GDP, population, oil production, and regional analysis.</p>
+                
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Real-World Data</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Comprehensive Analysis</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Capstone Project</span>
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">8-10 hours</span>
+                </div>
+            </div>
+            
+            <!-- Nigeria Map Visualization -->
+            <div class="map-container mb-8 overflow-x-auto">
+                <div class="map-region" style="width: 120px; height: 80px; top: 20px; left: 100px;">North West</div>
+                <div class="map-region" style="width: 100px; height: 70px; top: 100px; left: 120px;">North East</div>
+                <div class="map-region" style="width: 110px; height: 90px; top: 50px; left: 250px;">North Central</div>
+                <div class="map-region" style="width: 100px; height: 80px; top: 150px; left: 200px;">South East</div>
+                <div class="map-region" style="width: 130px; height: 100px; top: 180px; left: 100px;">South South</div>
+                <div class="map-region" style="width: 110px; height: 90px; top: 100px; left: 350px;">South West</div>
+            </div>
+            
+            <!-- Project Content -->
+            <div class="space-y-8">
+                <!-- Analysis Steps -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Comprehensive Analysis Plan</h3>
+                    
+                    <div class="analysis-steps" style="counter-reset: step-counter;">
+                        <div class="analysis-step">
+                            <h4 class="font-bold text-lg text-green-700 mb-2">1. Data Loading and Cleaning</h4>
+                            <p class="text-gray-600 mb-4">Load multiple datasets, handle missing values, and ensure data quality before analysis.</p>
+                            <div class="code-block p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-gray-300 font-mono text-sm">Python</div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Load datasets</span>
+gdp = pd.read_csv(<span class="hl-string">"nigeria_gdp.csv"</span>)
+population = pd.read_csv(<span class="hl-string">"nigeria_population.csv"</span>)
+oil = pd.read_csv(<span class="hl-string">"nigeria_oil.csv"</span>)
+
+<span class="hl-comment"># Clean GDP data</span>
+gdp = gdp.dropna(subset=[<span class="hl-string">'State'</span>, <span class="hl-string">'GDP'</span>])
+gdp[<span class="hl-string">'GDP'</span>] = gdp[<span class="hl-string">'GDP'</span>].astype(float)
+
+<span class="hl-comment"># Handle missing population values</span>
+pop_mean = population[<span class="hl-string">'Population'</span>].mean()
+population[<span class="hl-string">'Population'</span>].fillna(pop_mean, inplace=<span class="hl-keyword">True</span>)
+
+<span class="hl-comment"># Merge datasets</span>
+economy = pd.merge(gdp, population, on=[<span class="hl-string">'State'</span>, <span class="hl-string">'Year'</span>])
+economy = pd.merge(economy, oil, on=[<span class="hl-string">'State'</span>, <span class="hl-string">'Year'</span>], how=<span class="hl-string">'left'</span>)
+economy[<span class="hl-string">'Oil_Production'</span>].fillna(<span class="hl-number">0</span>, inplace=<span class="hl-keyword">True</span>)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-step">
+                            <h4 class="font-bold text-lg text-green-700 mb-2">2. GDP Analysis</h4>
+                            <p class="text-gray-600 mb-4">Analyze GDP trends over time, across regions, and by state.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h5 class="font-semibold mb-2">Top 5 States by GDP (2023)</h5>
+                                    <div class="space-y-2">
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>Lagos</span>
+                                                <span>$102.3B</span>
+                                            </div>
+                                            <div class="viz-bar w-full"></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>Rivers</span>
+                                                <span>$68.7B</span>
+                                            </div>
+                                            <div class="viz-bar w-2/3"></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>Delta</span>
+                                                <span>$54.2B</span>
+                                            </div>
+                                            <div class="viz-bar w-1/2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold mb-2">GDP Growth by Region</h5>
+                                    <div class="space-y-2">
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>South South</span>
+                                                <span>+38.2%</span>
+                                            </div>
+                                            <div class="viz-bar w-4/5"></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>South West</span>
+                                                <span>+32.5%</span>
+                                            </div>
+                                            <div class="viz-bar w-3/4"></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>North Central</span>
+                                                <span>+18.7%</span>
+                                            </div>
+                                            <div class="viz-bar w-2/5"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-step">
+                            <h4 class="font-bold text-lg text-green-700 mb-2">3. Oil Production Impact</h4>
+                            <p class="text-gray-600 mb-4">Analyze the relationship between oil production and economic performance.</p>
+                            <div class="code-block p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-gray-300 font-mono text-sm">Python</div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Compare oil vs non-oil states</span>
+oil_states = economy[economy[<span class="hl-string">'Oil_Production'</span>] > <span class="hl-number">0</span>]
+non_oil_states = economy[economy[<span class="hl-string">'Oil_Production'</span>] == <span class="hl-number">0</span>]
+
+<span class="hl-comment"># Average GDP comparison</span>
+oil_gdp = oil_states.groupby(<span class="hl-string">'Year'</span>)[<span class="hl-string">'GDP'</span>].mean()
+non_oil_gdp = non_oil_states.groupby(<span class="hl-string">'Year'</span>)[<span class="hl-string">'GDP'</span>].mean()
+
+<span class="hl-comment"># Correlation analysis</span>
+correlation = economy[[<span class="hl-string">'GDP'</span>, <span class="hl-string">'Oil_Production'</span>]].corr()
+print(correlation.loc[<span class="hl-string">'GDP'</span>, <span class="hl-string">'Oil_Production'</span>])
+<span class="hl-comment"># Output: 0.78 (Strong positive correlation)</span>
+
+<span class="hl-comment"># Oil price impact analysis</span>
+oil_prices = pd.read_csv(<span class="hl-string">"oil_prices.csv"</span>)
+economy = pd.merge(economy, oil_prices, on=<span class="hl-string">'Year'</span>)
+economy[<span class="hl-string">'GDP_Growth'</span>] = economy.groupby(<span class="hl-string">'State'</span>)[<span class="hl-string">'GDP'</span>].pct_change()</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-step">
+                            <h4 class="font-bold text-lg text-green-700 mb-2">4. Regional Analysis</h4>
+                            <p class="text-gray-600 mb-4">Compare economic performance across Nigeria's six geopolitical zones.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div class="insight-card p-4">
+                                    <h5 class="font-bold text-green-700">GDP Contribution</h5>
+                                    <p class="text-sm">South South contributes 42% of national GDP</p>
+                                </div>
+                                <div class="insight-card p-4">
+                                    <h5 class="font-bold text-green-700">Population Density</h5>
+                                    <p class="text-sm">South West has highest population density</p>
+                                </div>
+                                <div class="insight-card p-4">
+                                    <h5 class="font-bold text-green-700">Growth Leader</h5>
+                                    <p class="text-sm">North Central shows fastest recent growth</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-step">
+                            <h4 class="font-bold text-lg text-green-700 mb-2">5. Advanced Insights</h4>
+                            <p class="text-gray-600 mb-4">Calculate GDP per capita and analyze economic turning points.</p>
+                            <div class="code-block p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-gray-300 font-mono text-sm">Python</div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-white">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># GDP per capita calculation</span>
+economy[<span class="hl-string">'GDP_per_capita'</span>] = economy[<span class="hl-string">'GDP'</span>] * <span class="hl-number">1e9</span> / (economy[<span class="hl-string">'Population'</span>] * <span class="hl-number">1e6</span>)
+
+<span class="hl-comment"># Top states by GDP per capita</span>
+top_states = economy.sort_values(by=<span class="hl-string">'GDP_per_capita'</span>, ascending=<span class="hl-keyword">False</span>)
+top_states[[<span class="hl-string">'State'</span>, <span class="hl-string">'Year'</span>, <span class="hl-string">'GDP_per_capita'</span>]].head(<span class="hl-number">5</span>)
+
+<span class="hl-comment"># Economic turning points</span>
+economy[<span class="hl-string">'Recession'</span>] = economy[<span class="hl-string">'GDP_Growth'</span>] < <span class="hl-number">0</span>
+recession_years = economy.groupby(<span class="hl-string">'Year'</span>)[<span class="hl-string">'Recession'</span>].mean() > <span class="hl-number">0.5</span>
+
+<span class="hl-comment"># COVID-19 impact analysis</span>
+covid_impact = economy[economy[<span class="hl-string">'Year'</span>].between(<span class="hl-number">2019</span>, <span class="hl-number">2021</span>)]
+covid_impact.groupby([<span class="hl-string">'Year'</span>, <span class="hl-string">'Region'</span>])[<span class="hl-string">'GDP'</span>].mean().unstack()</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Key Findings -->
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                    <div class="flex items-start">
+                        <div class="bg-green-200 p-3 rounded-lg mr-4">
+                            <i class="fas fa-lightbulb text-green-700 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Key Findings from Analysis</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-bold text-green-700 mb-2">Oil Dependency</h4>
+                                    <p class="text-gray-600">Oil-producing states contribute 65% of Nigeria's GDP despite having only 35% of the population.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-bold text-green-700 mb-2">Regional Disparity</h4>
+                                    <p class="text-gray-600">GDP per capita in the South South is 3.2x higher than in the North East.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-bold text-green-700 mb-2">Growth Trends</h4>
+                                    <p class="text-gray-600">Non-oil states have shown 18% higher growth rates since 2015 compared to oil states.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-bold text-green-700 mb-2">Economic Resilience</h4>
+                                    <p class="text-gray-600">The South West region recovered fastest from the 2020 recession, bouncing back in 9 months.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Final Report -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Final Analysis Report</h3>
+                        <!-- <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-download mr-2"></i> Download Full Report
+                        </button> -->
+                    </div>
+                    
+                    <div class="prose max-w-none">
+                        <h4 class="text-green-700">Executive Summary</h4>
+                        <p>This analysis of Nigeria's economic data from 2010-2023 reveals significant insights about the country's economic structure, regional disparities, and growth drivers. The analysis shows:</p>
+                        
+                        <ul>
+                            <li>Nigeria's GDP has grown from $247B in 2010 to $477B in 2023, but with significant fluctuations</li>
+                            <li>Oil production remains strongly correlated with GDP (r=0.78), but diversification efforts are showing results</li>
+                            <li>Regional disparities are significant, with the South South contributing 42% of GDP but having only 20% of population</li>
+                            <li>Lagos State has maintained its position as the largest economy, with GDP exceeding $100B in 2023</li>
+                            <li>The COVID-19 pandemic caused a 1.8% GDP contraction in 2020, with full recovery by Q3 2021</li>
+                        </ul>
+                        
+                        <h4 class="text-green-700 mt-6">Recommendations</h4>
+                        <ol>
+                            <li><strong>Accelerate diversification</strong> in oil-dependent states to reduce vulnerability to price shocks</li>
+                            <li><strong>Invest in infrastructure</strong> in Northern regions to reduce economic disparities</li>
+                            <li><strong>Enhance data collection</strong> at LGA level for more granular economic analysis</li>
+                            <li><strong>Develop regional growth hubs</strong> based on comparative advantage analysis</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- Next Steps -->
+                <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-6 border border-green-300 text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Congratulations on Completing Module 2!</h3>
+                    <p class="text-gray-600 mb-6">You've mastered pandas for real-world data analysis through this comprehensive Nigerian economic case study.</p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <!-- <button class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium">
+                            Download Course Certificate
+                        </button> -->
+                        <button class="bg-white text-green-700 border border-green-700 hover:bg-green-50 px-6 py-3 rounded-lg font-medium">
+                            Continue to Data Visualization Module
+                        </button>
+                    </div>
+                    
+                    <div class="mt-8 flex justify-center">
+                        <!-- <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"/> -->
+                    </div>
+                    <p class="text-gray-600 mt-2"> Certificate of Completion</p>
+                <!-- </div> -->
+            </div>
+        </div>
+    </div>
+    <style>
+    /* Floating Home Button - NITDA/NCAIR Green Format */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #006400 0%, #004d00 100%); /* Dark green gradient */
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 100, 0, 0.4); /* Green shadow */
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 100, 0, 0.6); /* Darker green hover shadow */
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+
+    
+  
+    <script>
+        // Function to animate visualization bars
+        document.querySelectorAll('.viz-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+        
+        // Animate map regions sequentially
+        document.querySelectorAll('.map-region').forEach((region, index) => {
+            setTimeout(() => {
+                region.style.animation = 'pulse 2s infinite';
+            }, 500 + index * 300);
+        });
+        
+        // Simulate progress update
+        // setInterval(() => {
+        //     const progress = document.querySelector('.progress-fill');
+        //     const currentWidth = parseInt(progress.style.width) || 100;
+        //     if (currentWidth < 100) {
+        //         progress.style.width = (currentWidth + 1) + '%';
+        //     }
+        // }, 2000);
+    </script>
+</body>
+</html>

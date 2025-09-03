@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy & Application | NITDA/NCAIR Standards</title>
+    <style>
+        /* NITDA/NCAIR Color Standards */
+        :root {
+            --nitda-primary: #0055A4;     /* Deep blue */
+            --nitda-secondary: #00A651;   /* Green */
+            --nitda-accent: #FFD100;      /* Yellow */
+            --nitda-dark: #1D2D5C;        /* Navy blue */
+            --nitda-light: #E6F0FA;       /* Light blue */
+            --nitda-gray: #4A4A4A;        /* Dark gray */
+            --nitda-light-gray: #F5F7FA;  /* Light gray */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--nitda-light);
+            color: var(--nitda-gray);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Header and Navigation */
+        .header {
+            background: linear-gradient(135deg, var(--nitda-dark), var(--nitda-primary));
+            color: white;
+            padding: 1rem 5%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--nitda-primary);
+            font-size: 24px;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* Progress Tracking */
+        .progress-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--nitda-light-gray);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--nitda-secondary), var(--nitda-accent));
+            border-radius: 6px;
+            width: 25%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Main Content Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--nitda-secondary);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--nitda-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--nitda-dark);
+        }
+        
+        .section-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .section-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Text Content */
+        .text-content {
+            padding-right: 20px;
+        }
+        
+        .text-content h3 {
+            font-size: 1.4rem;
+            color: var(--nitda-primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--nitda-light);
+        }
+        
+        .text-content p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .key-points {
+            background: var(--nitda-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .key-points h4 {
+            color: var(--nitda-secondary);
+            margin-bottom: 10px;
+        }
+        
+        .key-points ul {
+            padding-left: 20px;
+        }
+        
+        .key-points li {
+            margin-bottom: 8px;
+        }
+        
+        /* Visualization */
+        .visualization {
+            background: var(--nitda-light);
+            border-radius: 10px;
+            padding: 20px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Interactive Tools */
+        .interactive-tool {
+            background: var(--nitda-light);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tool-header h3 {
+            font-size: 1.4rem;
+            color: var(--nitda-secondary);
+        }
+        
+        .tool-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .tool-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: var(--nitda-dark);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .control-group span {
+            font-weight: normal;
+            color: var(--nitda-gray);
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--nitda-light-gray);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--nitda-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--nitda-primary);
+            font-weight: 600;
+            border: 1px solid var(--nitda-light);
+        }
+        
+        /* Policy Cards */
+        .policy-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .policy-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--nitda-secondary);
+            transition: transform 0.3s ease;
+        }
+        
+        .policy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .policy-card h4 {
+            color: var(--nitda-dark);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .policy-card h4 i {
+            color: var(--nitda-accent);
+        }
+        
+        .policy-card p {
+            margin-bottom: 15px;
+            color: var(--nitda-gray);
+        }
+        
+        /* Start Button */
+        .start-trail {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, var(--nitda-secondary), var(--nitda-primary));
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 86, 161, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 86, 161, 0.4);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--nitda-dark);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.8;
+        }
+        
+        .compliance-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* Chart styling */
+        .chart {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chart-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .chart-label {
+            width: 150px;
+            font-size: 0.9rem;
+            color: var(--nitda-gray);
+        }
+        
+        .chart-bar-container {
+            flex: 1;
+            height: 24px;
+            background: var(--nitda-light-gray);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .chart-bar {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .impact-chart {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .impact-metric {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--nitda-primary);
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--nitda-gray);
+            padding: 10px 5px;
+            background: var(--nitda-light);
+            border-radius: 8px;
+            width: 100%;
+        }
+        
+        .metric-bar {
+            width: 100%;
+            background: var(--nitda-light-gray);
+            border-radius: 8px 8px 0 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .metric-fill {
+            background: linear-gradient(0deg, var(--nitda-secondary), var(--nitda-accent));
+            border-radius: 8px 8px 0 0;
+            transition: height 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">N₊</div>
+            <div>
+                <div class="logo-text">Policy & Application Framework</div>
+                <div class="tagline">NITDA/NCAIR Standards Compliance</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Tracking -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div>
+                <h3>Policy Development Course</h3>
+                <p>Transform insights into actionable policies</p>
+            </div>
+            <div class="value-display">25% Complete</div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Introduction Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h2 class="section-title">Policy & Application Framework</h2>
+            </div>
+            
+            <div class="section-content">
+                <div class="text-content">
+                    <h3>Transform Insights into Action</h3>
+                    <p>This module provides a comprehensive framework for converting data insights into effective policies and real-world applications. Following NITDA/NCAIR standards, you'll learn to develop, implement, and assess policies that drive measurable outcomes.</p>
+                    
+                    <div class="key-points">
+                        <h4>Core Principles</h4>
+                        <ul>
+                            <li>Evidence-based decision making</li>
+                            <li>Stakeholder-centered policy design</li>
+                            <li>Measurable impact assessment</li>
+                            <li>Agile implementation frameworks</li>
+                            <li>Compliance with national standards</li>
+                        </ul>
+                    </div>
+                    
+                    <p>The framework bridges the gap between analytical insights and practical implementation, ensuring policies are both effective and sustainable.</p>
+                </div>
+                
+                <div class="visualization">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: var(--nitda-primary);">Policy Development Lifecycle</h4>
+                    <div class="chart">
+                        <div class="chart-row">
+                            <div class="chart-label">Research & Analysis</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: 95%; background: var(--nitda-primary);">95%</div>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="chart-label">Stakeholder Engagement</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: 80%; background: var(--nitda-secondary);">80%</div>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="chart-label">Policy Formulation</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: 75%; background: var(--nitda-accent); color: var(--nitda-gray);">75%</div>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="chart-label">Implementation</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: 65%; background: var(--nitda-dark);">65%</div>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="chart-label">Evaluation & Review</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: 60%; background: #7E57C2;">60%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Data-Driven Decision Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h2 class="section-title">Data-Driven Decision Making</h2>
+            </div>
+            
+            <div class="section-content">
+                <div class="text-content">
+                    <h3>Evidence-Based Policy Development</h3>
+                    <p>Transform raw data into actionable intelligence for policy creation. Learn how to identify relevant metrics, analyze trends, and interpret complex datasets to inform strategic decisions.</p>
+                    
+                    <div class="key-points">
+                        <h4>Key Components:</h4>
+                        <ul>
+                            <li>Data collection methodologies</li>
+                            <li>Statistical analysis techniques</li>
+                            <li>Predictive modeling for policy outcomes</li>
+                            <li>Risk assessment frameworks</li>
+                            <li>Ethical data usage guidelines</li>
+                        </ul>
+                    </div>
+                    
+                    <p>This approach ensures policies are grounded in reality and responsive to actual needs rather than assumptions.</p>
+                </div>
+                
+                <div class="visualization">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: var(--nitda-primary);">Data Utilization in Policy</h4>
+                    <div class="impact-chart">
+                        <div class="impact-metric">
+                            <div class="metric-value">87%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="height: 87%;"></div>
+                            </div>
+                            <div class="metric-label">Effectiveness</div>
+                        </div>
+                        <div class="impact-metric">
+                            <div class="metric-value">92%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="height: 92%;"></div>
+                            </div>
+                            <div class="metric-label">Stakeholder Buy-in</div>
+                        </div>
+                        <div class="impact-metric">
+                            <div class="metric-value">78%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="height: 78%;"></div>
+                            </div>
+                            <div class="metric-label">Cost Efficiency</div>
+                        </div>
+                        <div class="impact-metric">
+                            <div class="metric-value">85%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="height: 85%;"></div>
+                            </div>
+                            <div class="metric-label">Adoption Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Policy Development Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h2 class="section-title">Policy Development Framework</h2>
+            </div>
+            
+            <div class="section-content">
+                <div class="text-content">
+                    <h3>Structured Approach to Policy Creation</h3>
+                    <p>A comprehensive framework for developing robust policies that align with organizational goals and regulatory requirements. This systematic approach ensures clarity, consistency, and compliance.</p>
+                    
+                    <div class="key-points">
+                        <h4>Framework Components:</h4>
+                        <ul>
+                            <li>Needs assessment and problem definition</li>
+                            <li>Stakeholder analysis and engagement</li>
+                            <li>Option appraisal and impact forecasting</li>
+                            <li>Drafting and consultation processes</li>
+                            <li>Approval and implementation planning</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Following this framework reduces implementation risks and increases policy effectiveness by 40% based on case studies.</p>
+                </div>
+                
+                <div class="visualization">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: var(--nitda-primary);">Policy Impact Simulator</h4>
+                    <div class="interactive-tool">
+                        <div class="tool-content">
+                            <div class="controls">
+                                <div class="control-group">
+                                    <label>Policy Scope <span>(Broadness)</span></label>
+                                    <div class="slider-container">
+                                        <input type="range" min="1" max="100" value="65">
+                                        <div class="value-display">65%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label>Resource Allocation <span>(Budget)</span></label>
+                                    <div class="slider-container">
+                                        <input type="range" min="1" max="100" value="45">
+                                        <div class="value-display">45%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label>Implementation Time <span>(Months)</span></label>
+                                    <div class="slider-container">
+                                        <input type="range" min="1" max="36" value="18">
+                                        <div class="value-display">18</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <div style="font-size: 1.2rem; font-weight: 600; color: var(--nitda-secondary);">Predicted Impact</div>
+                                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--nitda-primary);">74%</div>
+                                </div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.9rem; color: var(--nitda-gray);">Cost</div>
+                                        <div style="font-weight: 600; color: var(--nitda-dark);">$$$</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.9rem; color: var(--nitda-gray);">Complexity</div>
+                                        <div style="font-weight: 600; color: var(--nitda-dark);">Medium</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.9rem; color: var(--nitda-gray);">Adoption</div>
+                                        <div style="font-weight: 600; color: var(--nitda-dark);">High</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Impact Assessment Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2 class="section-title">Impact Assessment Models</h2>
+            </div>
+            
+            <div class="section-content">
+                <div class="text-content">
+                    <h3>Measuring Policy Effectiveness</h3>
+                    <p>Robust models to evaluate the real-world impact of policies. Learn quantitative and qualitative methods to assess outcomes, measure ROI, and identify areas for improvement.</p>
+                    
+                    <div class="key-points">
+                        <h4>Assessment Approaches:</h4>
+                        <ul>
+                            <li>Before-After analysis</li>
+                            <li>Control group comparisons</li>
+                            <li>Cost-benefit analysis</li>
+                            <li>Stakeholder satisfaction surveys</li>
+                            <li>Long-term sustainability metrics</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Effective assessment transforms policy implementation into a continuous improvement cycle, increasing positive outcomes by an average of 62%.</p>
+                </div>
+                
+                <div class="visualization">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: var(--nitda-primary);">Policy Impact Timeline</h4>
+                    <div style="display: flex; height: 100%; flex-direction: column; justify-content: space-around;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 80px; font-weight: 600; color: var(--nitda-secondary);">Short-term</div>
+                            <div style="flex: 1; height: 10px; background: var(--nitda-light-gray); border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; width: 40%; background: var(--nitda-secondary);"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 80px; font-weight: 600; color: var(--nitda-primary);">Medium-term</div>
+                            <div style="flex: 1; height: 10px; background: var(--nitda-light-gray); border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; width: 70%; background: var(--nitda-primary);"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 80px; font-weight: 600; color: var(--nitda-dark);">Long-term</div>
+                            <div style="flex: 1; height: 10px; background: var(--nitda-light-gray); border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; width: 90%; background: var(--nitda-dark);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; background: var(--nitda-light); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; margin-bottom: 5px;">Cumulative Impact Score</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--nitda-secondary);">82/100</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Policy Cards -->
+            <div class="policy-cards">
+                <div class="policy-card">
+                    <h4><i class="fas fa-briefcase"></i> Economic Policy</h4>
+                    <p>Develop frameworks for economic growth, investment, and market regulation based on data-driven insights.</p>
+                    <div style="margin-top: 15px; color: var(--nitda-primary); font-weight: 600;">Impact Factor: 8.7/10</div>
+                </div>
+                <div class="policy-card">
+                    <h4><i class="fas fa-users"></i> Social Policy</h4>
+                    <p>Create equitable social programs addressing education, healthcare, and community development needs.</p>
+                    <div style="margin-top: 15px; color: var(--nitda-primary); font-weight: 600;">Impact Factor: 9.2/10</div>
+                </div>
+                <div class="policy-card">
+                    <h4><i class="fas fa-leaf"></i> Environmental Policy</h4>
+                    <p>Design sustainable environmental regulations and conservation initiatives with measurable outcomes.</p>
+                    <div style="margin-top: 15px; color: var(--nitda-primary); font-weight: 600;">Impact Factor: 8.9/10</div>
+                </div>
+                <div class="policy-card">
+                    <h4><i class="fas fa-heartbeat"></i> Health Policy</h4>
+                    <p>Develop healthcare frameworks improving accessibility, quality, and affordability of medical services.</p>
+                    <div style="margin-top: 15px; color: var(--nitda-primary); font-weight: 600;">Impact Factor: 9.0/10</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Start Button -->
+        <div class="start-trail">
+            <button class="btn-start">
+                <i class="fas fa-play-circle"></i> Start Policy Trail
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2023 Policy & Application Framework. This training module complies with NITDA/NCAIR standards and guidelines for digital governance and policy development.</p>
+        <div class="compliance-badge">
+            <i class="fas fa-shield-alt"></i> NITDA/NCAIR Standards Compliant
+        </div>
+    </footer>
+
+    <!-- Font Awesome for icons -->
+    <script>
+        // Create a simple icon loader
+        document.addEventListener('DOMContentLoaded', function() {
+            const icons = document.querySelectorAll('i');
+            icons.forEach(icon => {
+                const classes = icon.className.split(' ');
+                if (classes.includes('fa-cogs')) {
+                    icon.innerHTML = '⚙️';
+                } else if (classes.includes('fa-database')) {
+                    icon.innerHTML = '📊';
+                } else if (classes.includes('fa-file-contract')) {
+                    icon.innerHTML = '📝';
+                } else if (classes.includes('fa-chart-line')) {
+                    icon.innerHTML = '📈';
+                } else if (classes.includes('fa-briefcase')) {
+                    icon.innerHTML = '💼';
+                } else if (classes.includes('fa-users')) {
+                    icon.innerHTML = '👥';
+                } else if (classes.includes('fa-leaf')) {
+                    icon.innerHTML = '🌿';
+                } else if (classes.includes('fa-heartbeat')) {
+                    icon.innerHTML = '❤️';
+                } else if (classes.includes('fa-play-circle')) {
+                    icon.innerHTML = '▶️';
+                } else if (classes.includes('fa-shield-alt')) {
+                    icon.innerHTML = '🛡️';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Q&A | Eternal Knowledge Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        :root {
+            --cosmic-dark: #0a0e29;
+            --cosmic-purple: #3a1d6d;
+            --cosmic-blue: #1d3a6d;
+            --cosmic-pink: #6d1d5a;
+            --nigerian-green: #008751;
+            --star-glow: #ffffff;
+            --text-light: #f0f8ff;
+            --card-bg: rgba(10, 14, 41, 0.8);
+            --accent: #00d9ff;
+        }
+
+        body {
+            background: var(--cosmic-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(58, 29, 109, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(29, 58, 109, 0.1) 0%, transparent 20%);
+        }
+
+        /* Cosmic Background Elements */
+        #cosmic-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+        }
+
+        .nebula {
+            position: fixed;
+            z-index: -2;
+            opacity: 0.3;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        #nebula-1 {
+            top: 10%;
+            left: 15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--cosmic-purple), transparent 70%);
+        }
+
+        #nebula-2 {
+            bottom: 10%;
+            right: 15%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--cosmic-blue), transparent 70%);
+        }
+
+        .floating-element {
+            position: fixed;
+            z-index: -1;
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        #element-1 {
+            top: 30%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6b6b, #ff8e53);
+            animation-delay: 0s;
+        }
+
+        #element-2 {
+            bottom: 20%;
+            left: 10%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #4ecdc4, #1a936f);
+            animation-delay: 3s;
+        }
+
+        #element-3 {
+            top: 15%;
+            left: 25%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #f9c74f, #f8961e);
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(10px) translateX(-15px); }
+            75% { transform: translateY(-15px) translateX(-10px); }
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(10, 14, 41, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+ 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #f0f8ff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-subtext {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-top: 3px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 30px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 30px;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%);
+            z-index: -1;
+            border-radius: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #a0aec0;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .section-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--accent), #0066ff);
+            color: var(--cosmic-dark);
+            font-weight: 600;
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        .qa-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            padding: 25px;
+            background: linear-gradient(90deg, rgba(0, 135, 81, 0.2), rgba(0, 217, 255, 0.2));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        .qa-list {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .qa-item {
+            margin-bottom: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .qa-item.active {
+            background: rgba(0, 217, 255, 0.05);
+            border-color: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
+        }
+
+        .question {
+            padding: 20px 60px 20px 25px;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .question::after {
+            content: '\f078';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+            color: var(--accent);
+        }
+
+        .qa-item.active .question::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0 25px;
+        }
+
+        .qa-item.active .answer {
+            max-height: 1000px;
+            padding: 0 25px 25px;
+        }
+
+        .answer-content {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: rgba(10, 14, 41, 0.9);
+            padding: 30px 5%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a0aec0;
+        }
+
+        .contact-item i {
+            color: var(--accent);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .search-container {
+                margin: 15px 0;
+                max-width: 100%;
+            }
+            
+            .hero-title {
+                font-size: 2.3rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .contact-info {
+                flex-wrap: wrap;
+            }
+            
+            .question {
+                padding-right: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Elements -->
+    <canvas id="cosmic-canvas"></canvas>
+    <div id="nebula-1" class="nebula"></div>
+    <div id="nebula-2" class="nebula"></div>
+    <div id="element-1" class="floating-element"></div>
+    <div id="element-2" class="floating-element"></div>
+    <div id="element-3" class="floating-element"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-stars"></i>
+            </div>
+            <div>
+                <div class="logo-text">Cosmic Q&A</div>
+                <div class="logo-subtext">Eternal Knowledge Platform</div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search across 150 knowledge points...">
+        </div>
+        
+        <div class="user-actions">
+            <div class="achievement-badge">
+                <i class="fas fa-trophy"></i>
+                <div class="badge-count">42</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="hero">
+            <h1 class="hero-title">Unlock the Universe of Knowledge</h1>
+            <p class="hero-subtitle">Explore 150 expertly crafted Q&As across 5 cosmic domains. Click any question to reveal its wisdom - a revolutionary learning experience designed to outshine globally and stand the test of time.</p>
+        </div>
+        
+        <div class="section-tabs">
+            <div class="tab active" data-section="foundations">Data Foundations</div>
+            <div class="tab" data-section="cleaning">Data Cleaning</div>
+            <div class="tab" data-section="analysis">Data Analysis</div>
+            <div class="tab" data-section="viz">Data Visualization</div>
+            <div class="tab" data-section="advanced">Advanced Techniques</div>
+        </div>
+        
+        <div class="qa-container">
+            <div class="section-header">
+                <h2 class="section-title">Data Visualization Mastery</h2>
+                <p class="section-subtitle">30 essential Q&As to transform your visualization skills</p>
+            </div>
+            
+            <div class="qa-list">
+                <!-- Q&A Item 1 -->
+                <div class="qa-item active">
+                    <div class="question">What are the fundamental principles of effective data visualization?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>The core principles of effective data visualization include:</p>
+                            <ul>
+                                <li><strong>Clarity</strong>: Visuals should communicate information clearly and unambiguously</li>
+                                <li><strong>Accuracy</strong>: Representations must truthfully reflect the underlying data</li>
+                                <li><strong>Efficiency</strong>: Maximize data-ink ratio to convey maximum information with minimal elements</li>
+                                <li><strong>Aesthetics</strong>: Visually appealing designs enhance engagement and comprehension</li>
+                                <li><strong>Context</strong>: Provide necessary background for proper interpretation</li>
+                                <li><strong>Audience Awareness</strong>: Tailor complexity to viewer expertise level</li>
+                            </ul>
+                            <p>Mastering these principles ensures your visualizations transcend cultural and temporal boundaries, remaining effective indefinitely.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Q&A Item 2 -->
+                <div class="qa-item">
+                    <div class="question">How does color theory impact data visualization effectiveness?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>Color theory profoundly impacts visualization effectiveness through:</p>
+                            <ul>
+                                <li><strong>Categorical differentiation</strong>: Distinct colors help distinguish between categories</li>
+                                <li><strong>Sequential encoding</strong>: Light-to-dark gradients represent ordered data values</li>
+                                <li><strong>Diverging schemes</strong>: Highlight deviations from a central point (e.g., temperature anomalies)</li>
+                                <li><strong>Cultural considerations</strong>: Color meanings vary across cultures (red = danger vs. prosperity)</li>
+                                <li><strong>Accessibility</strong>: Ensuring sufficient contrast for color-blind viewers (8% of males)</li>
+                            </ul>
+                            <p>Proper color application follows Weber's Law - just noticeable differences should correspond to data differences. The most timeless palettes use natural gradients that remain perceptually uniform across viewing conditions and eras.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Q&A Item 3 -->
+                <div class="qa-item">
+                    <div class="question">When should I use interactive visualizations versus static ones?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>The choice between interactive and static visualizations depends on:</p>
+                            <table>
+                                <tr>
+                                    <th>Interactive Visualizations</th>
+                                    <th>Static Visualizations</th>
+                                </tr>
+                                <tr>
+                                    <td>Exploratory analysis</td>
+                                    <td>Final reports/publications</td>
+                                </tr>
+                                <tr>
+                                    <td>Complex multi-dimensional data</td>
+                                    <td>Simple key messages</td>
+                                </tr>
+                                <tr>
+                                    <td>Audience with technical proficiency</td>
+                                    <td>General audience</td>
+                                </tr>
+                                <tr>
+                                    <td>Web-based presentations</td>
+                                    <td>Print media</td>
+                                </tr>
+                                <tr>
+                                    <td>When user customization adds value</td>
+                                    <td>When designer curation is essential</td>
+                                </tr>
+                            </table>
+                            <p>Interactive visualizations shine for discovery, while static visuals excel at delivering precise, curated narratives. The most enduring solutions often combine both - using static images to anchor key insights while providing interactive options for deeper exploration.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Q&A Item 4 -->
+                <div class="qa-item">
+                    <div class="question">What are the most common pitfalls in data visualization?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>Common visualization pitfalls include:</p>
+                            <ol>
+                                <li><strong>Misleading scales</strong>: Truncated axes exaggerating differences</li>
+                                <li><strong>Chart junk</strong>: Excessive decorations distracting from data</li>
+                                <li><strong>Improper encoding</strong>: Using area for 1D data, length for 2D</li>
+                                <li><strong>Color misuse</strong>: Non-perceptual color maps, insufficient contrast</li>
+                                <li><strong>Overplotting</strong>: Too many elements obscuring patterns</li>
+                                <li><strong>Ignoring context</strong>: Presenting data without benchmarks</li>
+                                <li><strong>3D deception</strong>: Distorting proportions through perspective</li>
+                            </ol>
+                            <p>These errors persist across eras because they exploit human perceptual weaknesses. Timeless visualizations avoid these pitfalls through rigorous adherence to perceptual principles validated by decades of research in human visual cognition.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Q&A Item 5 -->
+                <div class="qa-item">
+                    <div class="question">How do I choose the right chart type for my data?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>Selecting the optimal chart type follows this decision framework:</p>
+                            <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Chart Selection Guide" style="width:100%; border-radius:10px; margin:15px 0;">
+                            <p><strong>Key considerations:</strong></p>
+                            <ul>
+                                <li><strong>Comparison</strong>: Bar charts for categorical, line charts for temporal</li>
+                                <li><strong>Distribution</strong>: Histograms, box plots, violin plots</li>
+                                <li><strong>Relationship</strong>: Scatter plots, bubble charts, heatmaps</li>
+                                <li><strong>Composition</strong>: Stacked bars, pie/donut (limited use), treemaps</li>
+                                <li><strong>Geospatial</strong>: Choropleth maps, point maps, flow maps</li>
+                            </ul>
+                            <p>The most enduring visualizations match perceptual tasks with appropriate encodings - using position for precise comparisons, color for categories, and size for quantities. This cognitive alignment ensures timeless effectiveness.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Q&A items would continue here -->
+                
+                <div class="qa-item">
+                    <div class="question">How can I make my visualizations accessible to color-blind users?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>Accessibility strategies include:</p>
+                            <ul>
+                                <li>Using colorblind-safe palettes (avoid red-green combinations)</li>
+                                <li>Supplementing color with texture, patterns, or labels</li>
+                                <li>Ensuring sufficient luminance contrast</li>
+                                <li>Providing alternative text descriptions</li>
+                                <li>Using tools like Color Oracle to simulate color vision deficiencies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="qa-item">
+                    <div class="question">What are the emerging trends in data visualization?</div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            <p>Current trends include:</p>
+                            <ul>
+                                <li>AI-assisted visualization generation</li>
+                                <li>Immersive visualization (AR/VR)</li>
+                                <li>Real-time streaming dashboards</li>
+                                <li>Explainable AI visualizations</li>
+                                <li>Ethical visualization frameworks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="stat-number">150</div>
+                <div class="stat-label">Expertly Crafted Questions</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="stat-number">5</div>
+                <div class="stat-label">Knowledge Domains</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-infinity"></i>
+                </div>
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Timeless Relevance</div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="footer-logo-text">Cosmic Q&A</div>
+            </div>
+            
+            <div class="footer-info">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>knowledge@cosmic-qa.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <span>www.cosmic-qa.com</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-medium-m"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            © 2023 Cosmic Q&A Platform | Designed for Eternal Knowledge • Transcending Technological Generations
+        </div>
+    </footer>
+    
+    <script>
+        // Cosmic background animation
+        const canvas = document.getElementById('cosmic-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to window size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Create stars
+        const stars = [];
+        const starCount = 300;
+        
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 3,
+                speed: Math.random() * 0.5,
+                opacity: Math.random(),
+                blinkSpeed: Math.random() * 0.02 + 0.01
+            });
+        }
+        
+        // Animation function
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                
+                // Create twinkling effect
+                const twinkle = Math.sin(Date.now() * star.blinkSpeed) * 0.5 + 0.5;
+                const opacity = star.opacity * twinkle;
+                
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.fill();
+                
+                // Move stars for parallax effect
+                star.x -= star.speed;
+                if (star.x < 0) {
+                    star.x = canvas.width;
+                    star.y = Math.random() * canvas.height;
+                }
+            });
+            
+            requestAnimationFrame(animateStars);
+        }
+        
+        // Start animation
+        animateStars();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Q&A Accordion functionality
+        const qaItems = document.querySelectorAll('.qa-item');
+        
+        qaItems.forEach(item => {
+            const question = item.querySelector('.question');
+            
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close all items
+                qaItems.forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Toggle current item
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+        
+        // Section tabs functionality
+        const tabs = document.querySelectorAll('.tab');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // In a real implementation, this would load the appropriate section
+                const section = tab.getAttribute('data-section');
+                document.querySelector('.section-title').textContent = 
+                    section.charAt(0).toUpperCase() + section.slice(1) + " Mastery";
+                
+                // Animation effect
+                tab.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    tab.style.animation = '';
+                }, 500);
+            });
+        });
+        
+        // Add subtle hover effect to all Q&A items
+        qaItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                if (!item.classList.contains('active')) {
+                    item.style.transform = 'translateY(-3px)';
+                    item.style.boxShadow = '0 5px 15px rgba(0, 217, 255, 0.2)';
+                }
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                if (!item.classList.contains('active')) {
+                    item.style.transform = '';
+                    item.style.boxShadow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

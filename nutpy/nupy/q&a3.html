@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic NumPy Knowledge Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .galaxy {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 42, 109, 0.1) 0%, 
+                rgba(74, 30, 109, 0.05) 40%, 
+                transparent 70%);
+            filter: blur(20px);
+            animation: rotateGalaxy var(--speed, 120s) linear infinite;
+        }
+        
+        @keyframes rotateGalaxy {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: #00c9ff;
+            background: rgba(0, 201, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 201, 255, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #00c9ff;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(0, 201, 255, 0.15);
+            border: 1px solid rgba(0, 201, 255, 0.3);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(10, 15, 46, 0.5);
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .section-tab {
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: center;
+            flex-grow: 1;
+            min-width: 180px;
+        }
+        
+        .section-tab:hover, .section-tab.active {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.3), rgba(0, 201, 255, 0.3));
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(74, 30, 109, 0.4), rgba(12, 20, 69, 0.6));
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 201, 255, 0.5);
+        }
+        
+        .achievement-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        @media (max-width: 768px) {
+            .section-tabs {
+                flex-direction: column;
+            }
+            
+            .section-tab {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .knowledge-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body x-data="quizApp()">
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-6xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-stars mr-3"></i>Cosmic NumPy Knowledge Explorer
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                Journey through 150 expert Q&As organized across 5 cosmic knowledge domains
+            </p>
+            
+            <div class="flex flex-wrap justify-center mt-8">
+                <div class="badge">
+                    <i class="fas fa-check-circle mr-2 text-green-400"></i>Fundamental Principles
+                </div>
+                <div class="badge">
+                    <i class="fas fa-infinity mr-2 text-purple-400"></i>Timeless Knowledge
+                </div>
+                <div class="badge">
+                    <i class="fas fa-rocket mr-2 text-red-400"></i>Revolutionary Design
+                </div>
+            </div>
+        </header>
+        
+        <!-- Knowledge Statistics -->
+        <div class="knowledge-stats">
+            <div class="stat-item">
+                <div class="stat-value" x-text="totalQuestions">150</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Cosmic Domains</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`">25%</div>
+                <div class="stat-label">Progress</div>
+            </div>
+        </div>
+        
+        <!-- Progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-medium">Your Cosmic Journey</span>
+                <span class="text-blue-300" x-text="`${answeredCount}/${totalQuestions} (${Math.round((answeredCount/totalQuestions)*100)}%)`">5/20 (25%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(answeredCount/totalQuestions)*100}%`"></div>
+            </div>
+        </div>
+        
+        <!-- Section Tabs -->
+        <div class="section-tabs flex flex-wrap justify-center mb-10">
+            <template x-for="(section, index) in sections" :key="index">
+                <div class="section-tab" :class="{ 'active': activeSection === index }" @click="activeSection = index">
+                    <i class="fas" :class="section.icon"></i>
+                    <span x-text="section.title"></span>
+                </div>
+            </template>
+        </div>
+        
+        <!-- Quiz Content -->
+        <template x-if="!showResults">
+            <div>
+                <h2 class="section-title text-2xl mb-6" x-text="sections[activeSection].title"></h2>
+                
+                <div class="space-y-6">
+                    <template x-for="(question, qIndex) in sections[activeSection].questions" :key="qIndex">
+                        <div class="question-card p-6">
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                                <span x-text="`${qIndex + 1}. ${question.question}`"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[activeSection][qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[activeSection][qIndex] === oIndex && userAnswers[activeSection][qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(activeSection, qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers && userAnswers[activeSection][qIndex] !== undefined">
+                                <p class="font-semibold text-blue-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="userAnswers[activeSection][qIndex] === question.answer ? 'Correct! ' + question.explanation : 'Incorrect. ' + question.explanation"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <button class="submit-btn" @click="submitQuiz">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Cosmic Answers
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Results Panel -->
+        <template x-if="showResults">
+            <div class="results-container">
+                <h2 class="section-title text-3xl text-center mb-8">Cosmic Quiz Results</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="stat-item bg-blue-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${score}/${totalQuestions}`"></div>
+                        <div class="stat-label">Correct Answers</div>
+                    </div>
+                    
+                    <div class="stat-item bg-purple-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${Math.round((score/totalQuestions)*100)}%`"></div>
+                        <div class="stat-label">Overall Score</div>
+                    </div>
+                    
+                    <div class="stat-item bg-pink-900/30 p-6 rounded-xl">
+                        <div class="stat-value" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`"></div>
+                        <div class="stat-label">Completion</div>
+                    </div>
+                </div>
+                
+                <div class="motivation-message mb-10">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-comment-dots text-yellow-400 mr-2"></i>
+                        Cosmic Feedback from NMDatti
+                    </h3>
+                    <p class="text-lg" x-text="getMotivationMessage()"></p>
+                </div>
+                
+                <div class="text-center">
+                    <button class="submit-btn" @click="resetQuiz">
+                        <i class="fas fa-redo mr-2"></i>Restart Cosmic Journey
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Achievement Badges -->
+        <div class="mt-16" x-show="!showResults">
+            <h2 class="section-title text-2xl mb-6">Your Cosmic Achievements</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 5 }">
+                    <div class="achievement-icon" :class="answeredCount >= 5 ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">First Array</h3>
+                    <p class="text-sm" :class="answeredCount >= 5 ? 'text-blue-200' : 'text-gray-500'">Created your first NumPy array</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 10 }">
+                    <div class="achievement-icon" :class="answeredCount >= 10 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Array Master</h3>
+                    <p class="text-sm" :class="answeredCount >= 10 ? 'text-blue-200' : 'text-gray-500'">Mastered array creation</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 15 }">
+                    <div class="achievement-icon" :class="answeredCount >= 15 ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Vectorization</h3>
+                    <p class="text-sm" :class="answeredCount >= 15 ? 'text-blue-200' : 'text-gray-500'">Understood vectorized ops</p>
+                </div>
+                
+                <div class="achievement-card" :class="{ 'opacity-50': answeredCount < 20 }">
+                    <div class="achievement-icon" :class="answeredCount >= 20 ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700/50 text-gray-500'">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">NumPy Master</h3>
+                    <p class="text-sm" :class="answeredCount >= 20 ? 'text-blue-200' : 'text-gray-500'">Completed all sections</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-blue-800 text-center text-blue-300">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-xl hover:text-blue-100 transition"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>Cosmic NumPy Knowledge Explorer &copy; 2023 | Revolutionizing how we learn scientific computing</p>
+            <p class="mt-2 text-sm">Crafted with <i class="fas fa-heart text-red-400"></i> by NMDatti</p>
+        </footer>
+    </div>
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(255, 42, 109, 0.4); --color2: rgba(255, 42, 109, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(0, 201, 255, 0.4); --color2: rgba(0, 201, 255, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+    
+    <script>
+        // Quiz data
+        const quizData = {
+            sections: [
+                {
+                    title: "Arrays vs Lists",
+                    icon: "fa-atom",
+                    questions: [
+                        {
+                            question: "What is a key advantage of NumPy arrays over Python lists?",
+                            options: [
+                                "Automatic garbage collection",
+                                "Built-in methods for string manipulation",
+                                "Memory efficiency and faster operations",
+                                "Dynamic resizing without performance cost"
+                            ],
+                            answer: 2,
+                            explanation: "NumPy arrays store homogeneous data contiguously in memory, enabling vectorized operations and significant performance gains."
+                        },
+                        {
+                            question: "When is a Python list preferable to a NumPy array?",
+                            options: [
+                                "Storing mixed data types (e.g., integers and strings)",
+                                "Performing matrix multiplication",
+                                "Handling large datasets",
+                                "Calculating statistical metrics"
+                            ],
+                            answer: 0,
+                            explanation: "Python lists support heterogeneous data types, while NumPy arrays require homogeneous data."
+                        },
+                        {
+                            question: "How does memory usage compare between a list and an array of 10,000 integers?",
+                            options: [
+                                "The array uses ~10× less memory",
+                                "The list uses ~2× less memory",
+                                "Memory usage is identical",
+                                "Arrays use more memory due to metadata"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy arrays avoid per-element type metadata, reducing memory overhead."
+                        },
+                        {
+                            question: "What happens when you multiply a NumPy array by 2?",
+                            options: [
+                                "Each element is doubled",
+                                "Array length doubles",
+                                "A type error occurs",
+                                "Only integer elements are doubled"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy supports vectorized operations, applying arithmetic element-wise without loops."
+                        }
+                    ]
+                },
+                {
+                    title: "Array Creation",
+                    icon: "fa-cogs",
+                    questions: [
+                        {
+                            question: "How do you create a 2×3 array of zeros?",
+                            options: [
+                                "np.array([[0, 0, 0], [0, 0, 0]])",
+                                "np.zeros((2, 3))",
+                                "np.empty((2, 3))",
+                                "np.ones((2, 3)) * 0"
+                            ],
+                            answer: 1,
+                            explanation: "np.zeros(shape) is the standard way to initialize arrays with zeros."
+                        },
+                        {
+                            question: "What does np.arange(1, 10, 2) return?",
+                            options: [
+                                "[1, 3, 5, 7, 9]",
+                                "[1, 2, 3, ..., 9]",
+                                "[2, 4, 6, 8]",
+                                "[10, 9, 8, ..., 1]"
+                            ],
+                            answer: 0,
+                            explanation: "np.arange(start, stop, step) generates values from 1 to 10 (exclusive) in steps of 2."
+                        },
+                        {
+                            question: "How do you reshape a 1D array of 12 elements into 3×4?",
+                            options: [
+                                "arr.reshape(4, 3)",
+                                "arr.reshape(3, 4)",
+                                "np.reshape(arr, (4, 3))",
+                                "arr.resize(3, 4)"
+                            ],
+                            answer: 1,
+                            explanation: "reshape(rows, cols) reorganizes data without altering it. Total elements must match (12=3×4)."
+                        },
+                        {
+                            question: "Which function creates an array of 5 evenly spaced values between 0 and 1?",
+                            options: [
+                                "np.linspace(0, 1, 5)",
+                                "np.arange(0, 1, 5)",
+                                "np.sequence(0, 1, 5)",
+                                "np.space(0, 1, 5)"
+                            ],
+                            answer: 0,
+                            explanation: "np.linspace(start, stop, num) divides the range into num equal intervals."
+                        }
+                    ]
+                },
+                {
+                    title: "Vectorized Ops",
+                    icon: "fa-bolt",
+                    questions: [
+                        {
+                            question: "What is broadcasting in NumPy?",
+                            options: [
+                                "Converting arrays to broadcast format",
+                                "Transmitting data over networks",
+                                "Auto-expanding smaller arrays to match larger ones in operations",
+                                "A radio communication protocol"
+                            ],
+                            answer: 2,
+                            explanation: "Broadcasting allows arithmetic between arrays of different shapes by virtually 'stretching' smaller arrays."
+                        },
+                        {
+                            question: "What is the result of np.array([1, 2, 3]) * 2?",
+                            options: [
+                                "[2, 4, 6]",
+                                "[1, 2, 3, 1, 2, 3]",
+                                "TypeError",
+                                "[3, 4, 5]"
+                            ],
+                            answer: 0,
+                            explanation: "Scalar multiplication is applied element-wise."
+                        },
+                        {
+                            question: "What shape results from broadcasting arrays of shapes (3,1) and (1,4)?",
+                            options: [
+                                "(3, 4)",
+                                "(1, 1)",
+                                "(3, 1)",
+                                "(4, 3)"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy aligns dimensions from right to left and expands to the maximum size per dimension."
+                        },
+                        {
+                            question: "Why is np.array([1, 2]) + np.array([3, 4, 5]) invalid?",
+                            options: [
+                                "Incompatible shapes for broadcasting",
+                                "Data type mismatch",
+                                "Requires np.add()",
+                                "Arrays must be 2D"
+                            ],
+                            answer: 0,
+                            explanation: "Broadcasting requires trailing dimensions to be 1 or equal. Shapes (2,) and (3,) can't align."
+                        }
+                    ]
+                },
+                {
+                    title: "Statistics",
+                    icon: "fa-chart-line",
+                    questions: [
+                        {
+                            question: "How do you compute the mean of an array?",
+                            options: [
+                                "arr.mean()",
+                                "np.median(arr)",
+                                "np.average(arr)",
+                                "sum(arr)/len(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "arr.mean() is the standard method. np.average() supports weights."
+                        },
+                        {
+                            question: "Which function finds the standard deviation?",
+                            options: [
+                                "arr.std()",
+                                "np.var(arr)",
+                                "np.deviation(arr)",
+                                "np.spread(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "std() computes standard deviation; var() computes variance."
+                        },
+                        {
+                            question: "What does np.percentile(arr, 75) calculate?",
+                            options: [
+                                "Median",
+                                "Third quartile",
+                                "Mean",
+                                "Mode"
+                            ],
+                            answer: 1,
+                            explanation: "The 75th percentile is the third quartile (value below which 75% of data falls)."
+                        },
+                        {
+                            question: "How do you compute element-wise absolute values?",
+                            options: [
+                                "np.abs(arr)",
+                                "arr.absolute()",
+                                "np.positive(arr)",
+                                "np.modulus(arr)"
+                            ],
+                            answer: 0,
+                            explanation: "np.abs() converts negative values to positive."
+                        }
+                    ]
+                },
+                {
+                    title: "Real Applications",
+                    icon: "fa-seedling",
+                    questions: [
+                        {
+                            question: "You have a yields array (crop kg/ha). How do you find fields with >5000 yield?",
+                            options: [
+                                "yields[yields > 5000]",
+                                "np.greater(yields, 5000)",
+                                "yields.max(axis=0)",
+                                "np.select(yields, 5000)"
+                            ],
+                            answer: 0,
+                            explanation: "Boolean indexing filters arrays based on conditions."
+                        },
+                        {
+                            question: "How do you calculate average yield per crop type (stored in crop_codes)?",
+                            options: [
+                                "[yields[crop_codes == code].mean() for code in np.unique(crop_codes)]",
+                                "yields.mean()",
+                                "np.average(yields, weights=crop_codes)",
+                                "np.median(yields, group=crop_codes)"
+                            ],
+                            answer: 0,
+                            explanation: "Iterate over unique crop codes, filter yields, and compute means."
+                        },
+                        {
+                            question: "What does np.diff(rainfall) compute?",
+                            options: [
+                                "Cumulative rainfall",
+                                "Daily rainfall differences",
+                                "Mean rainfall",
+                                "Rainfall variance"
+                            ],
+                            answer: 1,
+                            explanation: "np.diff() calculates differences between consecutive elements."
+                        },
+                        {
+                            question: "How do you normalize yield data to [0, 1]?",
+                            options: [
+                                "(yields - yields.min()) / (yields.max() - yields.min())",
+                                "yields / yields.max()",
+                                "np.log(yields)",
+                                "yields.standardize()"
+                            ],
+                            answer: 0,
+                            explanation: "Min-max normalization scales data to a specified range."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        
+
+        // Quiz app functionality
+        function quizApp() {
+            return {
+                // Quiz state
+                activeSection: 0,
+                showAnswers: false,
+                showResults: false,
+                score: 0,
+                answeredCount: 0,
+                userAnswers: Array(quizData.sections.length).fill().map(() => []),
+                
+                // Get total questions
+                get totalQuestions() {
+                    return quizData.sections.reduce((total, section) => total + section.questions.length, 0);
+                },
+                
+                // Select answer
+                selectAnswer(sectionIndex, questionIndex, optionIndex) {
+                    if (this.showAnswers) return; // Prevent changing after submission
+                    
+                    // Save answer
+                    this.userAnswers[sectionIndex][questionIndex] = optionIndex;
+                    
+                    // Update answered count
+                    this.calculateAnsweredCount();
+                },
+                
+                // Calculate how many questions have been answered
+                calculateAnsweredCount() {
+                    let count = 0;
+                    for (const section of this.userAnswers) {
+                        for (const answer of section) {
+                            if (answer !== undefined) count++;
+                        }
+                    }
+                    this.answeredCount = count;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    
+                    // Calculate score
+                    this.score = 0;
+                    quizData.sections.forEach((section, sIndex) => {
+                        section.questions.forEach((question, qIndex) => {
+                            if (this.userAnswers[sIndex][qIndex] === question.answer) {
+                                this.score++;
+                            }
+                        });
+                    });
+                    
+                    // Show results after a delay
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1000);
+                },
+                
+                // Reset quiz
+                resetQuiz() {
+                    this.userAnswers = Array(quizData.sections.length).fill().map(() => []);
+                    this.showAnswers = false;
+                    this.showResults = false;
+                    this.score = 0;
+                    this.answeredCount = 0;
+                    this.activeSection = 0;
+                },
+                
+                // Get motivation message based on score
+                getMotivationMessage() {
+                    const percentage = this.score / this.totalQuestions;
+                    
+                    if (percentage >= 0.9) {
+                        return "Cosmic mastery achieved! Your understanding of NumPy is stellar. NMDatti says: 'You're ready to tackle any data challenge!'";
+                    } else if (percentage >= 0.7) {
+                        return "Impressive cosmic knowledge! You've shown great understanding of NumPy concepts. NMDatti says: 'A few more orbits and you'll master the NumPy universe!'";
+                    } else if (percentage >= 0.5) {
+                        return "Solid cosmic progress! You've grasped the fundamentals. NMDatti says: 'Keep exploring - the stars of NumPy mastery are within your reach!'";
+                    } else {
+                        return "Beginning your cosmic journey! Every master was once a beginner. NMDatti says: 'Review the explanations and try again - the universe of NumPy awaits your discovery!'";
+                    }
+                },
+                
+                // Initialize the quiz
+                init() {
+                    this.calculateAnsweredCount();
+                    this.createCosmicBackground();
+                },
+                
+                // Create cosmic background
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                    
+                    // Create nebulas
+                    for (let i = 0; i < 5; i++) {
+                        const nebula = document.createElement('div');
+                        nebula.classList.add('nebula');
+                        nebula.style.background = `radial-gradient(circle, 
+                            rgba(${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 50)}, ${Math.floor(Math.random() * 150 + 100)}, 0.3), 
+                            rgba(${Math.floor(Math.random() * 50)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 150 + 100)}, 0)`;
+                        nebula.style.width = `${Math.random() * 400 + 200}px`;
+                        nebula.style.height = `${Math.random() * 400 + 200}px`;
+                        nebula.style.left = `${Math.random() * 100}%`;
+                        nebula.style.top = `${Math.random() * 100}%`;
+                        container.appendChild(nebula);
+                    }
+                    
+                    // Create galaxies
+                    for (let i = 0; i < 3; i++) {
+                        const galaxy = document.createElement('div');
+                        galaxy.classList.add('galaxy');
+                        galaxy.style.left = `${Math.random() * 100}%`;
+                        galaxy.style.top = `${Math.random() * 100}%`;
+                        galaxy.style.setProperty('--speed', `${Math.random() * 100 + 80}s`);
+                        container.appendChild(galaxy);
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+function quizApp() {
+    return {
+        sections: quizData.sections,
+        activeSection: 0,
+        userAnswers: quizData.sections.map(section => Array(section.questions.length).fill(undefined)),
+        answeredCount: 0,
+        showAnswers: false,
+        showResults: false,
+        score: 0,
+        totalQuestions: quizData.sections.reduce((sum, section) => sum + section.questions.length, 0),
+
+        selectAnswer(sectionIndex, questionIndex, optionIndex) {
+            if (this.showAnswers) return;
+            if (this.userAnswers[sectionIndex][questionIndex] === undefined) {
+                this.answeredCount++;
+            }
+            this.userAnswers[sectionIndex][questionIndex] = optionIndex;
+        },
+
+        submitQuiz() {
+            this.showAnswers = true;
+            this.score = this.userAnswers.reduce((total, sectionAnswers, sectionIndex) => {
+                return total + sectionAnswers.reduce((secTotal, answer, qIndex) => {
+                    return secTotal + (answer === this.sections[sectionIndex].questions[qIndex].answer ? 1 : 0);
+                }, 0);
+            }, 0);
+            this.showResults = true;
+        },
+
+        resetQuiz() {
+            this.userAnswers = quizData.sections.map(section => Array(section.questions.length).fill(undefined));
+            this.answeredCount = 0;
+            this.showAnswers = false;
+            this.score = 0;
+            this.showResults = false;
+            this.activeSection = 0;
+        },
+
+        getMotivationMessage() {
+            if (this.score / this.totalQuestions > 0.8) return "You're a Cosmic Champion! 🚀";
+            if (this.score / this.totalQuestions > 0.5) return "Great progress! Keep exploring the galaxy! 🌌";
+            return "The stars are aligning — keep learning! ✨";
+        }
+    };
+}
+</script>
+
+</body>
+</html>

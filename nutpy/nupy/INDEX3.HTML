@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic NumPy Array Creation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'Fira Code';
+            src: url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0c1445 0%, #1a1a2e 100%);
+            color: #e0e0ff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Cosmic background elements */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 4s) infinite ease-in-out;
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            animation: float 120s infinite linear;
+        }
+
+        .nebula-1 { background: radial-gradient(circle, #4a00e0, transparent); width: 500px; height: 500px; top: 10%; left: 5%; }
+        .nebula-2 { background: radial-gradient(circle, #00d2ff, transparent); width: 400px; height: 400px; bottom: 15%; right: 10%; }
+        .nebula-3 { background: radial-gradient(circle, #ff416c, transparent); width: 300px; height: 300px; top: 30%; right: 20%; }
+
+        .glowing-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00f7ff;
+            box-shadow: 0 0 20px 5px #00f7ff;
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        /* Header styling */
+        header {
+            padding: 2rem 5%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        .cosmic-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #00d2ff, #ff416c, #00f7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(0, 247, 255, 0.3);
+            animation: gradient-shift 8s infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0ff;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        /* Module progress */
+        .progress-container {
+            background: rgba(10, 15, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: #00f7ff;
+        }
+
+        .progress-bar {
+            height: 16px;
+            background: rgba(20, 30, 60, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #4a00e0);
+            border-radius: 8px;
+            width: 35%;
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 2s infinite;
+        }
+
+        /* Main content container */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+            gap: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Sidebar navigation */
+        .sidebar {
+            flex: 0 0 300px;
+            background: rgba(10, 15, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.1);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #00f7ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .module-list {
+            list-style: none;
+        }
+
+        .module-item {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #00f7ff;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .module-item:hover {
+            background: rgba(0, 247, 255, 0.1);
+        }
+
+        .module-item:hover::before {
+            transform: translateX(0);
+        }
+
+        .module-item.active {
+            background: rgba(0, 247, 255, 0.2);
+        }
+
+        .module-item.active::before {
+            transform: translateX(0);
+        }
+
+        .module-icon {
+            font-size: 1.2rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 247, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .module-text {
+            flex: 1;
+        }
+
+        .module-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .module-desc {
+            font-size: 0.9rem;
+            color: #a0a0ff;
+        }
+
+        /* Main content area */
+        .content {
+            flex: 1;
+            background: rgba(10, 15, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.1);
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+        }
+
+        .content-title {
+            font-size: 2rem;
+            color: #00f7ff;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .content-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 247, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .content-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: #c0c0ff;
+            max-width: 800px;
+        }
+
+        /* Code block styling */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-header {
+            background: rgba(10, 15, 35, 0.8);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.1);
+        }
+
+        .code-title {
+            font-family: 'Fira Code', monospace;
+            color: #00f7ff;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: rgba(0, 247, 255, 0.1);
+            border: none;
+            color: #00f7ff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 247, 255, 0.2);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #73787d;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+
+        .keyword { color: #00bfff; }
+        .function { color: #fdd835; }
+        .string { color: #ff8a65; }
+        .comment { color: #6a9955; }
+        .operator { color: #ffffff; }
+        .variable { color: #82aaff; }
+        .value { color: #c3e88d; }
+
+        /* Array visualization */
+        .array-section {
+            margin: 2rem 0;
+        }
+
+        .array-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #00f7ff;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .dimension-badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: #00f7ff;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .array-visualization {
+            display: grid;
+            gap: 12px;
+            padding: 1.5rem;
+            background: rgba(20, 30, 60, 0.5);
+            border-radius: 12px;
+            margin: 1rem 0;
+            border: 1px solid rgba(0, 247, 255, 0.1);
+        }
+
+        .array-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            background: rgba(10, 15, 35, 0.8);
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            color: #00f7ff;
+            transition: all 0.3s ease;
+        }
+
+        .array-cell:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.2);
+            background: rgba(0, 247, 255, 0.1);
+        }
+
+        /* Interactive section */
+        .interactive-section {
+            background: linear-gradient(135deg, rgba(74, 0, 224, 0.2), rgba(0, 210, 255, 0.2));
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+        }
+
+        .interactive-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #00f7ff;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #00f7ff;
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(20, 30, 60, 0.8);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #00f7ff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #00d2ff, #4a00e0);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        /* Signature section */
+        .signature-section {
+            text-align: center;
+            padding: 3rem 0;
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .signature-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #00f7ff;
+            background: linear-gradient(to right, #00d2ff, #ff416c, #00f7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(0, 247, 255, 0.3);
+        }
+
+        .signature-container {
+            background: rgba(10, 15, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signature-name {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            position: relative;
+            display: inline-block;
+        }
+
+        .signature-name::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #4a00e0);
+        }
+
+        .signature-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00f7ff, transparent);
+            margin: 2rem 0;
+        }
+
+        .signature-orgs {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .org-badge {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(20, 30, 60, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(0, 247, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .org-badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 247, 255, 0.4), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .org-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.4);
+            border-color: #00f7ff;
+        }
+
+        .org-badge:hover::before {
+            opacity: 1;
+        }
+
+        .org-name {
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            color: #a0a0ff;
+        }
+
+        .signature-footer {
+            margin-top: 2rem;
+            color: #a0a0ff;
+            font-size: 1.1rem;
+        }
+
+        .signature-powered {
+            font-size: 1.3rem;
+            margin-top: 1rem;
+            color: #00f7ff;
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            color: #7070aa;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 20px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: 0 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cosmic-title {
+                font-size: 2.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.7rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .signature-name {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic background elements -->
+    <div class="cosmic-bg" id="cosmic-bg"></div>
+    
+    <!-- Header section -->
+    <header>
+        <h1 class="cosmic-title">Cosmic NumPy Array Creation</h1>
+        <p class="subtitle">Master the art of creating and manipulating multi-dimensional arrays with NumPy. Explore the cosmic dimensions of data manipulation in Python.</p>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Module Progress</span>
+                <span>35% Completed</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content container -->
+    <div class="container">
+        <!-- Sidebar navigation -->
+        <div class="sidebar">
+            <h2 class="sidebar-title"><i class="fas fa-road"></i> Learning Path</h2>
+            <ul class="module-list">
+                <li class="module-item">
+                    <div class="module-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="module-text">
+                        <div class="module-title">NumPy Arrays vs Python Lists</div>
+                        <div class="module-desc">Understanding the differences</div>
+                    </div>
+                </li>
+                <li class="module-item active">
+                    <div class="module-icon"><i class="fas fa-arrow-right"></i></div>
+                    <div class="module-text">
+                        <div class="module-title">Array Creation & Manipulation</div>
+                        <div class="module-desc">Current module</div>
+                    </div>
+                </li>
+                <li class="module-item">
+                    <div class="module-icon"><i class="fas fa-circle-notch"></i></div>
+                    <div class="module-text">
+                        <div class="module-title">Vectorized Operations</div>
+                        <div class="module-desc">Broadcasting techniques</div>
+                    </div>
+                </li>
+                <li class="module-item">
+                    <div class="module-icon"><i class="fas fa-circle-notch"></i></div>
+                    <div class="module-text">
+                        <div class="module-title">Statistical Operations</div>
+                        <div class="module-desc">Aggregations on arrays</div>
+                    </div>
+                </li>
+                <li class="module-item">
+                    <div class="module-icon"><i class="fas fa-circle-notch"></i></div>
+                    <div class="module-text">
+                        <div class="module-title">Agricultural Yield Analysis</div>
+                        <div class="module-desc">Real-world application</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="content">
+            <div class="content-header">
+                <div class="content-title">
+                    <div class="content-icon"><i class="fas fa-magic"></i></div>
+                    <div>Array Creation & Manipulation</div>
+                </div>
+            </div>
+            
+            <p class="content-description">
+                NumPy arrays are the fundamental data structure for scientific computing in Python. 
+                Learn how to create and manipulate multi-dimensional arrays efficiently to unlock the 
+                full potential of numerical computing.
+            </p>
+            
+            <!-- Code block -->
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">array_creation.py</div>
+                    <button class="copy-btn" id="copy-code"><i class="fas fa-copy"></i> Copy Code</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span>
+<span class="line-number">3</span><span class="comment"># Create a 1-dimensional array</span>
+<span class="line-number">4</span>arr1d = np.<span class="function">array</span>([<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>, <span class="value">4</span>, <span class="value">5</span>])
+<span class="line-number">5</span>
+<span class="line-number">6</span><span class="comment"># Create a 2-dimensional array (matrix)</span>
+<span class="line-number">7</span>arr2d = np.<span class="function">array</span>([[<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>], [<span class="value">4</span>, <span class="value">5</span>, <span class="value">6</span>]])
+<span class="line-number">8</span>
+<span class="line-number">9</span><span class="comment"># Create a 3-dimensional array</span>
+<span class="line-number">10</span>arr3d = np.<span class="function">array</span>([[[<span class="value">1</span>, <span class="value">2</span>], [<span class="value">3</span>, <span class="value">4</span>]], [[<span class="value">5</span>, <span class="value">6</span>], [<span class="value">7</span>, <span class="value">8</span>]]])</code></pre>
+                </div>
+            </div>
+            
+            <!-- Array visualizations -->
+            <div class="array-section">
+                <h3 class="array-title"><i class="fas fa-cube"></i> Array Visualization <span class="dimension-badge">1D Array</span></h3>
+                <div class="array-visualization" id="array1d" style="grid-template-columns: repeat(5, 1fr);">
+                    <div class="array-cell">1</div>
+                    <div class="array-cell">2</div>
+                    <div class="array-cell">3</div>
+                    <div class="array-cell">4</div>
+                    <div class="array-cell">5</div>
+                </div>
+            </div>
+            
+            <div class="array-section">
+                <h3 class="array-title"><i class="fas fa-th"></i> Array Visualization <span class="dimension-badge">2D Array (Matrix)</span></h3>
+                <div class="array-visualization" id="array2d" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="array-cell">1</div>
+                    <div class="array-cell">2</div>
+                    <div class="array-cell">3</div>
+                    <div class="array-cell">4</div>
+                    <div class="array-cell">5</div>
+                    <div class="array-cell">6</div>
+                </div>
+            </div>
+            
+            <div class="array-section">
+                <h3 class="array-title"><i class="fas fa-cubes"></i> Array Visualization <span class="dimension-badge">3D Array</span></h3>
+                <div class="array-visualization" style="grid-template-columns: 1fr; gap: 20px;">
+                    <div>
+                        <div class="dimension-badge" style="margin-bottom: 10px;">Layer 1</div>
+                        <div class="array-visualization" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="array-cell">1</div>
+                            <div class="array-cell">2</div>
+                            <div class="array-cell">3</div>
+                            <div class="array-cell">4</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="dimension-badge" style="margin-bottom: 10px;">Layer 2</div>
+                        <div class="array-visualization" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="array-cell">5</div>
+                            <div class="array-cell">6</div>
+                            <div class="array-cell">7</div>
+                            <div class="array-cell">8</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interactive array generator -->
+            <div class="interactive-section">
+                <h3 class="interactive-title"><i class="fas fa-wand-magic-sparkles"></i> Interactive Array Generator</h3>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="control-label">Array Dimensions</label>
+                        <select id="dimension-select" class="slider">
+                            <option value="1">1D Array</option>
+                            <option value="2" selected>2D Array</option>
+                            <option value="3">3D Array</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Rows: <span id="rows-value">3</span></label>
+                        <input type="range" min="1" max="6" value="3" class="slider" id="rows-slider">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Columns: <span id="cols-value">3</span></label>
+                        <input type="range" min="1" max="6" value="3" class="slider" id="cols-slider">
+                    </div>
+                </div>
+                
+                <div class="array-section">
+                    <h3 class="array-title"><i class="fas fa-cube"></i> Generated Array</h3>
+                    <div class="array-visualization" id="generated-array" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="array-cell">7</div>
+                        <div class="array-cell">2</div>
+                        <div class="array-cell">9</div>
+                        <div class="array-cell">4</div>
+                        <div class="array-cell">5</div>
+                        <div class="array-cell">1</div>
+                        <div class="array-cell">8</div>
+                        <div class="array-cell">3</div>
+                        <div class="array-cell">6</div>
+                    </div>
+                </div>
+                
+                <button class="generate-btn" id="generate-btn">
+                    <i class="fas fa-sync-alt"></i> Generate New Array
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Signature section -->
+    <div class="signature-section">
+        <h2 class="signature-title">Cosmic Legacy</h2>
+        
+        <div class="signature-container">
+            <div class="signature-name">NDATTI BESPOKE TECH</div>
+            <div class="signature-line"></div>
+            
+            <p>Creating cosmic digital experiences that transcend time and space.</p>
+            
+            <div class="signature-orgs">
+                <div>
+                    <div class="org-badge">
+                        <img src="https://via.placeholder.com/60/4a00e0/ffffff?text=5IRE" alt="5IRE">
+                    </div>
+                    <div class="org-name">5IRE CHAIN</div>
+                </div>
+                
+                <div>
+                    <div class="org-badge">
+                        <img src="https://via.placeholder.com/60/00d2ff/ffffff?text=NDATTI" alt="NDATTI">
+                    </div>
+                    <div class="org-name">NDATTI BESPOKE TECH</div>
+                </div>
+                
+                <div>
+                    <div class="org-badge">
+                        <img src="https://via.placeholder.com/60/ff416c/ffffff?text=BIS" alt="Baldom">
+                    </div>
+                    <div class="org-name">BALDOM INTERNATIONAL SCHOOL</div>
+                </div>
+            </div>
+            
+            <div class="signature-footer">
+                <p>In collaboration with NITDA/NCAIR Internship Program</p>
+                <p class="signature-powered">Powered by NDATTI Cosmic Technology</p>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 NDATTI BESPOKE TECH. This cosmic legacy will never grow old nor fade.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create cosmic background
+        function createCosmicBackground() {
+            const cosmicBg = document.getElementById('cosmic-bg');
+            
+            // Create stars
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random() * 0.8 + 0.2;
+                star.style.setProperty('--duration', `${Math.random() * 5 + 2}s`);
+                cosmicBg.appendChild(star);
+            }
+            
+            // Create glowing dots
+            for (let i = 0; i < 20; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('glowing-dot');
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.top = `${Math.random() * 100}%`;
+                dot.style.animationDelay = `${Math.random() * 3}s`;
+                cosmicBg.appendChild(dot);
+            }
+        }
+        
+        // Interactive array generator
+        function setupArrayGenerator() {
+            const rowsSlider = document.getElementById('rows-slider');
+            const colsSlider = document.getElementById('cols-slider');
+            const rowsValue = document.getElementById('rows-value');
+            const colsValue = document.getElementById('cols-value');
+            const dimensionSelect = document.getElementById('dimension-select');
+            const generateBtn = document.getElementById('generate-btn');
+            const generatedArray = document.getElementById('generated-array');
+            
+            // Update slider values
+            rowsSlider.addEventListener('input', () => {
+                rowsValue.textContent = rowsSlider.value;
+                generateRandomArray();
+            });
+            
+            colsSlider.addEventListener('input', () => {
+                colsValue.textContent = colsSlider.value;
+                generateRandomArray();
+            });
+            
+            dimensionSelect.addEventListener('change', generateRandomArray);
+            generateBtn.addEventListener('click', generateRandomArray);
+            
+            // Initial generation
+            generateRandomArray();
+            
+            function generateRandomArray() {
+                const rows = parseInt(rowsSlider.value);
+                const cols = parseInt(colsSlider.value);
+                const dimension = parseInt(dimensionSelect.value);
+                
+                // Clear existing array
+                generatedArray.innerHTML = '';
+                
+                // Set grid layout
+                generatedArray.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                
+                // Generate cells
+                const cellCount = rows * cols;
+                for (let i = 0; i < cellCount; i++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('array-cell');
+                    cell.textContent = Math.floor(Math.random() * 9) + 1;
+                    generatedArray.appendChild(cell);
+                }
+            }
+        }
+        
+        // Copy code functionality
+        function setupCopyButton() {
+            const copyBtn = document.getElementById('copy-code');
+            copyBtn.addEventListener('click', () => {
+                const code = `import numpy as np
+
+# Create a 1-dimensional array
+arr1d = np.array([1, 2, 3, 4, 5])
+
+# Create a 2-dimensional array (matrix)
+arr2d = np.array([[1, 2, 3], [4, 5, 6]])
+
+# Create a 3-dimensional array
+arr3d = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])`;
+                
+                navigator.clipboard.writeText(code).then(() => {
+                    // Visual feedback
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        }
+        
+        // Progress animation
+        function animateProgress() {
+            const progressFill = document.getElementById('progress-fill');
+            let progress = 35;
+            
+            setInterval(() => {
+                if (progress < 100) {
+                    progress += 0.5;
+                    progressFill.style.width = `${progress}%`;
+                }
+            }, 1000);
+        }
+        
+        // Initialize everything when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            createCosmicBackground();
+            setupArrayGenerator();
+            setupCopyButton();
+            animateProgress();
+        });
+    </script>
+</body>
+</html>

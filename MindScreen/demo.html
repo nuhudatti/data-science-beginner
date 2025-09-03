@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Fundamentals | MindScreen Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nitda: {
+                            blue: '#0052cc',
+                            green: '#00a651',
+                            light: '#e6f0ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #00a651;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 82, 204, 0.2);
+        }
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .step-indicator.active {
+            background: #0052cc;
+            color: white;
+        }
+        .step-indicator.completed {
+            background: #00a651;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-nitda-light font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-nitda-green to-nitda-blue"></div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-nitda-blue">MindScreen<span class="font-light">Analytics</span></h1>
+                        <p class="text-xs text-gray-600">NITDA/NCAIR Certified Learning Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="mr-4 text-right">
+                        <p class="text-sm font-medium text-nitda-blue">Olabode Oluwafemi</p>
+                        <p class="text-xs text-gray-600">Data Science Trainee</p>
+                    </div>
+                    <div class="h-10 w-10 rounded-full bg-nitda-blue flex items-center justify-center text-white">
+                        OO
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Header -->
+    <div class="bg-nitda-blue text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">Data Fundamentals Mastery</h2>
+                    <p class="text-nitda-light text-sm">Master data cleaning, transformation, and visualization with Nigerian datasets</p>
+                </div>
+                <div class="flex items-center">
+                    <div class="mr-4 text-right">
+                        <p class="text-sm">Module Progress</p>
+                        <div class="w-32 bg-white bg-opacity-20 rounded-full h-2 mt-1">
+                            <div class="bg-nitda-green h-2 rounded-full" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <svg class="w-16 h-16" viewBox="0 0 36 36">
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                fill="none" stroke="#e6f0ff" stroke-width="3" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                fill="none" stroke="#00a651" stroke-width="3" stroke-dasharray="30, 100" />
+                            <text x="18" y="22" text-anchor="middle" fill="white" font-size="8" font-weight="bold">30%</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h3 class="text-lg font-bold text-nitda-blue mb-4">Module Outline</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-nitda-green font-medium">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>1. Introduction to Data Science</span>
+                        </li>
+                        <li class="flex items-center text-nitda-green font-medium">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>2. Nigerian Data Ecosystem</span>
+                        </li>
+                        <li class="flex items-center text-nitda-blue font-bold">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            <span>3. Data Cleaning Fundamentals</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="far fa-circle mr-2"></i>
+                            <span>4. Data Transformation</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="far fa-circle mr-2"></i>
+                            <span>5. Data Visualization Principles</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="far fa-circle mr-2"></i>
+                            <span>6. Nigerian Case Studies</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="far fa-circle mr-2"></i>
+                            <span>7. Final Project</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="far fa-circle mr-2"></i>
+                            <span>8. Certification</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-nitda-blue mb-4">Your Progress</h3>
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">Quizzes Completed</span>
+                            <span class="text-sm">1/3</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-nitda-blue h-2 rounded-full" style="width: 33%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">Exercises Passed</span>
+                            <span class="text-sm">4/12</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-nitda-green h-2 rounded-full" style="width: 33%"></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-bold text-nitda-blue mb-2">Achievements</h4>
+                        <div class="flex space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                                <i class="fas fa-seedling text-yellow-500"></i>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-book text-blue-500"></i>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-chart-line text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:w-3/4">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <!-- Module Header -->
+                    <div class="bg-gradient-to-r from-nitda-blue to-nitda-green p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-white bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">Module 3 of 8</span>
+                                <h1 class="text-2xl font-bold text-white mt-3">Data Cleaning Fundamentals</h1>
+                                <p class="text-nitda-light mt-2">Learn how to clean and prepare Nigerian datasets for analysis</p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <p class="text-white text-sm">Estimated time:</p>
+                                <p class="text-white font-bold">45-60 minutes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Path -->
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center bg-nitda-green text-white">1</div>
+                                <div class="step-indicator active w-8 h-8 rounded-full flex items-center justify-center bg-nitda-blue text-white">2</div>
+                                <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-600">3</div>
+                                <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-600">4</div>
+                                <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-600">5</div>
+                            </div>
+                            <button class="px-4 py-2 bg-nitda-blue text-white rounded-lg font-medium hover:bg-opacity-90 transition">
+                                <i class="fas fa-save mr-2"></i>Save Progress
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <h2 class="text-xl font-bold text-nitda-blue">Why Data Cleaning Matters</h2>
+                            <p>In the Nigerian context, data cleaning is crucial because:</p>
+                            <ul class="list-disc pl-5 my-4">
+                                <li>Many datasets from government sources contain inconsistencies</li>
+                                <li>Cultural naming conventions can create duplication</li>
+                                <li>Regional variations in data collection methods</li>
+                                <li>Power instability can lead to incomplete data entries</li>
+                            </ul>
+                            
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-yellow-400 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700">
+                                            <span class="font-bold">Nigerian Data Tip:</span> When working with state-level data, always verify the current state names as administrative changes occur periodically.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-bold text-nitda-green mt-8">Common Data Issues in Nigerian Datasets</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                                <div class="module-card bg-white p-5 rounded-lg shadow">
+                                    <div class="flex items-start">
+                                        <div class="bg-red-100 p-3 rounded-lg mr-4">
+                                            <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Missing Values</h4>
+                                            <p class="text-sm text-gray-600 mt-2">Common in datasets from rural areas due to connectivity issues</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="module-card bg-white p-5 rounded-lg shadow">
+                                    <div class="flex items-start">
+                                        <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                                            <i class="fas fa-exchange-alt text-purple-500 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Inconsistent Formats</h4>
+                                            <p class="text-sm text-gray-600 mt-2">Dates, currencies, and measurements vary across regions</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="module-card bg-white p-5 rounded-lg shadow">
+                                    <div class="flex items-start">
+                                        <div class="bg-orange-100 p-3 rounded-lg mr-4">
+                                            <i class="fas fa-clone text-orange-500 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Duplicates</h4>
+                                            <p class="text-sm text-gray-600 mt-2">Common with manual data entry in large surveys</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="module-card bg-white p-5 rounded-lg shadow">
+                                    <div class="flex items-start">
+                                        <div class="bg-cyan-100 p-3 rounded-lg mr-4">
+                                            <i class="fas fa-ruler text-cyan-500 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Outliers</h4>
+                                            <p class="text-sm text-gray-600 mt-2">Extreme values that may represent errors or special cases</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-bold text-nitda-green mt-8">Handling Missing Values</h3>
+                            <p>In Nigerian datasets, we have several approaches for missing data:</p>
+                            
+                            <div class="my-6 overflow-hidden rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-nitda-blue uppercase tracking-wider">Method</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-nitda-blue uppercase tracking-wider">When to Use</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-nitda-blue uppercase tracking-wider">Nigerian Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Deletion</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">When missing data is random and small (&lt;5%)</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">Removing incomplete entries from a small business survey</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mean/Median Imputation</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">For numerical data with normal distribution</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">Filling missing household income data</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mode Imputation</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">For categorical data</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">Filling missing state of residence information</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="bg-nitda-blue rounded-xl p-6 text-white my-8">
+                                <h3 class="text-xl font-bold mb-4"><i class="fas fa-laptop-code mr-2"></i> Interactive Exercise</h3>
+                                <p>Clean this sample Nigerian agricultural dataset by handling missing values:</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                                    <div>
+                                        <h4 class="font-bold mb-2">Original Data</h4>
+                                        <div class="bg-black bg-opacity-20 p-4 rounded-lg text-sm">
+                                            <p>State, Crop, Production (tons), Year</p>
+                                            <p>Kaduna, Maize, 120000, 2022</p>
+                                            <p>Oyo, Cassava, , 2022</p>
+                                            <p>Kano, Rice, 98000, 2022</p>
+                                            <p>Enugu, Yam, 75000, </p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold mb-2">Cleaned Data</h4>
+                                        <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                                            <div class="mb-3">
+                                                <label class="block text-sm mb-1">Oyo, Cassava</label>
+                                                <select class="w-full bg-nitda-blue border border-nitda-light rounded px-3 py-2">
+                                                    <option>Delete row</option>
+                                                    <option>Impute with median (82,000)</option>
+                                                    <option>Impute with mean (98,333)</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm mb-1">Enugu, Yam</label>
+                                                <select class="w-full bg-nitda-blue border border-nitda-light rounded px-3 py-2">
+                                                    <option>Delete row</option>
+                                                    <option>Set to 2022 (current year)</option>
+                                                    <option>Set to 2021 (previous year)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="mt-4 px-4 py-2 bg-white text-nitda-blue rounded-lg font-medium">
+                                    Check Solution
+                                </button>
+                            </div>
+                            
+                            <h3 class="font-bold text-nitda-green mt-8">Data Cleaning in Action</h3>
+                            <p>Let's examine how cleaning affects our analysis of Nigerian screen time data:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+                                <div>
+                                    <h4 class="text-center font-bold text-nitda-blue mb-4">Before Cleaning</h4>
+                                    <div class="h-64">
+                                        <canvas id="dirtyChart"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-center font-bold text-nitda-green mb-4">After Cleaning</h4>
+                                    <div class="h-64">
+                                        <canvas id="cleanChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-green-50 border-l-4 border-nitda-green p-4 my-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-chart-line text-nitda-green text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-green-700">
+                                            <span class="font-bold">Analysis Insight:</span> After cleaning, the correlation between screen time and well-being becomes clearer, especially in the 3-5 hour range that most Nigerians fall into.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-12 pt-6 border-t">
+                                <button class="px-6 py-3 bg-nitda-blue text-white rounded-lg font-medium hover:bg-opacity-90 transition">
+                                    <i class="fas fa-arrow-left mr-2"></i>Previous Lesson
+                                </button>
+                                <button class="px-6 py-3 bg-nitda-green text-white rounded-lg font-medium hover:bg-opacity-90 transition">
+                                    Next Lesson: Data Transformation<i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-nitda-blue mb-4">Knowledge Check</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-medium">1. What is the most appropriate method for handling missing income data in a Nigerian household survey?</p>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" name="q1" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Delete all incomplete records</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" name="q1" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Impute with the national average</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" name="q1" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Impute with the state median</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" name="q1" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Set all to zero</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p class="font-medium">2. Which of these is a common data quality issue in Nigerian datasets?</p>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Inconsistent date formats</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Duplicate entries</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Perfect data quality</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-nitda-blue">
+                                    <label class="ml-2 text-gray-700">Missing rural area data</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="mt-4 px-4 py-2 bg-nitda-blue text-white rounded-lg font-medium">
+                            Submit Answers
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-nitda-blue text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-white flex items-center justify-center">
+                            <div class="h-8 w-8 rounded-full bg-gradient-to-r from-nitda-green to-nitda-blue"></div>
+                        </div>
+                        <span class="ml-3 text-xl font-bold">MindScreen Analytics</span>
+                    </div>
+                    <p class="mt-4 text-nitda-light text-sm">
+                        NITDA/NCAIR approved platform for data literacy and digital well-being.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Modules</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Data Fundamentals</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Statistical Analysis</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Data Visualization</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Nigerian Case Studies</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Nigerian Datasets</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Learning Guides</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">Research Papers</a></li>
+                        <li><a href="#" class="text-nitda-light hover:text-white text-sm">NITDA Standards</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-nitda-light text-sm">
+                            <i class="fas fa-map-marker-alt mr-2"></i> 
+                            NITDA HQ, Abuja
+                        </li>
+                        <li class="flex items-center text-nitda-light text-sm">
+                            <i class="fas fa-envelope mr-2"></i> 
+                            learning@nitda.gov.ng
+                        </li>
+                        <li class="flex items-center text-nitda-light text-sm">
+                            <i class="fas fa-phone-alt mr-2"></i> 
+                            +234 9 461 7000
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-nitda-light border-opacity-20 text-center text-sm text-nitda-light">
+                © 2023 National Information Technology Development Agency. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Before Cleaning Chart
+            const dirtyCtx = document.getElementById('dirtyChart').getContext('2d');
+            new Chart(dirtyCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Screen Time vs Well-being',
+                        data: [
+                            {x: 2, y: 8.2}, {x: 3, y: 7.8}, {x: 4, y: 7.1}, 
+                            {x: 5, y: 6.4}, {x: 6, y: 5.9}, {x: 7, y: 5.3},
+                            {x: 1.5, y: 8.5}, {x: 2.5, y: 8.0}, {x: 3.5, y: 7.5},
+                            {x: 4.5, y: 6.8}, {x: 5.5, y: 6.1}, {x: 6.5, y: 5.5},
+                            {x: 0, y: 8.8}, {x: 10, y: 4.5} // Outliers
+                        ],
+                        backgroundColor: 'rgba(220, 38, 38, 0.7)',
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        borderWidth: 1,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Screen Time (hours)',
+                                color: '#4b5563'
+                            },
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(229, 231, 235, 0.8)'
+                            },
+                            ticks: {
+                                color: '#4b5563'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Well-being Score',
+                                color: '#4b5563'
+                            },
+                            min: 4,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(229, 231, 235, 0.8)'
+                            },
+                            ticks: {
+                                color: '#4b5563'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // After Cleaning Chart
+            const cleanCtx = document.getElementById('cleanChart').getContext('2d');
+            new Chart(cleanCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Screen Time vs Well-being',
+                        data: [
+                            {x: 2, y: 8.2}, {x: 3, y: 7.8}, {x: 4, y: 7.1}, 
+                            {x: 5, y: 6.4}, {x: 6, y: 5.9}, {x: 7, y: 5.3},
+                            {x: 1.5, y: 8.5}, {x: 2.5, y: 8.0}, {x: 3.5, y: 7.5},
+                            {x: 4.5, y: 6.8}, {x: 5.5, y: 6.1}, {x: 6.5, y: 5.5}
+                        ],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(5, 150, 105, 1)',
+                        borderWidth: 1,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Screen Time (hours)',
+                                color: '#4b5563'
+                            },
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(229, 231, 235, 0.8)'
+                            },
+                            ticks: {
+                                color: '#4b5563'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Well-being Score',
+                                color: '#4b5563'
+                            },
+                            min: 4,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(229, 231, 235, 0.8)'
+                            },
+                            ticks: {
+                                color: '#4b5563'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR Universal Learning Archive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --nigerian-green: #006b3f;
+            --cosmic-purple: #6d28d9;
+            --star-yellow: #fbbf24;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Cosmic background elements */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 4s) infinite var(--delay, 0s);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+        }
+        
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(10px);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(20px, 15px); }
+            50% { transform: translate(0, 30px); }
+            75% { transform: translate(-20px, 15px); }
+        }
+        
+        /* Header styles */
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--cosmic-purple) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .progress-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .profile-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--cosmic-purple) 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 0 3rem;
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .module-tag {
+            display: inline-block;
+            background: rgba(14, 165, 233, 0.15);
+            color: #0ea5e9;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: #94a3b8;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-width: 180px;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #0ea5e9;
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .module-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .module-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--accent));
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .module-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--cosmic-purple) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .module-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #e2e8f0;
+        }
+        
+        .learning-trail {
+            margin-bottom: 2rem;
+        }
+        
+        .trail-section {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .trail-section.active {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 3px solid var(--accent);
+        }
+        
+        .trail-section:hover:not(.active) {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-icon {
+            color: var(--accent);
+        }
+        
+        .section-title {
+            font-weight: 600;
+        }
+        
+        .section-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            padding-left: 1.8rem;
+        }
+        
+        .resources {
+            margin-top: 2rem;
+        }
+        
+        .resources-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .resource-item:hover {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        .resource-icon {
+            font-size: 1.25rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .resource-name {
+            font-size: 0.95rem;
+        }
+        
+        .achievements {
+            margin-top: 2rem;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        /* Content Area */
+        .content {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--accent), var(--nigerian-green));
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .section-tag {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .section-name {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .content-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .primary-btn {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background: #0d94d8;
+        }
+        
+        .content-description {
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+        
+        /* Lessons */
+        .lesson {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .lesson-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .lesson-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .lesson-tag {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+        
+        .lesson-content {
+            padding: 1.5rem;
+        }
+        
+        .code-block {
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-title {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        .code-btn {
+            background: rgba(56, 189, 248, 0.1);
+            border: none;
+            color: #93c5fd;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .code-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+        }
+        
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .keyword { color: #60a5fa; }
+        .function { color: #fbbf24; }
+        .string { color: #34d399; }
+        .comment { color: #64748b; }
+        .operator { color: #c084fc; }
+        .variable { color: #93c5fd; }
+        .value { color: #f472b6; }
+        
+        .explanation {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .explanation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .explanation-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .explanation-content {
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+        
+        .explanation-item {
+            margin-bottom: 1rem;
+        }
+        
+        .code-snippet {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+        
+        /* Next Steps */
+        .next-steps {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .next-steps-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .next-steps-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .next-steps-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #e2e8f0;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--cosmic-purple));
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links a:hover {
+            color: #60a5fa;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 2rem 2rem 0;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .module-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .content-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div class="logo-text">NITDA/NCAIR ULA</div>
+        </div>
+        <div class="user-actions">
+            <div class="progress-container">
+                <div class="progress-label">Learning Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 35%;"></div>
+                </div>
+            </div>
+            <button class="profile-btn">
+                <i class="fas fa-user-graduate"></i> My Profile
+            </button>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="module-tag">Module 2</div>
+        <h1>pandas Mastery</h1>
+        <p>Data manipulation and analysis for real-world datasets</p>
+        
+        <div class="hero-stats">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="far fa-clock"></i></div>
+                <div class="stat-title">Estimated</div>
+                <div class="stat-value">8-10 hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-medal"></i></div>
+                <div class="stat-title">Level</div>
+                <div class="stat-value">Beginner to Intermediate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                <div class="stat-title">Content</div>
+                <div class="stat-value">5 Sections, 24 Lessons</div>
+            </div>
+        </div>
+        
+        <div class="module-cards">
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="module-title">Data Structures</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-broom"></i></div>
+                <div class="module-title">Data Cleaning</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-filter"></i></div>
+                <div class="module-title">Filtering & Grouping</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-code-merge"></i></div>
+                <div class="module-title">Merging Data</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="module-title">Real Analysis</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title"><i class="fas fa-map-signs"></i> Learning Trail</h2>
+            
+            <div class="learning-trail">
+                <div class="trail-section active">
+                    <div class="section-header">
+                        <i class="fas fa-play-circle section-icon"></i>
+                        <div class="section-title">Section 1: pandas Foundations</div>
+                    </div>
+                    <div class="section-desc">Series & DataFrame structures</div>
+                </div>
+                
+                <div class="trail-section">
+                    <div class="section-header">
+                        <i class="far fa-circle section-icon"></i>
+                        <div class="section-title">Section 2: Data Cleaning</div>
+                    </div>
+                    <div class="section-desc">Preprocessing & handling missing data</div>
+                </div>
+                
+                <div class="trail-section">
+                    <div class="section-header">
+                        <i class="far fa-circle section-icon"></i>
+                        <div class="section-title">Section 3: Filtering & Aggregation</div>
+                    </div>
+                    <div class="section-desc">Grouping, filtering and summarizing data</div>
+                </div>
+                
+                <div class="trail-section">
+                    <div class="section-header">
+                        <i class="far fa-circle section-icon"></i>
+                        <div class="section-title">Section 4: Merging & Time Series</div>
+                    </div>
+                    <div class="section-desc">Combining datasets and time-based analysis</div>
+                </div>
+                
+                <div class="trail-section">
+                    <div class="section-header">
+                        <i class="far fa-circle section-icon"></i>
+                        <div class="section-title">Section 5: Nigerian Economic Analysis</div>
+                    </div>
+                    <div class="section-desc">Real-world data application</div>
+                </div>
+            </div>
+            
+            <div class="resources">
+                <h3 class="resources-title"><i class="fas fa-book"></i> Learning Resources</h3>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="resource-name">pandas Cheat Sheet</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-video"></i></div>
+                    <div class="resource-name">Data Cleaning Techniques</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-database"></i></div>
+                    <div class="resource-name">Nigeria Economic Dataset</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-book"></i></div>
+                    <div class="resource-name">Time Series Handbook</div>
+                </div>
+            </div>
+            
+            <div class="achievements">
+                <h3 class="resources-title"><i class="fas fa-trophy"></i> Achievements</h3>
+                <div class="badges">
+                    <div class="badge"><i class="fas fa-medal" style="color: #fbbf24;"></i></div>
+                    <div class="badge"><i class="fas fa-trophy" style="color: #94a3b8;"></i></div>
+                    <div class="badge"><i class="fas fa-star" style="color: #94a3b8;"></i></div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content Area -->
+        <main class="content">
+            <div class="content-header">
+                <div class="section-info">
+                    <span class="section-tag">Section 1</span>
+                    <h2 class="section-name">pandas Foundations</h2>
+                </div>
+                <div class="content-actions">
+                    <button class="action-btn">
+                        <i class="fas fa-download"></i> Download Notebook
+                    </button>
+                    <button class="action-btn primary-btn">
+                        <i class="fas fa-rocket"></i> Start Practice Lab
+                    </button>
+                </div>
+            </div>
+            
+            <p class="content-description">Learn the core pandas data structures - Series and DataFrames. Understand how to create, inspect, and manipulate these foundational structures.</p>
+            
+            <div class="tags">
+                <span class="tag">Key Concept</span>
+                <span class="tag">Beginner Friendly</span>
+                <span class="tag">Hands-on</span>
+                <span class="tag">20 mins</span>
+            </div>
+            
+            <!-- Lesson 1 -->
+            <div class="lesson">
+                <div class="lesson-header">
+                    <h3 class="lesson-title">1.1 Series: One-dimensional Data</h3>
+                    <span class="lesson-tag">Essential</span>
+                </div>
+                <div class="lesson-content">
+                    <p>A Series is a one-dimensional labeled array capable of holding any data type. Think of it as a single column in a spreadsheet.</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-title">Python</div>
+                            <div class="code-actions">
+                                <button class="code-btn">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="code-btn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># Create a Series from a list</span>
+temperatures = pd.Series([<span class="value">28.5</span>, <span class="value">30.2</span>, <span class="value">25.8</span>, <span class="value">32.1</span>], 
+                      name=<span class="string">"Temperature"</span>)
+
+<span class="comment"># Create a Series with custom index</span>
+cities = pd.Series([<span class="value">28.5</span>, <span class="value">30.2</span>, <span class="value">25.8</span>], 
+                name=<span class="string">"Temperature"</span>,
+                index=[<span class="string">"Lagos"</span>, <span class="string">"Abuja"</span>, <span class="string">"Kano"</span>])
+
+<span class="comment"># Accessing data</span>
+print(cities[<span class="string">"Lagos"</span>])  <span class="comment"># Output: 28.5</span>
+print(cities.mean())   <span class="comment"># Output: 28.166...</span></code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="explanation">
+                        <div class="explanation-header">
+                            <h4 class="explanation-title">Code Explanation</h4>
+                            <button class="code-btn">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="explanation-content">
+                            <div class="explanation-item">
+                                <div class="code-snippet">import pandas as pd</div>
+                                <p>Imports the pandas library and gives it the alias 'pd' for easier reference throughout the code.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">temperatures = pd.Series([28.5, 30.2, 25.8, 32.1], name="Temperature")</div>
+                                <p>Creates a Series object - a one-dimensional array with data values. The 'name' parameter labels the entire series.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">cities = pd.Series([28.5, 30.2, 25.8], name="Temperature", index=["Lagos", "Abuja", "Kano"])</div>
+                                <p>Creates a Series with custom index labels. This allows accessing elements by label instead of position.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">print(cities["Lagos"])</div>
+                                <p>Accesses the value associated with the index label "Lagos" using dictionary-like syntax.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">print(cities.mean())</div>
+                                <p>Calculates and prints the average of all values in the Series using the mean() method.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 2 -->
+            <div class="lesson">
+                <div class="lesson-header">
+                    <h3 class="lesson-title">1.2 DataFrames: Two-dimensional Data</h3>
+                    <span class="lesson-tag">Core Concept</span>
+                </div>
+                <div class="lesson-content">
+                    <p>A DataFrame is a 2-dimensional labeled data structure with columns that can be of different types, similar to a spreadsheet or SQL table.</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-title">Python</div>
+                            <div class="code-actions">
+                                <button class="code-btn">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="code-btn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="comment"># Create DataFrame from dictionary</span>
+data = {
+    <span class="string">"City"</span>: [<span class="string">"Lagos"</span>, <span class="string">"Abuja"</span>, <span class="string">"Kano"</span>, <span class="string">"Port Harcourt"</span>],
+    <span class="string">"Population"</span>: [<span class="value">21.0</span>, <span class="value">3.8</span>, <span class="value">4.3</span>, <span class="value">1.8</span>],  <span class="comment"># in millions</span>
+    <span class="string">"GDP"</span>: [<span class="value">102.3</span>, <span class="value">68.4</span>, <span class="value">28.7</span>, <span class="value">32.1</span>]   <span class="comment"># in billion USD</span>
+}
+
+df = pd.DataFrame(data)
+
+<span class="comment"># Inspect the DataFrame</span>
+print(df.head())      <span class="comment"># First 5 rows</span>
+print(df.info())      <span class="comment"># Structure information</span>
+print(df.describe())  <span class="comment"># Statistical summary</span>
+
+<span class="comment"># Accessing columns</span>
+populations = df[<span class="string">"Population"</span>]  <span class="comment"># OR df.Population</span></code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="explanation">
+                        <div class="explanation-header">
+                            <h4 class="explanation-title">Code Explanation</h4>
+                            <button class="code-btn">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="explanation-content">
+                            <div class="explanation-item">
+                                <div class="code-snippet">data = { ... }</div>
+                                <p>Creates a Python dictionary where keys become column names and values become column data.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">df = pd.DataFrame(data)</div>
+                                <p>Converts the dictionary into a pandas DataFrame - a 2D tabular data structure with labeled axes.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">print(df.head())</div>
+                                <p>Displays the first 5 rows of the DataFrame - essential for initial data inspection.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">print(df.info())</div>
+                                <p>Provides metadata about the DataFrame: column count, data types, and memory usage.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">print(df.describe())</div>
+                                <p>Generates descriptive statistics for numerical columns: count, mean, std, min, max, etc.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">populations = df["Population"]</div>
+                                <p>Selects a single column from the DataFrame, returning it as a Series object.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 3 -->
+            <div class="lesson">
+                <div class="lesson-header">
+                    <h3 class="lesson-title">1.3 DataFrame Operations</h3>
+                    <span class="lesson-tag">Practical</span>
+                </div>
+                <div class="lesson-content">
+                    <p>Learn how to select, filter, and perform operations on DataFrames to extract valuable insights from your data.</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-title">Python</div>
+                            <div class="code-actions">
+                                <button class="code-btn">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="code-btn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="comment"># Add a new calculated column</span>
+df[<span class="string">"GDP_per_capita"</span>] = df[<span class="string">"GDP"</span>] * <span class="value">1000</span> / df[<span class="string">"Population"</span>]
+
+<span class="comment"># Filter rows based on condition</span>
+large_cities = df[df[<span class="string">"Population"</span>] > <span class="value">4</span>]  <span class="comment"># Cities with >4M population</span>
+
+<span class="comment"># Sorting data</span>
+df_sorted = df.sort_values(by=<span class="string">"GDP"</span>, ascending=<span class="keyword">False</span>)
+
+<span class="comment"># Selecting specific columns</span>
+economic_data = df[[<span class="string">"City"</span>, <span class="string">"GDP"</span>, <span class="string">"GDP_per_capita"</span>]]
+
+<span class="comment"># Set City as index</span>
+df.set_index(<span class="string">"City"</span>, inplace=<span class="keyword">True</span>)</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="explanation">
+                        <div class="explanation-header">
+                            <h4 class="explanation-title">Code Explanation</h4>
+                            <button class="code-btn">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="explanation-content">
+                            <div class="explanation-item">
+                                <div class="code-snippet">df["GDP_per_capita"] = df["GDP"] * 1000 / df["Population"]</div>
+                                <p>Creates a new column by performing element-wise calculations on existing columns.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">large_cities = df[df["Population"] > 4]</div>
+                                <p>Filters rows using a boolean condition, selecting only cities with population >4 million.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">df_sorted = df.sort_values(by="GDP", ascending=False)</div>
+                                <p>Sorts the DataFrame based on GDP values in descending order (highest GDP first).</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">economic_data = df[["City", "GDP", "GDP_per_capita"]]</div>
+                                <p>Selects a subset of columns by passing a list of column names.</p>
+                            </div>
+                            
+                            <div class="explanation-item">
+                                <div class="code-snippet">df.set_index("City", inplace=True)</div>
+                                <p>Sets the City column as the new index, making city names the primary access method.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <h3 class="next-steps-title">Ready for the Next Step?</h3>
+                <p>You've learned the foundational pandas structures. Next, we'll dive into data cleaning techniques to handle real-world messy datasets.</p>
+                <button class="next-steps-btn">
+                    Continue to Data Cleaning & Preprocessing
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>NITDA/NCAIR ULA</h3>
+                <p class="footer-links">Universal Learning Archive - Transforming digital education in Nigeria through accessible, world-class learning resources.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Data Science Track</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Python Fundamentals</a></li>
+                    <li><a href="#">pandas Mastery</a></li>
+                    <li><a href="#">Data Visualization</a></li>
+                    <li><a href="#">Machine Learning</a></li>
+                    <li><a href="#">Big Data Technologies</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Learning Materials</a></li>
+                    <li><a href="#">Practice Labs</a></li>
+                    <li><a href="#">Community Forum</a></li>
+                    <li><a href="#">Career Pathways</a></li>
+                    <li><a href="#">Industry Partnerships</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-envelope mr-2"></i> contact@ntida-ula.ng</a></li>
+                    <li><a href="#"><i class="fas fa-phone mr-2"></i> +234 800 0000 000</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt mr-2"></i> Abuja, Nigeria</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR). All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Create cosmic background
+        function createCosmicBackground() {
+            const cosmicCanvas = document.getElementById('cosmicCanvas');
+            
+            // Create stars
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random();
+                star.style.setProperty('--duration', `${4 + Math.random() * 6}s`);
+                star.style.setProperty('--delay', `${Math.random() * 5}s`);
+                cosmicCanvas.appendChild(star);
+            }
+            
+            // Create nebulas
+            for (let i = 0; i < 5; i++) {
+                const nebula = document.createElement('div');
+                nebula.classList.add('nebula');
+                nebula.style.width = `${100 + Math.random() * 300}px`;
+                nebula.style.height = nebula.style.width;
+                nebula.style.left = `${Math.random() * 100}%`;
+                nebula.style.top = `${Math.random() * 100}%`;
+                nebula.style.background = i % 2 === 0 ? 
+                    `radial-gradient(circle, rgba(139, 92, 246, 0.4), transparent)` : 
+                    `radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent)`;
+                cosmicCanvas.appendChild(nebula);
+            }
+            
+            // Create floating elements
+            for (let i = 0; i < 8; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                element.style.width = `${10 + Math.random() * 30}px`;
+                element.style.height = element.style.width;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+                element.style.background = `radial-gradient(circle, rgba(${
+                    Math.floor(Math.random() * 100) + 155
+                }, ${
+                    Math.floor(Math.random() * 100) + 155
+                }, ${
+                    Math.floor(Math.random() * 255)
+                }, 0.8), transparent)`;
+                cosmicCanvas.appendChild(element);
+            }
+        }
+        
+        // Initialize cosmic background
+        createCosmicBackground();
+        
+        // Toggle explanation sections
+        document.querySelectorAll('.explanation-header .code-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const explanation = this.closest('.explanation');
+                const content = explanation.querySelector('.explanation-content');
+                
+                if (content.style.display === 'none' || !content.style.display) {
+                    content.style.display = 'block';
+                    this.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                } else {
+                    content.style.display = 'none';
+                    this.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                }
+            });
+        });
+        
+        // Simulate progress
+        setInterval(() => {
+            const progress = document.querySelector('.progress-fill');
+            const currentWidth = parseInt(progress.style.width) || 35;
+            if (currentWidth < 100) {
+                progress.style.width = (currentWidth + 0.5) + '%';
+            }
+        }, 3000);
+        
+        // Section navigation
+        document.querySelectorAll('.trail-section').forEach(section => {
+            section.addEventListener('click', function() {
+                document.querySelectorAll('.trail-section').forEach(s => {
+                    s.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Update section title
+                const sectionTitle = this.querySelector('.section-title').textContent;
+                document.querySelector('.section-name').textContent = sectionTitle.split(': ')[1];
+            });
+        });
+        
+        // Module card hover effect
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.module-icon');
+                icon.style.animation = 'pulse 0.5s';
+                
+                setTimeout(() => {
+                    icon.style.animation = '';
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

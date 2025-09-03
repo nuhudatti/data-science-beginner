@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA | Vectorized Operations & Broadcasting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --light: #dbeafe;
+            --dark: #1e293b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .code-header {
+            background: #1e1e1e;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6c757d;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .function { color: #dcdcaa; }
+        .string { color: #ce9178; }
+        .operator { color: #d4d4d4; }
+        .variable { color: #9cdcfe; }
+        .value { color: #b5cea8; }
+        .module { color: #4ec9b0; }
+        
+        .explanation {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .concept-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .active-nav:after {
+            width: 100%;
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .array-visualization {
+            display: grid;
+            gap: 8px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .array-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .array-label {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .section-animation {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #dbeafe;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .floating-action {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .visualization-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .operation-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .operation-arrow {
+            font-size: 24px;
+            margin: 0 20px;
+            color: var(--primary);
+        }
+        
+        .result-box {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="gradient-header text-white shadow-xl">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="bg-white p-2 rounded-xl mr-4 shadow-md">
+                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 w-16 h-16 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calculator text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">NITDA/NCAIR ULA</h1>
+                        <p class="text-blue-200">Universal Learning Archive</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-xl md:text-2xl font-bold">Data Science Cohort 27</h2>
+                    <p class="text-blue-300">Mastering Numerical Computing for Nigeria's Future</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-20">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-3 gap-4 md:gap-8">
+                <a href="#" class="nav-item active-nav text-nca-700 font-medium">
+NumPy Fundamentals</a>
+                <a href="../pandas/pandas.html" class="nav-item hover:text-nca-700">
+Pandas Mastery</a>
+                <a href="../data Visual/index.html  " class="nav-item hover:text-nca-700">
+Data Visualization</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="bg-blue-50 py-2">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center">
+                <div class="w-full mr-4">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                </div>
+                <span class="text-blue-800 font-medium">60% Completed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Navigation Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                    <h3 class="font-bold text-xl text-blue-900 mb-4 flex items-center">
+                        <i class="fas fa-road mr-3 text-blue-500"></i>
+                        Learning Path
+                    </h3>
+                    <ul class="space-y-3">
+                        <a href="./nutpy.html">
+                        <li class="flex items-center bg-blue-50 rounded-xl px-4 py-3 mb-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">NumPy Arrays vs Python Lists</span>
+                        </li>
+                        </a>
+                        <a href="./a.html">
+                        <li class="flex items-center bg-blue-50 rounded-xl px-4 py-3 mb-3">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span class="font-medium text-blue-800">Array Creation & Manipulation</span>
+                        </li>
+                        </a>
+                        <a href="./v.html">
+                        <li class="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl px-4 py-3 shadow-md mb-3">
+                            <i class="fas fa-arrow-right mr-3"></i>
+                            <span class="font-medium">Vectorized Operations & Broadcasting</span>
+                        </li>
+                        </a>
+                        <a href="./s.html">
+                        <li class="flex items-center hover:bg-gray-50 rounded-xl px-4 py-3 mb-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-3"></i>
+                            <span>Statistical Operations on Arrays</span>
+                        </li>
+                        </a>
+                        <a href="./r.html">
+                        <li class="flex items-center hover:bg-gray-50 rounded-xl px-4 py-3">
+                            <i class="fas fa-circle-notch text-gray-300 mr-3"></i>
+                            <span>Agricultural Yield Analysis</span>
+                        </li>
+                        </a>
+                    </ul>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-xl text-blue-900 mb-4 flex items-center">
+                            <i class="fas fa-trophy mr-3 text-yellow-500"></i>
+                            Achievements
+                        </h3>
+                        <div class="flex items-center mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Array Fundamentals</h4>
+                                <p class="text-sm text-gray-600">Completed array creation section</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-bolt text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Vectorization Explorer</h4>
+                                <p class="text-sm text-gray-600">Started vectorized operations</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-xl text-blue-900 mb-4 flex items-center">
+                            <i class="fas fa-chart-line mr-3 text-green-500"></i>
+                            Your Progress
+                        </h3>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Module Completion</span>
+                                <span class="text-sm font-medium">60%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Exercises Completed</span>
+                                <span class="text-sm font-medium">4/7</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 57%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="lg:col-span-3">
+                          
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Helvetica, Arial,   sans-serif; margin-bottom: 20px; font-size: 12px; line-height: 1.4; color: #333333; border-collapse: collapse;">
+  <tr>
+     <!-- Logo Placeholder -->
+    <!-- <td valign="top" style="padding-right: 15px;">
+     
+      <img src="./logo.jpg" alt="NMD BESPOKE TECH" width="80" style="display: block; border: 0;">
+    </td> -->
+    <td style="border-left: 1px solid #cccccc; padding-left: 15px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td>
+            <strong style="font-size: 15px; color: #1a365d;">NUHU MUHAMMAD DATTI</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 13px; color: #718096;">
+            Principal Consultant | NMD BESPOKE TECH
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0" style="margin-top: 8px;">
+              <tr>
+                <td style="padding-right: 10px;">
+                    <i class="fas fa-globe" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td>
+                  <a href="https://www.nmdtech.io" style="color: #2b6cb0; text-decoration: none;">www.nmdtech.io</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                 <i class="fab fa-linkedin" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                </td>
+                <td style="padding-top: 3px;">
+                  <a href="https://linkedin.com/in/nuhudatti" style="color: #2b6cb0; text-decoration: none;">linkedin.com/in/nuhudatti</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-right: 10px; padding-top: 3px;">
+                    <i class="fas fa-envelope" style="color:  #2b6cb0; font-size: 12px; vertical-align: middle;"></i>
+                <td style="padding-top: 3px;">
+                  <a href="mailto:nuhu@nmdtech.io" style="color: #2b6cb0; text-decoration: none;">nuhumuhammaddatti@gmail.com</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 10px;">
+<img src="./logo.jpg" 
+     width="100" 
+     height="100"
+     alt="NMD BESPOKE TECH | Custom Digital Solutions" 
+     style="display: block; border-radius: 50%; object-fit: cover;">
+
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+                <!-- Section Header -->
+                <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl shadow-xl overflow-hidden mb-10 section-animation">
+                    <div class="p-8">
+                        <div class="flex flex-wrap items-center justify-between">
+                            <div>
+                                <span class="inline-block px-4 py-1 bg-blue-500 bg-opacity-30 rounded-full text-sm font-semibold mb-2">Section 3</span>
+                                <h2 class="text-3xl font-bold mb-3">Vectorized Operations & Broadcasting</h2>
+                                <p class="text-blue-200 max-w-3xl">Discover how NumPy's vectorized operations enable lightning-fast computations and how broadcasting allows operations between arrays of different shapes.</p>
+                            </div>
+                            <div class="mt-4 md:mt-0 floating-action">
+                                <div class="w-24 h-24 rounded-full bg-blue-500 bg-opacity-20 flex items-center justify-center">
+                                    <i class="fas fa-bolt text-white text-4xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Introduction -->
+                <section class="bg-white rounded-2xl shadow-lg p-6 mb-10">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                        <i class="fas fa-lightbulb mr-3 text-yellow-500"></i>
+                        The Power of Vectorization
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-blue-50 rounded-xl p-5">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-running text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">What is Vectorization?</h4>
+                                    <p class="text-gray-700">Vectorization is the process of executing operations on entire arrays rather than individual elements. This leverages optimized low-level code (C/Fortran) for significant performance gains.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 rounded-xl p-5">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-exchange-alt text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">Why Vectorize?</h4>
+                                    <ul class="list-disc list-inside text-gray-700">
+                                        <li>Eliminates slow Python loops</li>
+                                        <li>Reduces code complexity</li>
+                                        <li>Improves code readability</li>
+                                        <li>Utilizes CPU parallelism</li>
+                                        <li>Enables large dataset processing</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-5">
+                        <h4 class="font-bold text-xl mb-3 flex items-center">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Performance Comparison
+                        </h4>
+                        <p>Vectorized operations in NumPy can be <span class="font-bold">10-100x faster</span> than equivalent Python loops, especially with large datasets.</p>
+                        
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <div class="text-center text-3xl font-bold">10x</div>
+                                <div class="text-center">Small Arrays</div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <div class="text-center text-3xl font-bold">50x</div>
+                                <div class="text-center">Medium Arrays</div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <div class="text-center text-3xl font-bold">100x+</div>
+                                <div class="text-center">Large Arrays</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vectorized Operations -->
+                <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-10">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-cogs mr-3"></i>
+                            Vectorized Operations in Action
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h4 class="text-xl font-bold text-blue-900 mb-4">Element-wise Operations</h4>
+                            <p class="text-gray-700 mb-4">Perform mathematical operations on entire arrays without explicit loops.</p>
+                            
+                            <!-- Code Block -->
+                            <div class="code-block mb-6">
+                                <div class="code-header">
+                                    <span class="text-gray-300">vectorized_math.py</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span>
+<span class="line-number">3</span><span class="comment"># Create sample arrays</span>
+<span class="line-number">4</span>a = np.<span class="function">array</span>([<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>, <span class="value">4</span>])
+<span class="line-number">5</span>b = np.<span class="function">array</span>([<span class="value">5</span>, <span class="value">6</span>, <span class="value">7</span>, <span class="value">8</span>])
+<span class="line-number">6</span>
+<span class="line-number">7</span><span class="comment"># Basic arithmetic operations</span>
+<span class="line-number">8</span>addition = a + b        <span class="comment"># [6, 8, 10, 12]</span>
+<span class="line-number">9</span>subtraction = a - b     <span class="comment"># [-4, -4, -4, -4]</span>
+<span class="line-number">10</span>multiplication = a * b  <span class="comment"># [5, 12, 21, 32]</span>
+<span class="line-number">11</span>division = b / a        <span class="comment"># [5.0, 3.0, 2.33, 2.0]</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span><span class="comment"># Exponentiation</span>
+<span class="line-number">14</span>squares = a ** <span class="value">2</span>       <span class="comment"># [1, 4, 9, 16]</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span><span class="comment"># Trigonometric functions</span>
+<span class="line-number">17</span>sin_values = np.<span class="function">sin</span>(a) <span class="comment"># [0.84, 0.91, 0.14, -0.76]</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span><span class="comment"># Logarithmic functions</span>
+<span class="line-number">20</span>log_values = np.<span class="function">log</span>(b) <span class="comment"># [1.61, 1.79, 1.95, 2.08]</span></code></pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization -->
+                            <div class="visualization-container mb-6">
+                                <div class="array-label">Array A</div>
+                                <div class="array-visualization grid grid-cols-4">
+                                    <div class="array-cell">1</div>
+                                    <div class="array-cell">2</div>
+                                    <div class="array-cell">3</div>
+                                    <div class="array-cell">4</div>
+                                </div>
+                                
+                                <div class="array-label mt-4">Array B</div>
+                                <div class="array-visualization grid grid-cols-4">
+                                    <div class="array-cell">5</div>
+                                    <div class="array-cell">6</div>
+                                    <div class="array-cell">7</div>
+                                    <div class="array-cell">8</div>
+                                </div>
+                                
+                                <div class="operation-step">
+                                    <div>
+                                        <div class="array-label">A + B</div>
+                                        <div class="array-visualization grid grid-cols-4">
+                                            <div class="array-cell">6</div>
+                                            <div class="array-cell">8</div>
+                                            <div class="array-cell">10</div>
+                                            <div class="array-cell">12</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-arrow">+</div>
+                                    
+                                    <div>
+                                        <div class="array-label">A * B</div>
+                                        <div class="array-visualization grid grid-cols-4">
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">12</div>
+                                            <div class="array-cell">21</div>
+                                            <div class="array-cell">32</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Broadcasting -->
+                <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-10">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 p-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-expand-arrows-alt mr-3"></i>
+                            Broadcasting: Operations on Different Shapes
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h4 class="text-xl font-bold text-purple-900 mb-4">Understanding Broadcasting</h4>
+                            <p class="text-gray-700 mb-4">Broadcasting allows NumPy to perform operations on arrays of different shapes by automatically expanding dimensions.</p>
+                            
+                            <div class="bg-purple-50 rounded-xl p-5 mb-6">
+                                <h5 class="font-bold text-purple-800 mb-3">Broadcasting Rules</h5>
+                                <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                    <li><strong>Rule 1:</strong> Dimensions are compared from right to left</li>
+                                    <li><strong>Rule 2:</strong> Dimensions must be equal or one of them must be 1</li>
+                                    <li><strong>Rule 3:</strong> Arrays with fewer dimensions are padded with 1s on the left</li>
+                                </ol>
+                            </div>
+                            
+                            <!-- Code Block -->
+                            <div class="code-block mb-6">
+                                <div class="code-header">
+                                    <span class="text-gray-300">broadcasting.py</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="comment"># Broadcasting a scalar to an array</span>
+<span class="line-number">2</span>arr = np.<span class="function">array</span>([[<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>], [<span class="value">4</span>, <span class="value">5</span>, <span class="value">6</span>]])
+<span class="line-number">3</span>result = arr * <span class="value">10</span>  <span class="comment"># Multiply every element by 10</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span><span class="comment"># Broadcasting a vector to a matrix</span>
+<span class="line-number">6</span>matrix = np.<span class="function">array</span>([[<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>], [<span class="value">4</span>, <span class="value">5</span>, <span class="value">6</span>], [<span class="value">7</span>, <span class="value">8</span>, <span class="value">9</span>]])
+<span class="line-number">7</span>row_vector = np.<span class="function">array</span>([<span class="value">10</span>, <span class="value">20</span>, <span class="value">30</span>])
+<span class="line-number">8</span>result = matrix + row_vector  <span class="comment"># Add to each row</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span><span class="comment"># Broadcasting with dimension expansion</span>
+<span class="line-number">11</span>column_vector = np.<span class="function">array</span>([[<span class="value">100</span>], [<span class="value">200</span>], [<span class="value">300</span>]])
+<span class="line-number">12</span>result = matrix + column_vector  <span class="comment"># Add to each column</span></code></pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Visualization -->
+                            <div class="visualization-container">
+                                <div class="operation-step">
+                                    <div>
+                                        <div class="array-label">Matrix (3x3)</div>
+                                        <div class="array-visualization grid grid-cols-3 max-w-md mx-auto">
+                                            <div class="array-cell">1</div>
+                                            <div class="array-cell">2</div>
+                                            <div class="array-cell">3</div>
+                                            <div class="array-cell">4</div>
+                                            <div class="array-cell">5</div>
+                                            <div class="array-cell">6</div>
+                                            <div class="array-cell">7</div>
+                                            <div class="array-cell">8</div>
+                                            <div class="array-cell">9</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-arrow">+</div>
+                                    
+                                    <div>
+                                        <div class="array-label">Row Vector (1x3)</div>
+                                        <div class="array-visualization grid grid-cols-3 max-w-md mx-auto">
+                                            <div class="array-cell">10</div>
+                                            <div class="array-cell">20</div>
+                                            <div class="array-cell">30</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="operation-arrow">=</div>
+                                    
+                                    <div>
+                                        <div class="array-label">Result (3x3)</div>
+                                        <div class="array-visualization grid grid-cols-3 max-w-md mx-auto">
+                                            <div class="array-cell">11</div>
+                                            <div class="array-cell">22</div>
+                                            <div class="array-cell">33</div>
+                                            <div class="array-cell">14</div>
+                                            <div class="array-cell">25</div>
+                                            <div class="array-cell">36</div>
+                                            <div class="array-cell">17</div>
+                                            <div class="array-cell">28</div>
+                                            <div class="array-cell">39</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="result-box mt-6">
+                                    <p class="font-semibold text-purple-700 mb-2">What's happening:</p>
+                                    <p>The row vector is automatically "broadcast" to match the shape of the matrix by repeating itself for each row. This allows element-wise addition without explicitly copying the vector.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Real-World Application -->
+                <section class="bg-gradient-to-r from-green-500 to-green-700 rounded-2xl shadow-xl overflow-hidden mb-10">
+                    <div class="p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-seedling mr-3"></i>
+                            Real-World Application: Crop Yield Enhancement
+                        </h3>
+                        <p class="max-w-3xl mb-6">Vectorized operations and broadcasting are essential for processing agricultural data efficiently. Let's see how these techniques apply to crop yield analysis.</p>
+                        
+                        <div class="bg-white bg-opacity-10 rounded-xl p-6 backdrop-blur-sm">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <span class="text-green-200">crop_enhancement.py</span>
+                                    <button class="text-green-200 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="code-content">
+                                    <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span>
+<span class="line-number">3</span><span class="comment"># Base yield data (tons/hectare) for 5 fields over 3 years</span>
+<span class="line-number">4</span>base_yield = np.<span class="function">array</span>([
+<span class="line-number">5</span>    [<span class="value">5.2</span>, <span class="value">5.8</span>, <span class="value">6.1</span>],  <span class="comment"># Field 1</span>
+<span class="line-number">6</span>    [<span class="value">4.9</span>, <span class="value">5.2</span>, <span class="value">5.0</span>],  <span class="comment"># Field 2</span>
+<span class="line-number">7</span>    [<span class="value">6.0</span>, <span class="value">6.5</span>, <span class="value">6.3</span>],  <span class="comment"># Field 3</span>
+<span class="line-number">8</span>    [<span class="value">5.5</span>, <span class="value">5.7</span>, <span class="value">5.9</span>],  <span class="comment"># Field 4</span>
+<span class="line-number">9</span>    [<span class="value">4.8</span>, <span class="value">5.5</span>, <span class="value">5.7</span>]   <span class="comment"># Field 5</span>
+<span class="line-number">10</span>])
+<span class="line-number">11</span>
+<span class="line-number">12</span><span class="comment"># Fertilizer effectiveness multipliers per year</span>
+<span class="line-number">13</span>fertilizer_effect = np.<span class="function">array</span>([<span class="value">1.15</span>, <span class="value">1.20</span>, <span class="value">1.18</span>])
+<span class="line-number">14</span>
+<span class="line-number">15</span><span class="comment"># Calculate enhanced yields using broadcasting</span>
+<span class="line-number">16</span>enhanced_yield = base_yield * fertilizer_effect
+<span class="line-number">17</span>
+<span class="line-number">18</span><span class="comment"># Irrigation improvement (percentage points)</span>
+<span class="line-number">19</span>irrigation_improvement = np.<span class="function">array</span>([
+<span class="line-number">20</span>    [<span class="value">0.3</span>],  <span class="comment"># Field 1</span>
+<span class="line-number">21</span>    [<span class="value">0.1</span>],  <span class="comment"># Field 2</span>
+<span class="line-number">22</span>    [<span class="value">0.4</span>],  <span class="comment"># Field 3</span>
+<span class="line-number">23</span>    [<span class="value">0.2</span>],  <span class="comment"># Field 4</span>
+<span class="line-number">24</span>    [<span class="value">0.25</span>]  <span class="comment"># Field 5</span>
+<span class="line-number">25</span>])
+<span class="line-number">26</span>
+<span class="line-number">27</span><span class="comment"># Apply irrigation improvement to all years</span>
+<span class="line-number">28</span>final_yield = enhanced_yield + irrigation_improvement
+<span class="line-number">29</span>
+<span class="line-number">30</span><span class="comment"># Calculate average improvement percentage</span>
+<span class="line-number">31</span>improvement = (final_yield - base_yield) / base_yield * <span class="value">100</span></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Next Steps -->
+                <section class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Ready to Master Statistical Operations?</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto mb-6">You've learned how vectorized operations and broadcasting enable efficient computations. Next, we'll explore statistical operations on arrays to extract meaningful insights from data.</p>
+                    
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-blue-800 transition-all shadow-lg flex items-center">
+                            Continue to Statistical Operations <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <button class="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold py-3 px-8 rounded-xl hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg flex items-center">
+                            <i class="fas fa-redo mr-2"></i> Review This Section
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-900 to-blue-800 text-white pt-12 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h4>
+                    <p class="text-blue-300 mb-4">Empowering Nigeria through digital literacy and innovation.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Learning Paths</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-blue-300 hover:text-white">Data Science</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Artificial Intelligence</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Cybersecurity</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Blockchain</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Cloud Computing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-blue-300 hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Tutorials</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Research Papers</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Case Studies</a></li>
+                        <li><a href="#" class="text-blue-300 hover:text-white">Community Projects</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-blue-400"></i>
+                            <span>NITDA Headquarters, Abuja, Nigeria</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-2 text-blue-400"></i>
+                            <span>ula@nitda.gov.ng</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-2 text-blue-400"></i>
+                            <span>+234 9 461 7000</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-blue-700 pt-8 text-center text-blue-400">
+                <p>© 2023 National Information Technology Development Agency (NITDA). Universal Learning Archive (ULA). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy button functionality
+        document.querySelectorAll('.fa-copy').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('.code-content');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalIcon = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-check';
+                    this.classList.replace(originalIcon, 'fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.replace('fa-check', 'fa-copy');
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Floating animation for concept cards
+        const conceptCards = document.querySelectorAll('.concept-card');
+        conceptCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Progress simulation
+        let progress = 60;
+        const progressFill = document.querySelector('.progress-fill');
+        
+        setInterval(() => {
+            if (progress < 100) {
+                progress += 0.2;
+                progressFill.style.width = `${progress}%`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Data Analysis with Pandas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        dsblue: '#1e40af',
+                        dspurple: '#7e22ce',
+                        dspink: '#db2777'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --progress: 45%;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-content {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .explanation-panel {
+            background: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            padding: 16px;
+        }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            width: var(--progress);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .highlight {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(56, 189, 248, 0.3);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+        
+        .update-ticker {
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 20s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .learning-path {
+            position: relative;
+        }
+        
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 24px;
+            height: calc(100% - 80px);
+            width: 4px;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .path-item::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d1d5db;
+            z-index: 0;
+        }
+        
+        .path-item.active::before {
+            background: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
+        }
+        
+        .path-item.completed::before {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .path-item h3::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: -24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            z-index: -1;
+        }
+        
+        .interactive-code {
+            min-height: 200px;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .interactive-output {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .python-keyword {
+            color: #f472b6;
+        }
+        
+        .python-function {
+            color: #38bdf8;
+        }
+        
+        .python-string {
+            color: #86efac;
+        }
+        
+        .python-comment {
+            color: #94a3b8;
+        }
+        
+        .python-operator {
+            color: #fbbf24;
+        }
+        
+        .dataframe-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .dataframe-table th {
+            background: #334155;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #475569;
+        }
+        
+        .dataframe-table td {
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .dataframe-table tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+        
+        .dataframe-table tr:hover {
+            background: #e2e8f0;
+        }
+
+          /* NAV */
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #1a8cff;
+            transition: width 0.3s;
+        }
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        .active-nav:after {
+            width: 100%;
+        }
+
+        /* CODE DROP DOWN */
+         /* Unique styling using ds- prefix */
+    .ds-container {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      max-width: 800px;
+    }
+
+    .ds-block {
+      margin-bottom: 20px;
+      border: 1px solid #006b3f;
+      border-radius: 10px;
+      background: #f1f8f5;
+      padding: 15px;
+    }
+
+    .ds-button {
+      background: #006b3f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+
+    .ds-button:hover {
+      background: #004f2f;
+    }
+
+    .ds-content {
+      display: none;
+      padding: 10px;
+      background-color: white;
+      border-top: 1px solid #ccc;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+
+    .ds-line {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .ds-line strong {
+      color: #006b3f;
+    }
+
+    .ds-open {
+      display: block;
+    }
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <!-- Header with NITDA/NCAIR branding -->
+    <header class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white text-nigeriagreen rounded-full p-2">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">5IRE</h1>
+                    <p class="text-sm opacity-80">Universal Learning Archive</p>
+                    <button class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <i class="fas fa-user-graduate mr-2"></i>DATTI
+                </button>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm">Cohort 27: Data Science</p>
+                <p class="text-xs opacity-80">Data Analysis with Pandas</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Latest updates ticker -->
+    <div class="update-ticker">
+        <div class="ticker-content">
+            <span class="px-4"><i class="fas fa-bullhorn mr-2"></i>New: Added Nigerian economic dataset examples</span>
+            <span class="px-4"><i class="fas fa-star mr-2"></i>Updated: Pandas 2.0 features added to data cleaning module</span>
+            <span class="px-4"><i class="fas fa-book mr-2"></i>Now available: Pandas cheat sheet for data scientists</span>
+        </div>
+    </div>
+            <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4 gap-4 md:gap-8">
+                <a href="./fundementals.html" class="nav-item  text-nca-700" ><i class="fas fa-code mr-1"></i>Python</a>
+                <a href="#" class="nav-item hover:text-nca-700 font-medium active-nav"><i class="fas fa-database mr-1"></i>Data</a>
+                <a href="./index3.html" class="nav-item hover:text-nca-700"><i class="fas fa-chart-line mr-1"></i>Plots</a>
+                <a href="./index4.html" class="nav-item hover:text-nca-700"><i class="fas fa-robot mr-1"></i>ML</a>
+                <a href="./index5.html" class="nav-item hover:text-nca-700"><i class="fas fa-graduation-cap mr-1"></i>Project</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page header with progress -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Data Analysis with Pandas: Transform Data into Insights</h1>
+                <p class="text-gray-600 mb-4">Master the essential data manipulation library for data science</p>
+                
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-secondary mr-2"></i>
+                        <span>Estimated Time: 4-5 hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span>Prerequisite: Python Fundamentals</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium">Your Progress</span>
+                        <span id="progress-text" class="text-sm font-medium">45%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>5IRE Curriculum Compliant
+            </div>
+        </div>
+
+        <!-- Mission statement -->
+        <div class="bg-gradient-to-r from-dsblue to-dspink text-white rounded-xl shadow-md p-6 mb-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">From Data to Decisions</h2>
+            <p class="text-lg mb-4">
+                "Learn to transform raw data into actionable insights using Pandas - the most powerful data manipulation library in Python."
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <span>Clean messy datasets</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>Analyze trends and patterns</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <span>Derive meaningful insights</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legacy & Learning Trail Section: Pandas Mastery -->
+<div class="relative bg-white rounded-xl shadow-lg p-8 border border-gray-200 mt-12">
+  <div class="flex flex-col md:flex-row gap-8">
+    <!-- Left Side: Visual Cue -->
+    <div class="w-full md:w-1/2 flex justify-center">
+      <img src="./IMG/undraw_going-upwards_0y3z.png" alt="Data Analysis" class="w-80 md:w-96">
+    </div>
+
+    <!-- Right Side: Content Overview -->
+    <div class="w-full md:w-1/2">
+      <h2 class="text-3xl font-bold text-gray-800 mb-3">Data Analysis with Pandas</h2>
+      <p class="text-gray-600 mb-4 text-lg">Clean, explore, and visualize data using Nigeria-focused datasets in the most powerful Python library for data manipulation.</p>
+
+      <ul class="space-y-3 text-gray-700 mb-6">
+        <li class="flex items-start"><i class="fas fa-database text-blue-600 mt-1 mr-3"></i> <span><strong>DataFrames & Series:</strong> Learn to work with the foundational structures of Pandas</span></li>
+        <li class="flex items-start"><i class="fas fa-tools text-green-600 mt-1 mr-3"></i> <span><strong>Data Cleaning:</strong> Handle missing values, fix inconsistencies, and prepare real-world datasets</span></li>
+        <li class="flex items-start"><i class="fas fa-chart-bar text-purple-600 mt-1 mr-3"></i> <span><strong>Exploratory Analysis:</strong> Use filtering, aggregation, and stats to find insights</span></li>
+        <li class="flex items-start"><i class="fas fa-project-diagram text-yellow-600 mt-1 mr-3"></i> <span><strong>Real-World Projects:</strong> Analyze Nigerian economic data to drive impact</span></li>
+        <li class="flex items-start"><i class="fas fa-chart-pie text-red-600 mt-1 mr-3"></i> <span><strong>Data Visualization:</strong> Communicate your findings with clear, stunning plots</span></li>
+      </ul>
+
+      <div class="flex flex-wrap gap-3">
+        <div class="badge bg-blue-100 text-blue-800 px-4 py-1 rounded-full text-sm font-medium">
+          <i class="fas fa-clock mr-1"></i> 4–5 hours
+        </div>
+        <div class="badge bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-medium">
+          <i class="fas fa-certificate mr-1"></i> Prerequisite: Python Fundamentals
+        </div>
+        <div class="badge bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full text-sm font-medium">
+          <i class="fas fa-chart-line mr-1"></i> Progress: 45%
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- Footer CTA -->
+  <div class="mt-10 pt-6 border-t text-center text-sm text-gray-500">
+    <i class="fas fa-award mr-2 text-indigo-500"></i>
+    Proudly aligned with the <strong>5IRE Digital Curriculum</strong> – A step forward in building Africa’s data future 🇳🇬
+  </div>
+</div>
+
+
+        
+
+        <!-- Complete Learning Trail -->
+        <h2 class="text-2xl font-bold mb-6 mt-20  text-center">Learning Trail: Data Analysis with Pandas</h2>
+        
+        <div class="learning-path bg-white rounded-xl shadow-lg p-6 mb-16">
+            <!-- Module 1: Pandas Introduction -->
+            <div class="path-item completed active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-green-600">1</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Introduction to Pandas</h3>
+                        <p class="text-gray-600">DataFrames, Series, and core concepts</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Pandas is the foundation of data analysis in Python. It provides powerful, flexible data structures (DataFrames and Series) 
+                        that make data manipulation and analysis efficient. Understanding these core concepts is essential for all data science work.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    pandas_intro.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Import pandas</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">pandas</span> <span class="text-pink-400">as</span> <span class="text-blue-400">pd</span>
+
+<span class="text-purple-400"># Create DataFrame from Nigerian states data</span>
+<span class="text-blue-400">data</span> = {
+    <span class="text-green-400">'State'</span>: [<span class="text-green-400">'Lagos'</span>, <span class="text-green-400">'Kano'</span>, <span class="text-green-400">'Abuja'</span>, <span class="text-green-400">'Rivers'</span>, <span class="text-green-400">'Oyo'</span>],
+    <span class="text-green-400">'Population'</span>: [<span class="text-amber-400">14.8</span>, <span class="text-amber-400">4.3</span>, <span class="text-amber-400">3.6</span>, <span class="text-amber-400">3.3</span>, <span class="text-amber-400">3.2</span>],  <span class="text-gray-500"># Millions</span>
+    <span class="text-green-400">'GDP'</span>: [<span class="text-amber-400">102.4</span>, <span class="text-amber-400">23.7</span>, <span class="text-amber-400">29.3</span>, <span class="text-amber-400">21.6</span>, <span class="text-amber-400">16.2</span>],   <span class="text-gray-500"># Billion USD</span>
+    <span class="text-green-400">'Region'</span>: [<span class="text-green-400">'South West'</span>, <span class="text-green-400">'North West'</span>, <span class="text-green-400">'North Central'</span>, <span class="text-green-400">'South South'</span>, <span class="text-green-400">'South West'</span>]
+}
+
+<span class="text-blue-400">df</span> = <span class="text-blue-400">pd</span>.<span class="text-blue-400">DataFrame</span>(<span class="text-blue-400">data</span>)
+
+<span class="text-purple-400"># Display the DataFrame</span>
+<span class="text-pink-400">print</span>(<span class="text-blue-400">df</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">"\nDataFrame shape:"</span>, <span class="text-blue-400">df</span>.<span class="text-blue-400">shape</span>)
+<span class="text-pink-400">print</span>(<span class="text-green-400">"Data types:\n"</span>, <span class="text-blue-400">df</span>.<span class="text-blue-400">dtypes</span>)</pre>
+                            </div>
+                        </div>
+                            <!-- Code Block 1 -->
+  <div class="ds-block">
+    <button class="ds-button" onclick="toggleContent('ds-code1')">📦Code Explain : Create and Display Nigerian States DataFrame</button>
+    <div id="ds-code1" class="ds-content">
+      <div class="ds-line"><strong>import pandas as pd</strong> – Imports the pandas library for data analysis.</div>
+      <div class="ds-line"><strong>data = {...}</strong> – Defines a dictionary with keys like 'State', 'Population', etc.</div>
+      <div class="ds-line"><strong>df = pd.DataFrame(data)</strong> – Converts the dictionary to a DataFrame table.</div>
+      <div class="ds-line"><strong>print(df)</strong> – Displays the table in console.</div>
+      <div class="ds-line"><strong>print(df.shape)</strong> – Shows the number of rows and columns.</div>
+      <div class="ds-line"><strong>print(df.dtypes)</strong> – Displays data types of each column.</div>
+    </div>
+  </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Output Preview</h4>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <table class="dataframe-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>State</th>
+                                        <th>Population</th>
+                                        <th>GDP</th>
+                                        <th>Region</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0</td>
+                                        <td>Lagos</td>
+                                        <td>14.8</td>
+                                        <td>102.4</td>
+                                        <td>South West</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Kano</td>
+                                        <td>4.3</td>
+                                        <td>23.7</td>
+                                        <td>North West</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Abuja</td>
+                                        <td>3.6</td>
+                                        <td>29.3</td>
+                                        <td>North Central</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Rivers</td>
+                                        <td>3.3</td>
+                                        <td>21.6</td>
+                                        <td>South South</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Oyo</td>
+                                        <td>3.2</td>
+                                        <td>16.2</td>
+                                        <td>South West</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-4 text-sm">
+                                <p>DataFrame shape: (5, 4)</p>
+                                <p>Data types:</p>
+                                <p>State         object<br>
+                                Population    float64<br>
+                                GDP          float64<br>
+                                Region        object</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 2: Data Cleaning -->
+            <div class="path-item active mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">2</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Cleaning</h3>
+                        <p class="text-gray-600">Handling missing values, duplicates, and inconsistencies</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Real-world data is often messy and incomplete. Data cleaning is the crucial first step in any analysis, 
+                        accounting for 60-80% of a data scientist's time. Proper cleaning ensures your analysis is accurate and reliable.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Code Example</h4>
+                        <div class="code-block mb-4">
+                            <div class="code-header">
+                                <div class="text-gray-300 text-sm">
+                                    data_cleaning.py
+                                </div>
+                                <div>
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                        <i class="fas fa-copy mr-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Sample dataset with missing values</span>
+<span class="text-blue-400">data</span> = {
+    <span class="text-green-400">'City'</span>: [<span class="text-green-400">'Lagos'</span>, <span class="text-green-400">'Abuja'</span>, <span class="text-green-400">'Kano'</span>, <span class="text-green-400">'Port Harcourt'</span>, <span class="text-green-400">'Ibadan'</span>],
+    <span class="text-green-400">'Temperature'</span>: [<span class="text-amber-400">32.1</span>, <span class="text-blue-400">None</span>, <span class="text-amber-400">35.2</span>, <span class="text-amber-400">31.5</span>, <span class="text-blue-400">None</span>],
+    <span class="text-green-400">'Humidity'</span>: [<span class="text-amber-400">78</span>, <span class="text-amber-400">65</span>, <span class="text-amber-400">None</span>, <span class="text-amber-400">82</span>, <span class="text-amber-400">75</span>],
+    <span class="text-green-400">'Rainfall'</span>: [<span class="text-amber-400">1200</span>, <span class="text-amber-400">1100</span>, <span class="text-amber-400">900</span>, <span class="text-blue-400">None</span>, <span class="text-amber-400">1150</span>]
+}
+
+<span class="text-blue-400">df</span> = <span class="text-blue-400">pd</span>.<span class="text-blue-400">DataFrame</span>(<span class="text-blue-400">data</span>)
+
+<span class="text-purple-400"># Data cleaning operations</span>
+<span class="text-blue-400">df_clean</span> = <span class="text-blue-400">df</span>.<span class="text-blue-400">copy</span>()
+<span class="text-blue-400">df_clean</span>.<span class="text-blue-400">drop_duplicates</span>(<span class="text-blue-400">inplace</span>=<span class="text-blue-400">True</span>)  <span class="text-gray-500"># Remove duplicate rows</span>
+
+<span class="text-purple-400"># Handle missing values</span>
+<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Temperature'</span>].<span class="text-blue-400">fillna</span>(<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Temperature'</span>].<span class="text-blue-400">mean</span>(), <span class="text-blue-400">inplace</span>=<span class="text-blue-400">True</span>)
+<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Humidity'</span>].<span class="text-blue-400">fillna</span>(<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Humidity'</span>].<span class="text-blue-400">median</span>(), <span class="text-blue-400">inplace</span>=<span class="text-blue-400">True</span>)
+<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Rainfall'</span>].<span class="text-blue-400">fillna</span>(<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'Rainfall'</span>].<span class="text-blue-400">mean</span>(), <span class="text-blue-400">inplace</span>=<span class="text-blue-400">True</span>)
+
+<span class="text-purple-400"># Standardize city names</span>
+<span class="text-blue-400">df_clean</span>[<span class="text-green-400">'City'</span>] = <span class="text-blue-400">df_clean</span>[<span class="text-green-400">'City'</span>].<span class="text-blue-400">str</span>.<span class="text-blue-400">title</span>()
+
+<span class="text-purple-400"># Display cleaned DataFrame</span>
+<span class="text-pink-400">print</span>(<span class="text-blue-400">df_clean</span>)</pre>
+                            </div>
+                        </div>
+                        
+  <!-- Code Block 2 -->
+  <div class="ds-block">
+    <button class="ds-button" onclick="toggleContent('ds-code2')">🧹 Code Explain: Cleaning a Dataset with Missing Values</button>
+    <div id="ds-code2" class="ds-content">
+      <div class="ds-line"><strong>data = {...}</strong> – Creates sample data with missing values (None).</div>
+      <div class="ds-line"><strong>df = pd.DataFrame(data)</strong> – Converts it to a DataFrame.</div>
+      <div class="ds-line"><strong>df_clean = df.copy()</strong> – Makes a copy to clean without affecting original.</div>
+      <div class="ds-line"><strong>drop_duplicates()</strong> – Removes duplicate rows if any.</div>
+      <div class="ds-line"><strong>fillna(...)</strong> – Fills missing values with mean or median of column.</div>
+      <div class="ds-line"><strong>str.title()</strong> – Formats city names (e.g., "lagos" → "Lagos").</div>
+      <div class="ds-line"><strong>print(df_clean)</strong> – Prints the cleaned data.</div>
+    </div>
+  </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3">Data Cleaning Techniques</h4>
+                        <div class="bg-white p-4 rounded-lg border mb-4">
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Handling Missing Values</strong>
+                                        <p class="text-sm">Fill with mean, median, mode, or use interpolation</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Removing Duplicates</strong>
+                                        <p class="text-sm">Identify and remove duplicate records</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Standardizing Values</strong>
+                                        <p class="text-sm">Ensure consistent formatting (e.g., capitalization)</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <strong>Data Type Conversion</strong>
+                                        <p class="text-sm">Ensure correct data types for each column</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 class="font-bold text-yellow-700 mb-2 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i> Common Data Issues
+                            </h4>
+                            <ul class="list-disc pl-5 text-gray-700">
+                                <li>Missing values (NaNs)</li>
+                                <li>Inconsistent formatting</li>
+                                <li>Outliers and anomalies</li>
+                                <li>Incorrect data types</li>
+                                <li>Duplicate records</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 3: Data Analysis -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">3</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Analysis Techniques</h3>
+                        <p class="text-gray-600">Filtering, grouping, aggregation, and descriptive statistics</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Data analysis transforms raw data into meaningful insights. These techniques help you answer critical business questions, 
+                        identify trends, and make data-driven decisions. Mastering these skills is essential for any data scientist.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-6 mb-6">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="text-gray-300 text-sm">
+                                data_analysis.py
+                            </div>
+                            <div>
+                                <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                    <i class="fas fa-copy mr-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Load Nigerian economic data</span>
+<span class="text-blue-400">df</span> = <span class="text-blue-400">pd</span>.<span class="text-blue-400">read_csv</span>(<span class="text-green-400">'nigerian_economy.csv'</span>)
+
+<span class="text-purple-400"># Filtering data</span>
+<span class="text-blue-400">high_gdp</span> = <span class="text-blue-400">df</span>[<span class="text-blue-400">df</span>[<span class="text-green-400">'GDP'</span>] > <span class="text-amber-400">50</span>]  <span class="text-gray-500"># States with GDP > $50B</span>
+<span class="text-blue-400">south_states</span> = <span class="text-blue-400">df</span>[<span class="text-blue-400">df</span>[<span class="text-green-400">'Region'</span>].<span class="text-blue-400">str</span>.<span class="text-blue-400">contains</span>(<span class="text-green-400">'South'</span>)]
+
+<span class="text-purple-400"># Grouping and aggregation</span>
+<span class="text-blue-400">region_stats</span> = <span class="text-blue-400">df</span>.<span class="text-blue-400">groupby</span>(<span class="text-green-400">'Region'</span>).<span class="text-blue-400">agg</span>({
+    <span class="text-green-400">'Population'</span>: <span class="text-green-400">'sum'</span>,
+    <span class="text-green-400">'GDP'</span>: [<span class="text-green-400">'sum'</span>, <span class="text-green-400">'mean'</span>, <span class="text-green-400">'max'</span>],
+    <span class="text-green-400">'Unemployment'</span>: <span class="text-green-400">'mean'</span>
+}).<span class="text-blue-400">reset_index</span>()
+
+<span class="text-purple-400"># Descriptive statistics</span>
+<span class="text-blue-400">summary</span> = <span class="text-blue-400">df</span>.<span class="text-blue-400">describe</span>(<span class="text-blue-400">include</span>=<span class="text-green-400">'all'</span>)
+
+<span class="text-purple-400"># Correlation analysis</span>
+<span class="text-blue-400">correlation_matrix</span> = <span class="text-blue-400">df</span>.<span class="text-blue-400">corr</span>()</pre>
+                        </div>
+                    </div>
+                      <!-- Code Block 3 -->
+  <div class="ds-block">
+    <button class="ds-button" onclick="toggleContent('ds-code3')">🔍 Code 3: Filtering and Analyzing Economic Data</button>
+    <div id="ds-code3" class="ds-content">
+      <div class="ds-line"><strong>read_csv()</strong> – Loads data from a CSV file into a DataFrame.</div>
+      <div class="ds-line"><strong>df[df['GDP'] > 50]</strong> – Filters rows where GDP > $50B.</div>
+      <div class="ds-line"><strong>df[df['Region'].str.contains('South')]</strong> – Filters states from southern regions.</div>
+      <div class="ds-line"><strong>groupby().agg(...)</strong> – Groups by region, then aggregates stats like sum and mean.</div>
+      <div class="ds-line"><strong>describe()</strong> – Summarizes numerical stats of the dataset.</div>
+      <div class="ds-line"><strong>corr()</strong> – Returns correlation between numerical columns.</div>
+    </div>
+  </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 class="font-bold text-green-700 mb-2 flex items-center">
+                            <i class="fas fa-brain mr-2"></i> Real-World Application
+                        </h4>
+                        <p class="text-gray-700">
+                            Imagine you're analyzing Nigeria's economic data to advise on resource allocation. 
+                            <strong>Filtering</strong> helps identify high-potential states. <strong>Grouping</strong> by region shows 
+                            economic disparities. <strong>Aggregation</strong> reveals total GDP and average unemployment rates. 
+                            <strong>Descriptive statistics</strong> provide an overview of economic health. These techniques turn 
+                            raw data into actionable insights for policymakers.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module 4: Data Visualization -->
+            <div class="path-item mb-12 pl-12 relative">
+                <div class="flex items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">4</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Data Visualization</h3>
+                        <p class="text-gray-600">Creating insightful charts and graphs</p>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Why This Matters
+                    </h4>
+                    <p class="text-gray-700">
+                        Visualization transforms complex data into intuitive, understandable graphics. It helps identify patterns, 
+                        communicate insights, and tell compelling data stories. Effective visualization is crucial for sharing 
+                        findings with stakeholders.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-lg border">
+                        <h4 class="font-bold text-gray-800 mb-3">GDP by State</h4>
+                        <div class="bg-gray-100 p-4 rounded h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-chart-bar text-4xl text-blue-500 mb-3"></i>
+                                <p>Bar chart showing GDP comparison</p>
+                                <p class="text-sm mt-2">Lagos: $102.4B, Kano: $23.7B, Abuja: $29.3B</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg border">
+                        <h4 class="font-bold text-gray-800 mb-3">Population Distribution</h4>
+                        <div class="bg-gray-100 p-4 rounded h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-chart-pie text-4xl text-green-500 mb-3"></i>
+                                <p>Pie chart showing regional distribution</p>
+                                <p class="text-sm mt-2">South West: 48%, North West: 28%, South South: 15%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg border">
+                        <h4 class="font-bold text-gray-800 mb-3">Unemployment Trends</h4>
+                        <div class="bg-gray-100 p-4 rounded h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-chart-line text-4xl text-purple-500 mb-3"></i>
+                                <p>Line chart showing trends over time</p>
+                                <p class="text-sm mt-2">2018: 23%, 2019: 21%, 2020: 27%, 2021: 25%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg border">
+                        <h4 class="font-bold text-gray-800 mb-3">GDP vs Population</h4>
+                        <div class="bg-gray-100 p-4 rounded h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-dot-circle text-4xl text-red-500 mb-3"></i>
+                                <p>Scatter plot showing correlation</p>
+                                <p class="text-sm mt-2">R = 0.87 (strong positive correlation)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 code-block">
+                    <div class="code-header">
+                        <div class="text-gray-300 text-sm">
+                            visualization.py
+                        </div>
+                        <div>
+                            <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm mr-2">
+                                <i class="fas fa-copy mr-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre class="text-gray-200 font-mono text-sm">
+<span class="text-purple-400"># Import visualization libraries</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">matplotlib.pyplot</span> <span class="text-pink-400">as</span> <span class="text-blue-400">plt</span>
+<span class="text-pink-400">import</span> <span class="text-blue-400">seaborn</span> <span class="text-pink-400">as</span> <span class="text-blue-400">sns</span>
+
+<span class="text-purple-400"># Set Nigerian color palette</span>
+<span class="text-blue-400">nigerian_colors</span> = [<span class="text-green-400">'#006b3f'</span>, <span class="text-green-400">'#fcd116'</span>, <span class="text-green-400">'#000000'</span>]
+<span class="text-blue-400">sns</span>.<span class="text-blue-400">set_palette</span>(<span class="text-blue-400">nigerian_colors</span>)
+
+<span class="text-purple-400"># Create bar plot of GDP by state</span>
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">figure</span>(<span class="text-blue-400">figsize</span>=(<span class="text-amber-400">10</span>, <span class="text-amber-400">6</span>))
+<span class="text-blue-400">sns</span>.<span class="text-blue-400">barplot</span>(<span class="text-blue-400">x</span>=<span class="text-green-400">'State'</span>, <span class="text-blue-400">y</span>=<span class="text-green-400">'GDP'</span>, <span class="text-blue-400">data</span>=<span class="text-blue-400">df</span>.<span class="text-blue-400">sort_values</span>(<span class="text-green-400">'GDP'</span>, <span class="text-blue-400">ascending</span>=<span class="text-blue-400">False</span>))
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">title</span>(<span class="text-green-400">'GDP by State (Billions USD)'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">xticks</span>(<span class="text-blue-400">rotation</span>=<span class="text-amber-400">45</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">show</span>()
+
+<span class="text-purple-400"># Create scatter plot of GDP vs Population</span>
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">figure</span>(<span class="text-blue-400">figsize</span>=(<span class="text-amber-400">8</span>, <span class="text-amber-400">6</span>))
+<span class="text-blue-400">sns</span>.<span class="text-blue-400">scatterplot</span>(<span class="text-blue-400">x</span>=<span class="text-green-400">'Population'</span>, <span class="text-blue-400">y</span>=<span class="text-green-400">'GDP'</span>, <span class="text-blue-400">data</span>=<span class="text-blue-400">df</span>, <span class="text-blue-400">s</span>=<span class="text-amber-400">100</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">title</span>(<span class="text-green-400">'GDP vs Population by State'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">xlabel</span>(<span class="text-green-400">'Population (Millions)'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">ylabel</span>(<span class="text-green-400">'GDP (Billions USD)'</span>)
+<span class="text-blue-400">plt</span>.<span class="text-blue-400">show</span>()</pre>
+                    </div>
+                </div>
+                 <!-- Code Block 4 -->
+  <div class="ds-block mt-5">
+    <button class="ds-button" onclick="toggleContent('ds-code4')">📊 Code 4: Data Visualization with Nigerian Colors</button>
+    <div id="ds-code4" class="ds-content">
+      <div class="ds-line"><strong>import matplotlib.pyplot as plt</strong> – For charts and graphs.</div>
+      <div class="ds-line"><strong>import seaborn as sns</strong> – For beautiful statistical plots.</div>
+      <div class="ds-line"><strong>sns.set_palette([...])</strong> – Sets color scheme to Nigerian flag colors.</div>
+      <div class="ds-line"><strong>barplot(...)</strong> – Plots GDP per state as bar chart.</div>
+      <div class="ds-line"><strong>scatterplot(...)</strong> – Plots GDP vs population as dots on a graph.</div>
+      <div class="ds-line"><strong>plt.show()</strong> – Displays the chart.</div>
+    </div>
+  </div>
+</div>
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div class="bg-gradient-to-r from-dspurple to-dspink text-white rounded-xl shadow-lg p-8 text-center mb-16">
+            <div class="max-w-2xl mx-auto">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-trophy text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Master Pandas, Master Data</h2>
+                <p class="text-xl mb-6">You've learned essential skills for transforming raw data into valuable insights</p>
+                
+                <div class="bg-white bg-opacity-20 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">What's Next in Your Learning Trail</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-database text-2xl mb-2"></i>
+                            <p>Data Visualization with Matplotlib</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-project-diagram text-2xl mb-2"></i>
+                            <p>Statistical Analysis</p>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-4 rounded">
+                            <i class="fas fa-robot text-2xl mb-2"></i>
+                            <p>Machine Learning Fundamentals</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="index3.html" class="bg-white text-purple-700 hover:bg-gray-100 px-6 py-3 rounded-full text-lg font-bold shadow-lg transform transition hover:scale-105">
+                    Continue to Data Visualization
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Home Button - Add to your education page template -->
+<a href="./index.html" class="fixed bottom-6 left-6 z-40">
+  <button class="flex items-center space-x-2 bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 hover:bg-[#1e3a8a]/10">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Home</span>
+  </button>
+</a>
+
+
+  <!-- Footer -->
+    <footer class="bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">5IRE ULA</h3>
+                    <p class="text-sm opacity-80">
+                        The Universal Learning Archive is a flagship project of the 5th Industrial Revelution, designed to democratize technology education across Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Cohort 27 Learning Trail</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">Python Fundamentals</a></li>
+                        <li><a href="#" class="hover:underline">Data Analysis with Pandas</a></li>
+                        <li><a href="#" class="hover:underline">Data Visualization</a></li>
+                        <li><a href="#" class="hover:underline">Machine Learning Essentials</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>5IRE Headquarters, Abuja</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white border-opacity-20 mt-8 pt-6 text-center text-sm opacity-80">
+                <p>© 2025 Universal Learning Archive. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy code functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('pre');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Update progress
+        function updateProgress(percent) {
+            document.documentElement.style.setProperty('--progress', percent + '%');
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(45);
+        });
+          // Toggle dropdown explanation
+  function toggleContent(id) {
+    const content = document.getElementById(id);
+    content.classList.toggle('ds-open');
+  }
+    </script>
+</body>
+</html>

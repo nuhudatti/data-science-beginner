@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Seaborn Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        dark: '#0f172a',
+                        light: '#f1f5f9'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            scroll-behavior: smooth;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .keyword { color: #f472b6; }
+        .function { color: #38bdf8; }
+        .string { color: #34d399; }
+        .comment { color: #94a3b8; }
+        .variable { color: #fbbf24; }
+        .module { color: #c084fc; }
+        .parameter { color: #fda4af; }
+        
+        .section-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+        
+        .explanation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .explanation-content.show {
+            max-height: 1000px;
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .concept-pill {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid #8b5cf6;
+        }
+        
+        .module-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            transform: rotate(5deg);
+        }
+        
+        .plot-card {
+            transition: all 0.3s ease;
+            border: 1px solid #334155;
+        }
+        
+        .plot-card:hover {
+            transform: scale(1.03);
+            border-color: #8b5cf6;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+        }
+        
+        .comparison-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #1e293b;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-primary to-accent text-white py-6 px-4 sm:px-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <h1 class="text-3xl font-bold flex items-center justify-center md:justify-start">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    NITDA/NCAIR ULA - Data Science Cohort 27
+                </h1>
+                <p class="mt-2 text-blue-100">Module 3: Data Visualization - Seaborn Mastery</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                    <p class="text-sm">Module Progress</p>
+                    <div class="flex items-center mt-1">
+                        <span class="text-xs mr-2">40%</span>
+                        <div class="progress-bar w-32">
+                            <div class="progress-fill w-2/5"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hidden md:block">
+                    <p class="text-sm flex items-center">
+                        <i class="far fa-user mr-2"></i>
+                        DATTI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Navigation Sidebar -->
+            <nav class="lg:w-1/4 bg-slate-800/50 rounded-xl p-6 h-fit sticky top-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open mr-2"></i>
+                    Module 3: Data Visualization
+                </h2>
+                <p class="text-slate-300 mb-6">Statistical Visualization with Seaborn</p>
+                
+                <ul class="space-y-2">
+                    <li>
+                        <a href="./Matplotlib Fundamentals.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">1</div>
+                                Matplotlib Fundamentals
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Seaborn for Statistical Visualization.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50 active">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-purple-500 text-white mr-3">2</div>
+                                Seaborn for Statistical Visualization
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Customizing Plots Themes.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-indigo-500 text-white mr-3">3</div>
+                                Customizing Plots & Themes
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Interactive Visualizations with Plotly.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-pink-500 text-white mr-3">4</div>
+                                Interactive Visualizations with Plotly
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Nigerian Health Data.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-emerald-500 text-white mr-3">5</div>
+                                Real Project: Nigerian Health Data
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        Seaborn Resources
+                    </h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-book text-yellow-400 mr-3"></i>
+                            Seaborn Documentation
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-chart-bar text-green-400 mr-3"></i>
+                            Statistical Visualization Guide
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-laptop-code text-purple-400 mr-3"></i>
+                            Interactive Examples
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Seaborn Header -->
+                <div class="bg-gradient-to-r from-purple-900/80 to-indigo-900/80 rounded-2xl p-8 mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop')] bg-cover opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="module-badge bg-yellow-400 text-slate-900 font-bold py-1 px-4 rounded-full text-sm">
+                            Statistical Visualization
+                        </div>
+                        <h1 class="text-4xl font-bold mb-4">Mastering Seaborn</h1>
+                        <p class="text-lg text-blue-100 max-w-3xl">
+                            Elevate your data storytelling with Seaborn - the premier Python library for statistical visualization. 
+                            Learn to create insightful, publication-quality plots with minimal code.
+                        </p>
+                        <div class="flex flex-wrap gap-3 mt-6">
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Statistical Plots</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Data Relationships</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Automatic Styling</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Multivariate Analysis</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Introduction to Seaborn -->
+                <section class="section-card p-6 mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="step-indicator bg-purple-500 text-white mr-4">2</div>
+                        <h2 class="text-2xl font-bold">Seaborn for Statistical Visualization</h2>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Seaborn is a Python data visualization library based on Matplotlib that provides a high-level interface 
+                            for drawing attractive and informative statistical graphics. It integrates closely with pandas DataFrames.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 flex items-center text-purple-400">
+                                    <i class="fas fa-star mr-2"></i>
+                                    Why Seaborn?
+                                </h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Built-in themes for styling matplotlib graphics
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Tools for visualizing univariate and bivariate distributions
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Functions for visualizing linear relationships
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Statistical estimation and error bars
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        Tools that work well with pandas DataFrames
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-slate-800/50 p-5 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3 flex items-center text-purple-400">
+                                    <i class="fas fa-exchange-alt mr-2"></i>
+                                    Seaborn vs Matplotlib
+                                </h3>
+                                <table class="comparison-table">
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Seaborn</th>
+                                        <th>Matplotlib</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Learning Curve</td>
+                                        <td>Easier for statistical plots</td>
+                                        <td>Steeper but more flexible</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Default Styles</td>
+                                        <td>Modern and attractive</td>
+                                        <td>Basic and functional</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pandas Integration</td>
+                                        <td>Excellent (DataFrame-native)</td>
+                                        <td>Requires manual conversion</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Statistical Plots</td>
+                                        <td>Built-in support</td>
+                                        <td>Requires manual implementation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Use Case</td>
+                                        <td>Exploratory data analysis</td>
+                                        <td>Custom publication-quality figures</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Seaborn Plot Types -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-chart-area mr-3 text-purple-400"></i>
+                        Core Seaborn Plot Types
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Distribution Plots -->
+                        <div class="plot-card bg-slate-800/50 rounded-xl p-5">
+                            <h3 class="font-bold text-lg mb-3 text-blue-400">
+                                <i class="fas fa-chart-bar mr-2"></i>
+                                Distribution Plots
+                            </h3>
+                            <p class="text-sm text-slate-300 mb-4">
+                                Visualize the distribution of a dataset. Essential for understanding data spread and central tendencies.
+                            </p>
+                            <div class="code-block mb-4">
+                                <div class="code-header">
+                                    <span>Histogram & KDE</span>
+                                    <button class="text-slate-300 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre><code><span class="comment"># Histogram with Kernel Density Estimate</span>
+sns.histplot(data=df, x=<span class="string">'age'</span>, kde=<span class="keyword">True</span>, bins=<span class="number">20</span>)
+
+<span class="comment"># Empirical Cumulative Distribution</span>
+sns.ecdfplot(data=df, x=<span class="string">'income'</span>, hue=<span class="string">'region'</span>)</code></pre>
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                <i class="fas fa-lightbulb mr-1 text-yellow-400"></i>
+                                Use for: Understanding data distribution, identifying skewness, comparing subgroups
+                            </div>
+                        </div>
+                        
+                        <!-- Categorical Plots -->
+                        <div class="plot-card bg-slate-800/50 rounded-xl p-5">
+                            <h3 class="font-bold text-lg mb-3 text-green-400">
+                                <i class="fas fa-chart-pie mr-2"></i>
+                                Categorical Plots
+                            </h3>
+                            <p class="text-sm text-slate-300 mb-4">
+                                Compare different categories and their relationships. Ideal for grouped data analysis.
+                            </p>
+                            <div class="code-block mb-4">
+                                <div class="code-header">
+                                    <span>Boxplot & Violin</span>
+                                    <button class="text-slate-300 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre><code><span class="comment"># Box plot showing distribution</span>
+sns.boxplot(data=df, x=<span class="string">'region'</span>, y=<span class="string">'income'</span>)
+
+<span class="comment"># Violin plot showing density</span>
+sns.violinplot(data=df, x=<span class="string">'education'</span>, y=<span class="string">'age'</span>, 
+               inner=<span class="string">'quartile'</span>)</code></pre>
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                <i class="fas fa-lightbulb mr-1 text-yellow-400"></i>
+                                Use for: Comparing categories, visualizing distributions, identifying outliers
+                            </div>
+                        </div>
+                        
+                        <!-- Relational Plots -->
+                        <div class="plot-card bg-slate-800/50 rounded-xl p-5">
+                            <h3 class="font-bold text-lg mb-3 text-yellow-400">
+                                <i class="fas fa-project-diagram mr-2"></i>
+                                Relational Plots
+                            </h3>
+                            <p class="text-sm text-slate-300 mb-4">
+                                Visualize relationships between variables. Crucial for correlation and trend analysis.
+                            </p>
+                            <div class="code-block mb-4">
+                                <div class="code-header">
+                                    <span>Scatter & Line Plots</span>
+                                    <button class="text-slate-300 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre><code><span class="comment"># Scatter plot with regression line</span>
+sns.lmplot(data=df, x=<span class="string">'gdp'</span>, y=<span class="string">'life_expectancy'</span>, 
+          hue=<span class="string">'continent'</span>, height=<span class="number">6</span>)
+
+<span class="comment"># Line plot with confidence interval</span>
+sns.lineplot(data=df, x=<span class="string">'year'</span>, y=<span class="string">'population'</span>, 
+             hue=<span class="string">'country'</span>, ci=<span class="number">95</span>)</code></pre>
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                <i class="fas fa-lightbulb mr-1 text-yellow-400"></i>
+                                Use for: Identifying correlations, tracking trends over time, multivariate analysis
+                            </div>
+                        </div>
+                        
+                        <!-- Matrix Plots -->
+                        <div class="plot-card bg-slate-800/50 rounded-xl p-5">
+                            <h3 class="font-bold text-lg mb-3 text-red-400">
+                                <i class="fas fa-table mr-2"></i>
+                                Matrix Plots
+                            </h3>
+                            <p class="text-sm text-slate-300 mb-4">
+                                Visualize matrix-like data. Perfect for correlation matrices and cluster analysis.
+                            </p>
+                            <div class="code-block mb-4">
+                                <div class="code-header">
+                                    <span>Heatmap & Clustermap</span>
+                                    <button class="text-slate-300 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre><code><span class="comment"># Correlation matrix heatmap</span>
+corr = df.corr()
+sns.heatmap(corr, annot=<span class="keyword">True</span>, cmap=<span class="string">'coolwarm'</span>)
+
+<span class="comment"># Hierarchical clustering heatmap</span>
+sns.clustermap(corr, cmap=<span class="string">'vlag'</span>, standard_scale=<span class="number">1</span>)</code></pre>
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                <i class="fas fa-lightbulb mr-1 text-yellow-400"></i>
+                                Use for: Correlation analysis, pattern recognition, clustering visualization
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Practical Example -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-flask mr-3 text-purple-400"></i>
+                        Practical Application: Nigerian Health Data
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Let's apply Seaborn to visualize Nigerian health facility data. We'll explore regional distributions,
+                            facility types, and access patterns.
+                        </p>
+                        
+                        <div class="code-block mb-6">
+                            <div class="code-header">
+                                <span>Health Facility Analysis</span>
+                                <div>
+                                    <button class="text-slate-300 hover:text-white mr-3">
+                                        <i class="far fa-copy"></i> Copy
+                                    </button>
+                                    <button class="text-slate-300 hover:text-white explain-btn" data-target="explain-seaborn">
+                                        <i class="far fa-question-circle"></i> Explain
+                                    </button>
+                                </div>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">seaborn</span> <span class="keyword">as</span> <span class="module">sns</span>
+<span class="keyword">import</span> <span class="module">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="module">plt</span>
+<span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+
+<span class="comment"># Load Nigerian health facility data</span>
+<span class="variable">url</span> = <span class="string">"https://raw.githubusercontent.com/datasets/nigeria-health-facilities/main/data/health-facilities.csv"</span>
+<span class="variable">health_df</span> = pd.read_csv(url)
+
+<span class="comment"># Data preparation</span>
+<span class="variable">health_df</span> = health_df.dropna(subset=[<span class="string">'latitude'</span>, <span class="string">'longitude'</span>])
+<span class="variable">top_states</span> = health_df[<span class="string">'state'</span>].value_counts().nlargest(<span class="number">10</span>).index
+<span class="variable">health_df</span> = health_df[health_df[<span class="string">'state'</span>].isin(top_states)]
+
+<span class="comment"># Set Seaborn style</span>
+sns.set_theme(style=<span class="string">"whitegrid"</span>, palette=<span class="string">"muted"</span>)
+
+<span class="comment"># Create figure with subplots</span>
+<span class="variable">fig</span>, <span class="variable">axs</span> = plt.subplots(<span class="number">2</span>, <span class="number">2</span>, figsize=(<span class="number">16</span>, <span class="number">12</span>))
+<span class="variable">fig</span>.suptitle(<span class="string">'Nigerian Health Facility Analysis'</span>, fontsize=<span class="number">18</span>)
+
+<span class="comment"># Plot 1: Facility distribution by state</span>
+sns.countplot(
+    y=<span class="string">'state'</span>, 
+    data=health_df, 
+    order=health_df[<span class="string">'state'</span>].value_counts().index,
+    ax=axs[<span class="number">0</span>, <span class="number">0</span>]
+)
+axs[<span class="number">0</span>, <span class="number">0</span>].set_title(<span class="string">'Health Facilities by State'</span>)
+axs[<span class="number">0</span>, <span class="number">0</span>].set_xlabel(<span class="string">'Number of Facilities'</span>)
+
+<span class="comment"># Plot 2: Facility types</span>
+sns.countplot(
+    y=<span class="string">'type'</span>, 
+    data=health_df, 
+    order=health_df[<span class="string">'type'</span>].value_counts().index,
+    ax=axs[<span class="number">0</span>, <span class="number">1</span>]
+)
+axs[<span class="number">0</span>, <span class="number">1</span>].set_title(<span class="string">'Facility Type Distribution'</span>)
+axs[<span class="number">0</span>, <span class="number">1</span>].set_xlabel(<span class="string">'Count'</span>)
+
+<span class="comment"># Plot 3: Ownership distribution</span>
+sns.countplot(
+    x=<span class="string">'ownership'</span>, 
+    data=health_df, 
+    order=health_df[<span class="string">'ownership'</span>].value_counts().index,
+    ax=axs[<span class="number">1</span>, <span class="number">0</span>]
+)
+axs[<span class="number">1</span>, <span class="number">0</span>].set_title(<span class="string">'Facility Ownership'</span>)
+axs[<span class="number">1</span>, <span class="number">0</span>].set_xlabel(<span class="string">''</span>)
+axs[<span class="number">1</span>, <span class="number">0</span>].tick_params(axis=<span class="string">'x'</span>, rotation=<span class="number">45</span>)
+
+<span class="comment"># Plot 4: Facility types by state</span>
+<span class="variable">type_by_state</span> = health_df.groupby([<span class="string">'state'</span>, <span class="string">'type'</span>]).size().unstack().fillna(<span class="number">0</span>)
+sns.heatmap(
+    type_by_state, 
+    annot=<span class="keyword">True</span>, 
+    fmt=<span class="string">'g'</span>, 
+    cmap=<span class="string">'Blues'</span>, 
+    ax=axs[<span class="number">1</span>, <span class="number">1</span>]
+)
+axs[<span class="number">1</span>, <span class="number">1</span>].set_title(<span class="string">'Facility Types by State'</span>)
+axs[<span class="number">1</span>, <span class="number">1</span>].set_xlabel(<span class="string">'Facility Type'</span>)
+axs[<span class="number">1</span>, <span class="number">1</span>].set_ylabel(<span class="string">'State'</span>)
+
+<span class="comment"># Final adjustments</span>
+plt.tight_layout()
+plt.subplots_adjust(top=<span class="number">0.92</span>)
+plt.show()</code></pre>
+                        </div>
+                        
+                        <div id="explain-seaborn" class="explanation-content bg-slate-800/80 rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3">Code Explanation:</h3>
+                            
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-purple-400 mb-2">Data Preparation:</h4>
+                                <ul class="space-y-2">
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">health_df = pd.read_csv(url)</span>
+                                        <p>Loads Nigerian health facility data from a public GitHub repository.</p>
+                                    </li>
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">dropna()</span>
+                                        <p>Removes facilities with missing location data.</p>
+                                    </li>
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">health_df['state'].isin(top_states)</span>
+                                        <p>Filters to only the top 10 states by facility count.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-purple-400 mb-2">Visualization Setup:</h4>
+                                <ul class="space-y-2">
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">sns.set_theme()</span>
+                                        <p>Sets Seaborn's visual theme to "whitegrid" with a muted color palette.</p>
+                                    </li>
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">plt.subplots(2, 2)</span>
+                                        <p>Creates a 2x2 grid of subplots for our multi-panel visualization.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-purple-400 mb-2">Plot Creation:</h4>
+                                <ul class="space-y-2">
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">sns.countplot()</span>
+                                        <p>Creates bar charts showing counts of facilities by state, type, and ownership.</p>
+                                    </li>
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">sns.heatmap()</span>
+                                        <p>Creates a matrix showing facility types distribution across states.</p>
+                                    </li>
+                                    <li>
+                                        <span class="font-mono bg-slate-700 px-2 py-1 rounded">.set_title(), .set_xlabel()</span>
+                                        <p>Customizes plot titles and axis labels for clarity.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold text-purple-400 mb-2">Insights from Visualization:</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-slate-800 p-4 rounded-lg">
+                                        <h5 class="font-bold flex items-center">
+                                            <i class="fas fa-map-marker-alt text-red-400 mr-2"></i>
+                                            Regional Distribution
+                                        </h5>
+                                        <p class="text-sm">Reveals which states have the highest concentration of health facilities.</p>
+                                    </div>
+                                    <div class="bg-slate-800 p-4 rounded-lg">
+                                        <h5 class="font-bold flex items-center">
+                                            <i class="fas fa-clinic-medical text-green-400 mr-2"></i>
+                                            Facility Types
+                                        </h5>
+                                        <p class="text-sm">Shows the most common types of health facilities across Nigeria.</p>
+                                    </div>
+                                    <div class="bg-slate-800 p-4 rounded-lg">
+                                        <h5 class="font-bold flex items-center">
+                                            <i class="fas fa-building text-blue-400 mr-2"></i>
+                                            Ownership Patterns
+                                        </h5>
+                                        <p class="text-sm">Identifies the balance between public and private healthcare providers.</p>
+                                    </div>
+                                    <div class="bg-slate-800 p-4 rounded-lg">
+                                        <h5 class="font-bold flex items-center">
+                                            <i class="fas fa-balance-scale text-yellow-400 mr-2"></i>
+                                            Regional Disparities
+                                        </h5>
+                                        <p class="text-sm">Highlights differences in healthcare infrastructure across states.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Best Practices -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-medal mr-3 text-yellow-400"></i>
+                        Seaborn Best Practices
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-3 text-white">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Do's of Seaborn Visualization
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Use Appropriate Plots</h4>
+                                        <p class="text-sm text-slate-200">Match plot types to your data characteristics and analysis goals</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Leverage Hue Semantic</h4>
+                                        <p class="text-sm text-slate-200">Use color (hue) to represent additional variables effectively</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Contextualize with Titles/Labels</h4>
+                                        <p class="text-sm text-slate-200">Always add descriptive titles and axis labels</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Adjust Figure Size</h4>
+                                        <p class="text-sm text-slate-200">Resize plots appropriately for better readability</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-red-900/50 to-rose-900/50 rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-3 text-white">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Don'ts of Seaborn Visualization
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Overcrowd Plots</h4>
+                                        <p class="text-sm text-slate-200">Avoid too many categories or complex visualizations</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Ignore Colorblind Accessibility</h4>
+                                        <p class="text-sm text-slate-200">Use color palettes accessible to colorblind viewers</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Forget Context</h4>
+                                        <p class="text-sm text-slate-200">Don't present visualizations without proper context</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-times text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Misrepresent Data</h4>
+                                        <p class="text-sm text-slate-200">Avoid scales or visual encodings that distort data</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-slate-800/50 rounded-xl p-6">
+                        <h3 class="font-bold text-lg mb-3 text-center">
+                            <i class="fas fa-palette mr-2 text-purple-400"></i>
+                            Choosing the Right Color Palette
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            <div class="text-center">
+                                <div class="h-12 rounded-lg mb-2 bg-gradient-to-r from-#003f5c to-#58508d"></div>
+                                <p class="text-sm">Sequential</p>
+                                <p class="text-xs text-slate-400">For ordered data</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="h-12 rounded-lg mb-2 bg-gradient-to-r from-#ff6361 to-#ffa600"></div>
+                                <p class="text-sm">Diverging</p>
+                                <p class="text-xs text-slate-400">For critical values</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="h-12 rounded-lg mb-2 bg-gradient-to-r from-#bc5090 to-#ff6361"></div>
+                                <p class="text-sm">Qualitative</p>
+                                <p class="text-xs text-slate-400">For categories</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="h-12 rounded-lg mb-2 bg-gradient-to-r from-#00a896 to-#02c39a"></div>
+                                <p class="text-sm">Colorblind Safe</p>
+                                <p class="text-xs text-slate-400">For accessibility</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Next Steps -->
+                <div class="section-card p-6 mt-6">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Continue Your Learning Journey</h2>
+                    <div class="flex flex-wrap justify-center gap-4 mt-6">
+                        <a href="./Matplotlib Fundamentals.html" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-arrow-left mr-2"></i> Previous: Matplotlib
+                        </a>
+                        <a href="./Customizing Plots & Themes.html" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            Next: Customization <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="./Nigerian Health Data.html" class="bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-700 hover:to-emerald-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-project-diagram mr-2"></i> Go to Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+     <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/80 border-t border-slate-700 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-atom text-blue-400 mr-2"></i>
+                        NITDA/NCAIR ULA
+                    </h3>
+                    <p class="text-slate-400 mt-2">Universal Learning Archive - Transforming Nigeria through digital education</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-linkedin text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-youtube text-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm">
+                <p>© 2025 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR)</p>
+                <p class="mt-2">Cohort 27 - Data Science Specialization | Module 3: Data Visualization</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle explanation sections
+        document.querySelectorAll('.explain-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                targetElement.classList.toggle('show');
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (targetElement.classList.contains('show')) {
+                    icon.classList.remove('fa-question-circle');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-question-circle');
+                }
+            });
+        });
+        
+        // Update active navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Simulate progress as user scrolls
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollPosition / documentHeight) * 100;
+            document.querySelector('.progress-fill').style.width = Math.min(progress, 100) + '%';
+        });
+        
+        // Copy code functionality
+        document.querySelectorAll('.fa-copy').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-header').nextElementSibling;
+                const codeText = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const original = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-times';
+                    this.classList.remove(original);
+                    this.classList.add('fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.remove('fa-check');
+                        this.classList.add(original);
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

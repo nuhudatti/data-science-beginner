@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Nigerian Health Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8',
+                        secondary: '#0ea5e9',
+                        accent: '#8b5cf6',
+                        dark: '#0f172a',
+                        light: '#f1f5f9',
+                        nigerianGreen: '#008751',
+                        nigerianWhite: '#FFFFFF'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            scroll-behavior: smooth;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .code-header {
+            background: #334155;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .keyword { color: #f472b6; }
+        .function { color: #38bdf8; }
+        .string { color: #34d399; }
+        .comment { color: #94a3b8; }
+        .variable { color: #fbbf24; }
+        .module { color: #c084fc; }
+        .parameter { color: #fda4af; }
+        
+        .section-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #008751, #0ea5e9);
+            border-radius: 3px;
+        }
+        
+        .explanation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .explanation-content.show {
+            max-height: 1000px;
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .concept-pill {
+            background: rgba(0, 135, 81, 0.2);
+            border: 1px solid #008751;
+        }
+        
+        .module-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            transform: rotate(5deg);
+        }
+        
+        .plotly-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 400px;
+        }
+        
+        .feature-card {
+            transition: all 0.3s;
+            border: 1px solid #334155;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #008751;
+            box-shadow: 0 10px 25px rgba(0, 135, 81, 0.2);
+        }
+        
+        .project-step {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .project-step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #008751;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .insight-card {
+            background: rgba(0, 135, 81, 0.1);
+            border-left: 4px solid #008751;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .dashboard-preview {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #334155;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .dashboard-cell {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .dashboard-cell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.05) 50%);
+            background-size: 20px 20px;
+        }
+        
+        .dashboard-cell:nth-child(1) { grid-row: span 2; }
+        
+        .mock-chart {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: linear-gradient(to top, #008751, transparent);
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .mock-map {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed #008751;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #008751;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-nigerianGreen to-primary text-white py-6 px-4 sm:px-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <h1 class="text-3xl font-bold flex items-center justify-center md:justify-start">
+                    <i class="fas fa-heartbeat mr-3"></i>
+                    NITDA/NCAIR ULA - Data Science Cohort 27
+                </h1>
+                <p class="mt-2 text-blue-100">Module 3: Nigerian Health Data Visualization Project</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                    <p class="text-sm">Module Progress</p>
+                    <div class="flex items-center mt-1">
+                        <span class="text-xs mr-2">100%</span>
+                        <div class="progress-bar w-32">
+                            <div class="progress-fill w-full"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg hidden md:block">
+                    <p class="text-sm flex items-center">
+                        <i class="fas fa-trophy mr-2"></i>
+                        Project Mode
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Navigation Sidebar -->
+            <nav class="lg:w-1/4 bg-slate-800/50 rounded-xl p-6 h-fit sticky top-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open mr-2"></i>
+                    Module 3: Data Visualization
+                </h2>
+                <p class="text-slate-300 mb-6">Nigerian Health Data Project</p>
+                
+                <ul class="space-y-2">
+                    <li>
+                        <a href="./Matplotlib Fundamentals.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">1</div>
+                                Matplotlib Fundamentals
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Seaborn for Statistical Visualization.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-purple-500 text-white mr-3">2</div>
+                                Seaborn Visualization
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Customizing Plots Themes.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-pink-500 text-white mr-3">3</div>
+                                Customizing Plots
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Interactive Visualizations with Plotly.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-blue-500 text-white mr-3">4</div>
+                                Interactive Visualizations
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./Nigerian Health Data.html" class="nav-link block py-3 px-4 rounded-lg hover:bg-slate-700/50 active">
+                            <div class="flex items-center">
+                                <div class="step-indicator bg-green-500 text-white mr-3">5</div>
+                                Nigerian Health Project
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        Project Resources
+                    </h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-database text-green-400 mr-3"></i>
+                            Health Datasets
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-code text-blue-400 mr-3"></i>
+                            Starter Template
+                        </li>
+                        <li class="flex items-center py-2 px-3 rounded-lg bg-slate-700/50">
+                            <i class="fas fa-book text-yellow-400 mr-3"></i>
+                            Project Guidelines
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Project Header -->
+                <div class="bg-gradient-to-r from-nigerianGreen/80 to-primary/80 rounded-2xl p-8 mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=2832&auto=format&fit=crop')] bg-cover opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="module-badge bg-yellow-400 text-slate-900 font-bold py-1 px-4 rounded-full text-sm">
+                            Capstone Project
+                        </div>
+                        <h1 class="text-4xl font-bold mb-4">Nigerian Health Data Visualization Project</h1>
+                        <p class="text-lg text-blue-100 max-w-3xl">
+                            Apply all your data visualization skills to analyze and communicate insights from Nigeria's healthcare system. 
+                            This comprehensive project will demonstrate your ability to transform raw data into actionable insights.
+                        </p>
+                        <div class="flex flex-wrap gap-3 mt-6">
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Data Analysis</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Visual Storytelling</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Dashboard Design</div>
+                            <div class="concept-pill px-4 py-1 rounded-full text-sm">Policy Recommendations</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Overview -->
+                <section class="section-card p-6 mb-8">
+                    <div class="flex items-center mb-6">
+                        <div class="step-indicator bg-green-500 text-white mr-4">5</div>
+                        <h2 class="text-2xl font-bold">Project Overview</h2>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="mb-4">
+                            Nigeria's healthcare system faces numerous challenges, including unequal access to facilities, 
+                            regional disparities in healthcare quality, and varying disease burdens. This project uses real 
+                            Nigerian health data to visualize these challenges and identify opportunities for improvement.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            <div class="feature-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-green-500 text-4xl mb-3">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Data Sources</h3>
+                                <p class="text-sm text-slate-300">Multiple datasets from Nigerian health organizations</p>
+                            </div>
+                            
+                            <div class="feature-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-blue-500 text-4xl mb-3">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Visualization Techniques</h3>
+                                <p class="text-sm text-slate-300">Matplotlib, Seaborn, and Plotly</p>
+                            </div>
+                            
+                            <div class="feature-card bg-slate-800/50 p-5 rounded-xl text-center">
+                                <div class="text-yellow-500 text-4xl mb-3">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Project Goals</h3>
+                                <p class="text-sm text-slate-300">Identify disparities and recommend improvements</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-400 mr-3"></i>
+                                Key Questions to Answer
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    How are healthcare facilities distributed across Nigeria?
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    Which regions have the best/worst access to healthcare?
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    What is the relationship between disease prevalence and healthcare access?
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    How has healthcare infrastructure evolved over time?
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    What are the regional differences in health outcomes?
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-question-circle text-green-500 mt-1 mr-3"></i>
+                                    How can data visualization inform policy decisions?
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Project Implementation -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-tasks text-green-500 mr-3"></i>
+                        Project Implementation Guide
+                    </h2>
+                    
+                    <div class="project-step">
+                        <div class="project-step-number">1</div>
+                        <h3 class="text-xl font-bold mb-3">Data Acquisition and Preparation</h3>
+                        <p>Gather and clean Nigerian health data from multiple sources</p>
+                        
+                        <div class="code-block mt-4">
+                            <div class="code-header">
+                                <span>Data Loading and Cleaning</span>
+                                <button class="text-slate-300 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+<span class="keyword">import</span> <span class="module">numpy</span> <span class="keyword">as</span> <span class="module">np</span>
+
+<span class="comment"># Load datasets</span>
+<span class="variable">facilities_df</span> = pd.read_csv(<span class="string">'nigerian_health_facilities.csv'</span>)
+<span class="variable">disease_df</span> = pd.read_csv(<span class="string">'nigerian_disease_prevalence.csv'</span>)
+<span class="variable">population_df</span> = pd.read_csv(<span class="string">'nigerian_population_data.csv'</span>)
+
+<span class="comment"># Clean facilities data</span>
+<span class="variable">facilities_df</span> = facilities_df.dropna(subset=[<span class="string">'latitude'</span>, <span class="string">'longitude'</span>])
+<span class="variable">facilities_df</span>[<span class="string">'facility_type'</span>] = facilities_df[<span class="string">'facility_type'</span>].fillna(<span class="string">'Unknown'</span>)
+
+<span class="comment"># Merge disease and population data</span>
+<span class="variable">health_df</span> = pd.merge(disease_df, population_df, on=[<span class="string">'state'</span>, <span class="string">'year'</span>])
+
+<span class="comment"># Calculate facility density per 100,000 people</span>
+<span class="variable">facility_counts</span> = facilities_df.groupby(<span class="string">'state'</span>).size().reset_index(name=<span class="string">'facility_count'</span>)
+<span class="variable">health_df</span> = pd.merge(health_df, facility_counts, on=<span class="string">'state'</span>, how=<span class="string">'left'</span>)
+<span class="variable">health_df</span>[<span class="string">'facility_density'</span>] = health_df[<span class="string">'facility_count'</span>] / health_df[<span class="string">'population'</span>] * 100000
+
+<span class="comment"># Save cleaned data</span>
+health_df.to_csv(<span class="string">'nigerian_health_analysis.csv'</span>, index=<span class="keyword">False</span>)</code></pre>
+                        </div>
+                        
+                        <div class="insight-card mt-4">
+                            <h4 class="font-bold flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                                Insight:
+                            </h4>
+                            <p>Data cleaning is crucial for accurate analysis. We handle missing values, merge datasets, and create new metrics like facility density to enable meaningful comparisons between states.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="project-step">
+                        <div class="project-step-number">2</div>
+                        <h3 class="text-xl font-bold mb-3">Exploratory Data Analysis</h3>
+                        <p>Use Seaborn and Matplotlib to explore patterns and relationships</p>
+                        
+                        <div class="code-block mt-4">
+                            <div class="code-header">
+                                <span>Facility Distribution Analysis</span>
+                                <button class="text-slate-300 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="module">plt</span>
+<span class="keyword">import</span> <span class="module">seaborn</span> <span class="keyword">as</span> <span class="module">sns</span>
+
+<span class="comment"># Set style</span>
+sns.set_theme(style=<span class="string">"whitegrid"</span>, palette=<span class="string">"muted"</span>)
+
+<span class="comment"># Facility distribution by state</span>
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">8</span>))
+ax = sns.barplot(
+    x=<span class="string">'facility_count'</span>, 
+    y=<span class="string">'state'</span>,
+    data=health_df.sort_values(<span class="string">'facility_count'</span>, ascending=<span class="keyword">False</span>).head(<span class="number">10</span>),
+    palette=<span class="string">"viridis"</span>
+)
+plt.title(<span class="string">'Top 10 Nigerian States by Health Facility Count'</span>, fontsize=<span class="number">16</span>)
+plt.xlabel(<span class="string">'Number of Facilities'</span>, fontsize=<span class="number">12</span>)
+plt.ylabel(<span class="string">'State'</span>, fontsize=<span class="number">12</span>)
+
+<span class="comment"># Add annotations</span>
+<span class="keyword">for</span> p <span class="keyword">in</span> ax.patches:
+    width = p.get_width()
+    plt.text(
+        width + <span class="number">20</span>, 
+        p.get_y() + p.get_height()/<span class="number">2</span>,
+        <span class="string">'{:1.0f}'</span>.format(width),
+        ha=<span class="string">'left'</span>, 
+        va=<span class="string">'center'</span>
+    )
+    
+plt.tight_layout()
+plt.savefig(<span class="string">'facility_distribution.png'</span>, dpi=<span class="number">300</span>)
+plt.show()</code></pre>
+                        </div>
+                        
+                        <div class="insight-card mt-4">
+                            <h4 class="font-bold flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                                Insight:
+                            </h4>
+                            <p>This visualization reveals significant disparities in healthcare infrastructure. Lagos has nearly 3 times more health facilities than Rivers state despite similar population sizes.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="project-step">
+                        <div class="project-step-number">3</div>
+                        <h3 class="text-xl font-bold mb-3">Advanced Visualization</h3>
+                        <p>Create publication-quality visualizations with custom styling</p>
+                        
+                        <div class="code-block mt-4">
+                            <div class="code-header">
+                                <span>Disease Prevalence vs Facility Density</span>
+                                <button class="text-slate-300 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre><code><span class="comment"># Custom style for publication</span>
+plt.style.use(<span class="string">'seaborn-whitegrid'</span>)
+custom_style = {
+    <span class="string">'axes.edgecolor'</span>: <span class="string">'#333'</span>,
+    <span class="string">'axes.labelcolor'</span>: <span class="string">'#333'</span>,
+    <span class="string">'text.color'</span>: <span class="string">'#333'</span>,
+    <span class="string">'font.family'</span>: [<span class="string">'DejaVu Sans'</span>, <span class="string">'Arial'</span>, <span class="string">'sans-serif'</span>],
+    <span class="string">'grid.linestyle'</span>: <span class="string">'--'</span>,
+    <span class="string">'grid.alpha'</span>: <span class="number">0.3</span>
+}
+plt.rcParams.update(custom_style)
+
+<span class="comment"># Create figure</span>
+fig, ax = plt.subplots(figsize=(<span class="number">10</span>, <span class="number">6</span>))
+
+<span class="comment"># Scatter plot with regression line</span>
+sns.regplot(
+    x=<span class="string">'facility_density'</span>, 
+    y=<span class="string">'malaria_rate'</span>, 
+    data=health_df,
+    scatter_kws={<span class="string">'s'</span>: <span class="number">100</span>, <span class="string">'alpha'</span>: <span class="number">0.7</span>, <span class="string">'color'</span>: <span class="string">'#008751'</span>},
+    line_kws={<span class="string">'color'</span>: <span class="string">'#d62728'</span>, <span class="string">'linewidth'</span>: <span class="number">2</span>},
+    ax=ax
+)
+
+<span class="comment"># Annotate outliers</span>
+outliers = health_df[health_df[<span class="string">'malaria_rate'</span>] > <span class="number">40</span>]
+<span class="keyword">for</span> i, row <span class="keyword">in</span> outliers.iterrows():
+    ax.annotate(row[<span class="string">'state'</span>], 
+                (row[<span class="string">'facility_density'</span>], row[<span class="string">'malaria_rate'</span>]),
+                xytext=(<span class="number">5</span>, <span class="number">5</span>), textcoords=<span class="string">'offset points'</span>,
+                fontsize=<span class="number">9</span>, color=<span class="string">'#d62728'</span>)
+
+<span class="comment"># Labels and title</span>
+ax.set_title(<span class="string">'Relationship Between Healthcare Access and Malaria Prevalence'</span>, fontsize=<span class="number">14</span>)
+ax.set_xlabel(<span class="string">'Health Facilities per 100,000 People'</span>, fontsize=<span class="number">12</span>)
+ax.set_ylabel(<span class="string">'Malaria Rate (%)'</span>, fontsize=<span class="number">12</span>)
+
+<span class="comment"># Add footnote</span>
+plt.figtext(<span class="number">0.5</span>, <span class="number">0.01</span>, <span class="string">'Data Source: Nigerian Ministry of Health | Visualization: NITDA/NCAIR Cohort 27'</span>, 
+            ha=<span class="string">'center'</span>, fontsize=<span class="number">9</span>, color=<span class="string">'#666'</span>)
+
+plt.tight_layout()
+plt.subplots_adjust(bottom=<span class="number">0.15</span>)
+plt.savefig(<span class="string">'malaria_vs_facilities.png'</span>, dpi=<span class="number">300</span>, bbox_inches=<span class="string">'tight'</span>)
+plt.show()</code></pre>
+                        </div>
+                        
+                        <div class="insight-card mt-4">
+                            <h4 class="font-bold flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                                Insight:
+                            </h4>
+                            <p>This analysis reveals a strong negative correlation between healthcare access and malaria prevalence. States with higher facility density tend to have lower malaria rates, highlighting the importance of healthcare infrastructure investment.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="project-step">
+                        <div class="project-step-number">4</div>
+                        <h3 class="text-xl font-bold mb-3">Interactive Dashboard</h3>
+                        <p>Create an interactive dashboard for data exploration</p>
+                        
+                        <div class="dashboard-preview mt-4">
+                            <div class="dashboard-grid">
+                                <div class="dashboard-cell">
+                                    <div class="mock-map">
+                                        <i class="fas fa-map-marked-alt mr-2"></i>
+                                        Nigerian Health Facilities Map
+                                    </div>
+                                </div>
+                                <div class="dashboard-cell">
+                                    <div class="mock-chart"></div>
+                                    <div class="absolute top-3 left-3 text-green-500 text-sm">Facility Types</div>
+                                </div>
+                                <div class="dashboard-cell">
+                                    <div class="mock-chart"></div>
+                                    <div class="absolute top-3 left-3 text-green-500 text-sm">Disease Trends</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="code-block mt-4">
+                            <div class="code-header">
+                                <span>Dashboard Implementation</span>
+                                <button class="text-slate-300 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre><code><span class="keyword">import</span> <span class="module">dash</span>
+<span class="keyword">import</span> <span class="module">dash_core_components</span> <span class="keyword">as</span> <span class="module">dcc</span>
+<span class="keyword">import</span> <span class="module">dash_html_components</span> <span class="keyword">as</span> <span class="module">html</span>
+<span class="keyword">from</span> <span class="module">dash.dependencies</span> <span class="keyword">import</span> <span class="module">Input</span>, <span class="module">Output</span>
+<span class="keyword">import</span> <span class="module">plotly.express</span> <span class="keyword">as</span> <span class="module">px</span>
+<span class="keyword">import</span> <span class="module">pandas</span> <span class="keyword">as</span> <span class="module">pd</span>
+
+<span class="comment"># Load data</span>
+df = pd.read_csv(<span class="string">'nigerian_health_analysis.csv'</span>)
+
+<span class="comment"># Initialize Dash app</span>
+app = dash.Dash(__name__)
+
+<span class="comment"># App layout</span>
+app.layout = html.Div([
+    html.Div(className=<span class="string">"header"</span>, children=[
+        html.H1(<span class="string">"Nigerian Health Analytics Dashboard"</span>),
+        html.P(<span class="string">"NITDA/NCAIR Data Science Cohort 27"</span>)
+    ]),
+    
+    html.Div(className=<span class="string">"controls"</span>, children=[
+        dcc.Dropdown(
+            id=<span class="string">'state-selector'</span>,
+            options=[{<span class="string">'label'</span>: s, <span class="string">'value'</span>: s} <span class="keyword">for</span> s <span class="keyword">in</span> df[<span class="string">'state'</span>].unique()],
+            value=[<span class="string">'Lagos'</span>, <span class="string">'Kano'</span>],
+            multi=<span class="keyword">True</span>,
+            placeholder=<span class="string">"Select states..."</span>
+        ),
+        dcc.Dropdown(
+            id=<span class="string">'disease-selector'</span>,
+            options=[
+                {<span class="string">'label'</span>: <span class="string">'Malaria'</span>, <span class="string">'value'</span>: <span class="string">'malaria_rate'</span>},
+                {<span class="string">'label'</span>: <span class="string">'Cholera'</span>, <span class="string">'value'</span>: <span class="string">'cholera_rate'</span>},
+                {<span class="string">'label'</span>: <span class="string">'Typhoid'</span>, <span class="string">'value'</span>: <span class="string">'typhoid_rate'</span>}
+            ],
+            value=<span class="string">'malaria_rate'</span>,
+            placeholder=<span class="string">"Select disease..."</span>
+        ),
+        dcc.RangeSlider(
+            id=<span class="string">'year-slider'</span>,
+            min=df[<span class="string">'year'</span>].min(),
+            max=df[<span class="string">'year'</span>].max(),
+            value=[df[<span class="string">'year'</span>].min(), df[<span class="string">'year'</span>].max()],
+            marks={str(year): str(year) <span class="keyword">for</span> year <span class="keyword">in</span> df[<span class="string">'year'</span>].unique()}
+        )
+    ]),
+    
+    html.Div(className=<span class="string">"dashboard"</span>, children=[
+        dcc.Graph(id=<span class="string">'map-plot'</span>),
+        dcc.Graph(id=<span class="string">'disease-trend'</span>),
+        dcc.Graph(id=<span class="string">'facility-comparison'</span>)
+    ]),
+    
+    html.Div(className=<span class="string">"footer"</span>, children=[
+        html.P(<span class="string">"Data Source: Nigerian Ministry of Health | © 2023 NITDA/NCAIR Cohort 27"</span>)
+    ])
+])
+
+<span class="comment"># Callback for updating plots</span>
+@app.callback(
+    [Output(<span class="string">'map-plot'</span>, <span class="string">'figure'</span>),
+     Output(<span class="string">'disease-trend'</span>, <span class="string">'figure'</span>),
+     Output(<span class="string">'facility-comparison'</span>, <span class="string">'figure'</span>)],
+    [Input(<span class="string">'state-selector'</span>, <span class="string">'value'</span>),
+     Input(<span class="string">'disease-selector'</span>, <span class="string">'value'</span>),
+     Input(<span class="string">'year-slider'</span>, <span class="string">'value'</span>)]
+)
+<span class="keyword">def</span> <span class="function">update_plots</span>(selected_states, selected_disease, years):
+    <span class="comment"># Filter data based on selections</span>
+    filtered_df = df[
+        (df[<span class="string">'state'</span>].isin(selected_states)) & 
+        (df[<span class="string">'year'</span>] >= years[<span class="number">0</span>]) & 
+        (df[<span class="string">'year'</span>] <= years[<span class="number">1</span>])
+    ]
+    
+    <span class="comment"># Create map plot</span>
+    map_fig = px.scatter_mapbox(
+        filtered_df,
+        lat=<span class="string">'latitude'</span>,
+        lon=<span class="string">'longitude'</span>,
+        color=<span class="string">'state'</span>,
+        size=<span class="string">'facility_count'</span>,
+        hover_name=<span class="string">'state'</span>,
+        hover_data=[<span class="string">'facility_count'</span>, <span class="string">'population'</span>, selected_disease],
+        zoom=<span class="number">5</span>,
+        height=<span class="number">500</span>,
+        title=<span class="string">'Health Facilities Distribution'</span>
+    )
+    map_fig.update_layout(mapbox_style=<span class="string">"open-street-map"</span>)
+    
+    <span class="comment"># Create disease trend plot</span>
+    trend_fig = px.line(
+        filtered_df,
+        x=<span class="string">'year'</span>,
+        y=selected_disease,
+        color=<span class="string">'state'</span>,
+        title=f<span class="string">'{selected_disease.replace("_", " ").title()} Trends'</span>,
+        markers=<span class="keyword">True</span>
+    )
+    
+    <span class="comment"># Create facility comparison</span>
+    comp_fig = px.bar(
+        filtered_df,
+        x=<span class="string">'state'</span>,
+        y=[<span class="string">'hospital_count'</span>, <span class="string">'clinic_count'</span>, <span class="string">'pharmacy_count'</span>],
+        title=<span class="string">'Healthcare Facility Comparison'</span>,
+        barmode=<span class="string">'group'</span>,
+        labels={<span class="string">'value'</span>: <span class="string">'Number of Facilities'</span>}
+    )
+    
+    <span class="keyword">return</span> map_fig, trend_fig, comp_fig
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    app.run_server(debug=<span class="keyword">True</span>)</code></pre>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Insights and Recommendations -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-chart-line text-green-500 mr-3"></i>
+                        Insights and Recommendations
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-800/50 p-5 rounded-xl">
+                            <h3 class="font-bold text-lg mb-3 text-green-400">
+                                <i class="fas fa-binoculars mr-2"></i>
+                                Key Findings
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-map-marker-alt text-red-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Regional Disparities</h4>
+                                        <p>Northern states have 40% fewer health facilities per capita than southern states</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-hospital text-blue-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Facility Distribution</h4>
+                                        <p>70% of specialist facilities are concentrated in 5 urban centers</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-bug text-yellow-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Disease Patterns</h4>
+                                        <p>Malaria rates are 35% higher in states with low facility density</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-truck-medical text-purple-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Emergency Response</h4>
+                                        <p>Response times are 2.5x longer in rural areas compared to urban centers</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-slate-800/50 p-5 rounded-xl">
+                            <h3 class="font-bold text-lg mb-3 text-green-400">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                Policy Recommendations
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-clinic-medical text-green-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Infrastructure Investment</h4>
+                                        <p>Prioritize healthcare facility construction in underserved northern states</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-user-md text-blue-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Workforce Development</h4>
+                                        <p>Create incentives for healthcare professionals to work in rural areas</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-syringe text-yellow-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Preventive Programs</h4>
+                                        <p>Expand malaria prevention programs in high-risk regions</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-mobile-alt text-purple-400 mt-1 mr-2"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Telemedicine</h4>
+                                        <p>Implement telemedicine initiatives to bridge urban-rural healthcare gaps</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gradient-to-r from-nigerianGreen/20 to-primary/20 rounded-xl p-6">
+                        <h3 class="font-bold text-lg mb-3 text-center">
+                            <i class="fas fa-rocket text-yellow-400 mr-2"></i>
+                            Real-World Impact
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-heartbeat text-red-400 mr-2"></i>
+                                    Improved Resource Allocation
+                                </h4>
+                                <p class="text-sm">Informed decisions on where to build new healthcare facilities</p>
+                            </div>
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>
+                                    Disease Prevention Focus
+                                </h4>
+                                <p class="text-sm">Targeted interventions in high-risk regions</p>
+                            </div>
+                            <div class="bg-slate-800 p-4 rounded-lg">
+                                <h4 class="font-bold flex items-center">
+                                    <i class="fas fa-hand-holding-medical text-green-400 mr-2"></i>
+                                    Healthcare Access Expansion
+                                </h4>
+                                <p class="text-sm">Policies to improve access in underserved areas</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Project Submission -->
+                <section class="section-card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-flag-checkered text-green-500 mr-3"></i>
+                        Project Submission
+                    </h2>
+                    
+                    <div class="bg-gradient-to-r from-nigerianGreen/30 to-primary/30 rounded-xl p-6">
+                        <h3 class="font-bold text-lg mb-4">Submission Requirements</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-file-code text-blue-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-semibold">Jupyter Notebook</h4>
+                                    <p>Complete analysis with documented code and visualizations</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-chart-bar text-green-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-semibold">Visualization Portfolio</h4>
+                                    <p>5-7 publication-quality visualizations with insights</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-tachometer-alt text-yellow-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-semibold">Interactive Dashboard</h4>
+                                    <p>Dash application for exploring health data</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-file-alt text-purple-400 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-semibold">Policy Brief</h4>
+                                    <p>2-page report summarizing findings and recommendations</p>
+                                </div>
+                            </li>
+                        </ul>
+                        
+                        <div class="mt-8">
+                            <h3 class="font-bold text-lg mb-4">Grading Criteria</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-cogs text-blue-400 mr-2"></i>
+                                        Technical Execution (40%)
+                                    </h4>
+                                    <ul class="text-sm list-disc pl-5 mt-2">
+                                        <li>Data cleaning and preparation</li>
+                                        <li>Code quality and organization</li>
+                                        <li>Appropriate visualization techniques</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-eye text-green-400 mr-2"></i>
+                                        Visual Design (30%)
+                                    </h4>
+                                    <ul class="text-sm list-disc pl-5 mt-2">
+                                        <li>Aesthetic quality of visualizations</li>
+                                        <li>Clarity and effectiveness</li>
+                                        <li>Professional customization</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                                        Insight Quality (20%)
+                                    </h4>
+                                    <ul class="text-sm list-disc pl-5 mt-2">
+                                        <li>Depth of analysis</li>
+                                        <li>Relevance of findings</li>
+                                        <li>Quality of recommendations</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-slate-800 p-4 rounded-lg">
+                                    <h4 class="font-bold flex items-center">
+                                        <i class="fas fa-clipboard-list text-purple-400 mr-2"></i>
+                                        Presentation (10%)
+                                    </h4>
+                                    <ul class="text-sm list-disc pl-5 mt-2">
+                                        <li>Organization of materials</li>
+                                        <li>Clarity of documentation</li>
+                                        <li>Professionalism of report</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Next Steps -->
+                <!-- <div class="section-card p-6 mt-6">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Continue Your Learning Journey</h2>
+                    <div class="flex flex-wrap justify-center gap-4 mt-6">
+                        <a href="." class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-arrow-left mr-2"></i> Previous: Interactive Visualizations
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-download mr-2"></i> Download Project Resources
+                        </a>
+                        <a href="#" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all">
+                            <i class="fas fa-certificate mr-2"></i> Claim Certificate
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </main>
+
+     <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/80 border-t border-slate-700 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-atom text-blue-400 mr-2"></i>
+                        NITDA/NCAIR ULA
+                    </h3>
+                    <p class="text-slate-400 mt-2">Universal Learning Archive - Transforming Nigeria through digital education</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-linkedin text-lg"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-white">
+                        <i class="fab fa-youtube text-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm">
+                <p>© 2025 National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR)</p>
+                <p class="mt-2">Cohort 27 - Data Science Specialization | Module 3: Data Visualization</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle explanation sections
+        document.querySelectorAll('.explain-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                targetElement.classList.toggle('show');
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (targetElement.classList.contains('show')) {
+                    icon.classList.remove('fa-question-circle');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-question-circle');
+                }
+            });
+        });
+        
+        // Update active navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Simulate progress as user scrolls
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollPosition / documentHeight) * 100;
+            document.querySelector('.progress-fill').style.width = Math.min(progress, 100) + '%';
+        });
+        
+        // Copy code functionality
+        document.querySelectorAll('.fa-copy').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-header').nextElementSibling;
+                const codeText = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const original = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-times';
+                    this.classList.remove(original);
+                    this.classList.add('fa-check');
+                    
+                    setTimeout(() => {
+                        this.classList.remove('fa-check');
+                        this.classList.add(original);
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

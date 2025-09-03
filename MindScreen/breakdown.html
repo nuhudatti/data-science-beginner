@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Analysis - Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nitdaBlue: '#0066cc',
+                        nitdaGreen: '#00cc99',
+                        nitdaPurple: '#9933cc',
+                        nitdaOrange: '#ff6600',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+            tab-size: 4;
+        }
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        .section-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .role-tag {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .question {
+            border-left: 4px solid #0066cc;
+            background-color: #f0f7ff;
+        }
+        .explanation {
+            background-color: #f9f9f9;
+            border-left: 4px solid #00cc99;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-nitdaBlue to-nitdaPurple text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Screen Time Analysis Learning Platform</h1>
+            <p class="text-xl">Master your project code and prepare for your presentation</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center py-4">
+                <a href="#overview" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaBlue text-white">Overview</a>
+                <a href="#abiola" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaGreen text-white">Abiola</a>
+                <a href="#cholli" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaPurple text-white">Cholli</a>
+                <a href="#alaudddee" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaOrange text-white">Alaudddee</a>
+                <a href="#dattii" class="mx-2 my-1 px-4 py-2 rounded-full bg-nitdaBlue text-white">Dattii</a>
+                <a href="#qa" class="mx-2 my-1 px-4 py-2 rounded-full bg-gray-700 text-white">Q&A Practice</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaBlue mb-6">Project Overview</h2>
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4">About This Project</h3>
+                <p class="mb-4">This project analyzes the relationship between screen time and mental well-being using Python for data analysis. The code follows best practices and produces clear visualizations to communicate findings effectively.</p>
+                
+                <div class="grid md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-nitdaBlue text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-database text-3xl mb-2"></i>
+                        <h4 class="font-bold">Data Collection</h4>
+                        <p class="text-sm">Abiola</p>
+                    </div>
+                    <div class="bg-nitdaGreen text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-chart-bar text-3xl mb-2"></i>
+                        <h4 class="font-bold">Descriptive Statistics</h4>
+                        <p class="text-sm">Cholli</p>
+                    </div>
+                    <div class="bg-nitdaPurple text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-chart-line text-3xl mb-2"></i>
+                        <h4 class="font-bold">Visualization</h4>
+                        <p class="text-sm">Alaudddee</p>
+                    </div>
+                    <div class="bg-nitdaOrange text-white text-center p-4 rounded-lg">
+                        <i class="fas fa-file-alt text-3xl mb-2"></i>
+                        <h4 class="font-bold">Interpretation</h4>
+                        <p class="text-sm">Dattii</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Abiola's Section -->
+        <section id="abiola" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaBlue mb-6">Data Collection & Cleaning</h2>
+            <p class="mb-6">Abiola is responsible for importing libraries, loading data, and preparing it for analysis.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaBlue relative">
+                <span class="role-tag bg-nitdaBlue text-white">Abiola's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Importing Libraries</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd</div>
+                    <div><span class="line-number">2</span><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+                    <div><span class="line-number">3</span><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt</div>
+                    <div><span class="line-number">4</span><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>These lines import the necessary Python libraries for data analysis:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li><span class="font-mono">pandas</span>: For data manipulation and analysis</li>
+                        <li><span class="font-mono">numpy</span>: For numerical operations</li>
+                        <li><span class="font-mono">matplotlib</span>: For creating visualizations</li>
+                        <li><span class="font-mono">seaborn</span>: For advanced statistical visualizations</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "We chose these libraries because they are industry standards for data analysis in Python. Pandas helps us work with structured data, while Matplotlib and Seaborn help create publication-quality visualizations."</p>
+                </div>
+            </div>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaBlue relative">
+                <span class="role-tag bg-nitdaBlue text-white">Abiola's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Loading Data</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span>file_name = <span class="code-string">"screen_time.csv"</span></div>
+                    <div><span class="line-number">2</span><span class="code-keyword">try</span>:</div>
+                    <div><span class="line-number">3</span>    df = pd.read_csv(file_name)</div>
+                    <div><span class="line-number">4</span>    print(<span class="code-string">f"✅ Successfully loaded '{file_name}'"</span>)</div>
+                    <div><span class="line-number">5</span><span class="code-keyword">except</span> FileNotFoundError:</div>
+                    <div><span class="line-number">6</span>    print(<span class="code-string">f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script."</span>)</div>
+                    <div><span class="line-number">7</span>    exit()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code safely loads the dataset with error handling:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 1: Specifies the filename</li>
+                        <li>Lines 2-4: Tries to load the CSV file using pandas</li>
+                        <li>Lines 5-7: Handles the case where the file isn't found</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: Why use try/except instead of just loading the file?</strong></p>
+                    <p>A: This makes our code more robust. If the file is missing, we get a clear error message instead of the program crashing unexpectedly.</p>
+                </div>
+            </div>
+            
+            <!-- More code sections for Abiola would follow the same pattern -->
+            
+        </section>
+
+        <!-- Cholli's Section -->
+        <section id="cholli" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaGreen mb-6">Descriptive Statistics</h2>
+            <p class="mb-6">Cholli handles the basic analysis and descriptive statistics of the dataset.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaGreen relative">
+                <span class="role-tag bg-nitdaGreen text-white">Cholli's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Basic Analysis</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span><span class="code-comment"># Average daily screen time</span></div>
+                    <div><span class="line-number">2</span>avg_screen_time = df[<span class="code-string">'daily_screen_time'</span>].mean()</div>
+                    <div><span class="line-number">3</span>print(<span class="code-string">f"📊 Average daily screen time: {avg_screen_time:.2f} hours"</span>)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code calculates and displays the average screen time:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 2: Calculates the mean of the 'daily_screen_time' column</li>
+                        <li>Line 3: Prints a formatted message with the result (rounded to 2 decimal places)</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "We found that the average screen time was X hours. This is important because it establishes a baseline for our analysis."</p>
+                </div>
+            </div>
+            
+            <!-- More code sections for Cholli would follow the same pattern -->
+            
+        </section>
+
+        <!-- Alaudddee's Section -->
+        <section id="alaudddee" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaPurple mb-6">Visualization & Correlation Analysis</h2>
+            <p class="mb-6">Alaudddee creates visualizations to explore relationships in the data.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaPurple relative">
+                <span class="role-tag bg-nitdaPurple text-white">Alaudddee's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Creating Visualizations</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span><span class="code-comment"># 6.1 Stress Level Distribution</span></div>
+                    <div><span class="line-number">2</span>plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">5</span>))</div>
+                    <div><span class="line-number">3</span>sns.countplot(data=df, x=<span class="code-string">'self_reported_stress'</span>, palette=<span class="code-string">"Set2"</span>)</div>
+                    <div><span class="line-number">4</span>plt.title(<span class="code-string">"Stress Level Distribution"</span>)</div>
+                    <div><span class="line-number">5</span>plt.xlabel(<span class="code-string">"Stress Level"</span>)</div>
+                    <div><span class="line-number">6</span>plt.ylabel(<span class="code-string">"Count"</span>)</div>
+                    <div><span class="line-number">7</span>plt.show()</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code creates a bar chart showing the distribution of stress levels:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 2: Sets the figure size to 8x5 inches</li>
+                        <li>Line 3: Creates a countplot of stress levels using Seaborn</li>
+                        <li>Lines 4-6: Adds title and axis labels</li>
+                        <li>Line 7: Displays the plot</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Potential Questions & Answers:</h4>
+                    <p><strong>Q: Why did you choose a countplot for this visualization?</strong></p>
+                    <p>A: A countplot is ideal for showing the distribution of categorical variables like stress levels. It clearly shows how many participants reported each stress level.</p>
+                </div>
+            </div>
+            
+            <!-- More code sections for Alaudddee would follow the same pattern -->
+            
+        </section>
+
+        <!-- Dattii's Section -->
+        <section id="dattii" class="mb-12">
+            <h2 class="text-2xl font-bold text-nitdaOrange mb-6">Interpretation & Final Report</h2>
+            <p class="mb-6">Dattii handles the interpretation of results and preparation of the final report.</p>
+            
+            <div class="section-card bg-white rounded-lg shadow-md p-6 mb-6 border-l-nitdaOrange relative">
+                <span class="role-tag bg-nitdaOrange text-white">Dattii's Code</span>
+                <h3 class="text-xl font-semibold mb-4">Saving Cleaned Data</h3>
+                <div class="code-block">
+                    <div><span class="line-number">1</span>clean_file_name = <span class="code-string">"screen_time_cleaned.csv"</span></div>
+                    <div><span class="line-number">2</span>df.to_csv(clean_file_name, index=<span class="code-keyword">False</span>)</div>
+                    <div><span class="line-number">3</span>print(<span class="code-string">f"💾 Cleaned data saved as '{clean_file_name}'"</span>)</div>
+                </div>
+                
+                <div class="explanation p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Explanation:</h4>
+                    <p>This code saves the cleaned dataset for future use:</p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Line 1: Specifies the output filename</li>
+                        <li>Line 2: Exports the DataFrame to a CSV file without the index column</li>
+                        <li>Line 3: Confirms the file has been saved</li>
+                    </ul>
+                </div>
+                
+                <div class="question p-4 rounded-lg mt-4">
+                    <h4 class="font-bold mb-2">Presentation Tips:</h4>
+                    <p>Say: "Saving the cleaned data is important for reproducibility. Other researchers can use our cleaned dataset without going through the entire cleaning process again."</p>
+                </div>
+            </div>
+            
+            <!-- More code sections for Dattii would follow the same pattern -->
+            
+        </section>
+
+        <!-- Q&A Practice Section -->
+        <section id="qa" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-700 mb-6">Q&A Practice</h2>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Common Questions & How to Answer Them</h3>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: Why did you choose this specific dataset?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>This dataset was ideal because it contained both screen time metrics and mental well-being indicators, allowing us to explore the relationship between technology use and psychological health. The dataset was also well-structured and had a sufficient sample size for meaningful analysis.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: What was your most surprising finding?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>We were surprised to find that [mention surprising finding], which suggests [explain why it's surprising]. This finding was unexpected because [provide context].</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="question p-4 rounded-lg">
+                        <p class="font-bold">Q: How would you improve this analysis if you had more time?</p>
+                    </div>
+                    <div class="answer p-4 bg-green-50 rounded-lg mt-2">
+                        <p class="font-bold">A:</p>
+                        <p>We would [suggest improvements like more advanced statistical tests, additional data sources, or machine learning approaches]. Specifically, we would explore [specific technique] to better understand [specific relationship].</p>
+                    </div>
+                </div>
+                
+                <!-- More Q&A items would follow the same pattern -->
+                
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Screen Time Analysis Learning Platform</p>
+            <p>Group 9 - NITDA/NCair Project</p>
+            <p class="mt-4">Abiola • Cholli • Alaudddee • Dattii</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

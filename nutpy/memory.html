@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic NumPy Array Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --cosmic-primary: #0f172a;
+            --cosmic-secondary: #1e293b;
+            --cosmic-accent: #3b82f6;
+            --cosmic-purple: #6d28d9;
+            --nebula-pink: #db2777;
+            --star-yellow: #fbbf24;
+            --nigerian-green: #006b3f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--cosmic-primary);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Cosmic background elements */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 4s) infinite var(--delay, 0s);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+        }
+        
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(10px);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, 15px) rotate(90deg); }
+            50% { transform: translate(0, 30px) rotate(180deg); }
+            75% { transform: translate(-20px, 15px) rotate(270deg); }
+        }
+        
+        /* Header styles */
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--cosmic-accent) 0%, var(--cosmic-purple) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: #93c5fd;
+        }
+        
+        /* Main content styles */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: #94a3b8;
+        }
+        
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cosmic-accent) 0%, var(--cosmic-purple) 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--cosmic-accent);
+            color: var(--cosmic-accent);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Section styles */
+        .section {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--cosmic-accent), var(--nebula-pink));
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #e2e8f0;
+        }
+        
+        .section-title i {
+            background: linear-gradient(135deg, var(--cosmic-accent) 0%, var(--cosmic-purple) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Code block styles */
+        .code-block {
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            margin: 1.5rem 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-title {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        .code-btn {
+            background: rgba(56, 189, 248, 0.1);
+            border: none;
+            color: #93c5fd;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .code-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+        }
+        
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .code-line {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #64748b;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .keyword { color: #60a5fa; }
+        .function { color: #fbbf24; }
+        .string { color: #34d399; }
+        .comment { color: #64748b; }
+        .operator { color: #c084fc; }
+        .variable { color: #93c5fd; }
+        .value { color: #f472b6; }
+        
+        /* Array visualization */
+        .array-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .array-dimension {
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .array-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .array-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .dimension-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: #93c5fd;
+            border-radius: 20px;
+            padding: 0.25rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .array-grid {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .array-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .array-cell:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* Concept cards */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .concept-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--cosmic-accent));
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .icon-blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+        
+        .icon-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        
+        .card-content {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        
+        /* Interactive section */
+        .interactive-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .interactive-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--cosmic-accent), var(--nebula-pink));
+        }
+        
+        .interactive-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .interactive-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .interactive-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .control-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+        
+        .control-input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: white;
+            font-family: inherit;
+        }
+        
+        select.control-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        
+        .visualization-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .array-preview {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            margin-bottom: 1.5rem;
+        }
+        
+        .preview-grid {
+            display: grid;
+            gap: 10px;
+            padding: 20px;
+        }
+        
+        .preview-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        /* Next Section Button */
+        .next-section {
+            text-align: center;
+            margin: 4rem 0;
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--nebula-pink));
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(219, 39, 119, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(219, 39, 119, 0.4);
+        }
+        
+        /* Attribution Section */
+        .attribution {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .attribution::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--cosmic-accent), var(--nigerian-green));
+        }
+        
+        .signature-container {
+            position: relative;
+            margin: 2rem 0;
+            padding: 2rem 0;
+        }
+        
+        .signature-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--nigerian-green), transparent);
+            margin: 1.5rem 0;
+        }
+        
+        .signature-name {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .organization-badges {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.7);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1);
+            border-color: var(--cosmic-accent);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        .badge::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #db2777);
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .badge-content {
+            background: var(--cosmic-secondary);
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .professional-details {
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+        
+        .internship-highlight {
+            background: linear-gradient(90deg, transparent, rgba(0, 107, 63, 0.3), transparent);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: inline-block;
+            border: 1px solid var(--nigerian-green);
+        }
+        
+        .powered-by {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            color: #93c5fd;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+        }
+        
+        .copyright {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .interactive-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .signature-name {
+                font-size: 2rem;
+            }
+        }
+        /* logo */
+        .organization-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background-color: #ffffff; /* you can change */
+}
+
+.org-logo {
+    max-width: 150px;  /* prevents logo from being too big */
+    height: auto;      /* keeps aspect ratio */
+    border-radius: 8px; /* optional soft corners */
+}
+
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-cubes"></i>
+            </div>
+            <div class="logo-text">NumPy Arrays</div>
+        </div>
+        <!-- <div class="nav-links">
+            <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">Tutorials</a>
+            <a href="#" class="nav-link">Examples</a>
+            <a href="#" class="nav-link">Documentation</a>
+        </div> -->
+    </header>
+    
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Master NumPy Array Creation & Manipulation</h1>
+            <p>Learn how to create and manipulate multidimensional arrays with NumPy - the fundamental building block of scientific computing in Python.</p>
+            <div class="hero-btns">
+                <a href="#array-creation" class="btn btn-primary">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+                <a href="#interactive" class="btn btn-outline">
+                    <i class="fas fa-flask"></i> Interactive Demo
+                </a>
+            </div>
+        </section>
+        
+        <!-- Array Creation Section -->
+        <section class="section" id="array-creation">
+            <h2 class="section-title">
+                <i class="fas fa-magic"></i> Array Creation Methods
+            </h2>
+            
+            <p>NumPy provides several methods to create arrays. The most straightforward way is from a Python list or tuple.</p>
+            
+            <!-- Code Block -->
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">array_creation.py</div>
+                    <div class="code-actions">
+                        <button class="code-btn" id="copyCode1">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="code-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="code-content">
+                    <div class="code-line">
+                        <span class="line-number">1</span>
+                        <span class="keyword">import</span> numpy <span class="keyword">as</span> np
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">2</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">3</span>
+                        <span class="comment"># Create a Series from a list</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">4</span>
+                        arr1d = np.<span class="function">array</span>([<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>, <span class="value">4</span>, <span class="value">5</span>])
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">5</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">6</span>
+                        <span class="comment"># Create a Series with custom index</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">7</span>
+                        arr2d = np.<span class="function">array</span>([[<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>], [<span class="value">4</span>, <span class="value">5</span>, <span class="value">6</span>]])
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">8</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">9</span>
+                        <span class="comment"># Create a 3-dimensional array</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">10</span>
+                        arr3d = np.<span class="function">array</span>([[[<span class="value">1</span>, <span class="value">2</span>], [<span class="value">3</span>, <span class="value">4</span>]], [[<span class="value">5</span>, <span class="value">6</span>], [<span class="value">7</span>, <span class="value">8</span>]]])
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Array Visualization -->
+            <div class="array-container">
+                <div class="array-dimension">
+                    <div class="array-header">
+                        <div class="array-label">1D Array</div>
+                        <div class="dimension-badge">Shape: (5,)</div>
+                    </div>
+                    <div class="array-grid" style="grid-template-columns: repeat(5, 1fr);">
+                        <div class="array-cell">1</div>
+                        <div class="array-cell">2</div>
+                        <div class="array-cell">3</div>
+                        <div class="array-cell">4</div>
+                        <div class="array-cell">5</div>
+                    </div>
+                </div>
+                
+                <div class="array-dimension">
+                    <div class="array-header">
+                        <div class="array-label">2D Array (Matrix)</div>
+                        <div class="dimension-badge">Shape: (2, 3)</div>
+                    </div>
+                    <div class="array-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="array-cell">1</div>
+                        <div class="array-cell">2</div>
+                        <div class="array-cell">3</div>
+                        <div class="array-cell">4</div>
+                        <div class="array-cell">5</div>
+                        <div class="array-cell">6</div>
+                    </div>
+                </div>
+                
+                <div class="array-dimension">
+                    <div class="array-header">
+                        <div class="array-label">3D Array</div>
+                        <div class="dimension-badge">Shape: (2, 2, 2)</div>
+                    </div>
+                    <div class="array-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="array-cell">
+                            <div style="text-align: center;">
+                                <div>Layer 1</div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-top: 10px;">
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">1</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">2</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">3</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">4</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="array-cell">
+                            <div style="text-align: center;">
+                                <div>Layer 2</div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-top: 10px;">
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">5</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">6</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">7</div>
+                                    <div style="background: rgba(56, 189, 248, 0.2); padding: 5px; border-radius: 4px;">8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Interactive Section -->
+        <section class="interactive-section" id="interactive">
+            <div class="interactive-header">
+                <h2 class="interactive-title">Interactive Array Explorer</h2>
+                <p>Create custom arrays and visualize them in real-time</p>
+            </div>
+            
+            <div class="interactive-grid">
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label class="control-label">Array Dimensions</label>
+                        <select class="control-input" id="dimensionSelect">
+                            <option value="1">1D Array</option>
+                            <option value="2" selected>2D Array</option>
+                            <option value="3">3D Array</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Rows</label>
+                        <input type="number" class="control-input" id="rowsInput" min="1" max="6" value="3">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Columns</label>
+                        <input type="number" class="control-input" id="colsInput" min="1" max="6" value="3">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Data Type</label>
+                        <select class="control-input" id="dtypeSelect">
+                            <option value="int">Integer</option>
+                            <option value="float">Float</option>
+                            <option value="bool">Boolean</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="generateBtn" style="width: 100%; margin-top: 1rem;">
+                        <i class="fas fa-sync-alt"></i> Generate Array
+                    </button>
+                </div>
+                
+                <div class="visualization-panel">
+                    <div class="array-preview">
+                        <div class="preview-grid" id="arrayPreview" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="preview-cell">5</div>
+                            <div class="preview-cell">2</div>
+                            <div class="preview-cell">9</div>
+                            <div class="preview-cell">1</div>
+                            <div class="preview-cell">8</div>
+                            <div class="preview-cell">3</div>
+                            <div class="preview-cell">7</div>
+                            <div class="preview-cell">4</div>
+                            <div class="preview-cell">6</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: rgba(30, 41, 59, 0.5); border-radius: 8px;">
+                        <div id="arrayInfo">Shape: (3, 3) | Data Type: int32</div>
+                        <div style="margin-top: 0.5rem; color: #94a3b8;">Click on cells to edit values</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Next Section Button -->
+        <div class="next-section">
+            <button class="next-btn" id="nextModuleBtn">
+                Complete Module & Continue
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <!-- Attribution Section -->
+        <section class="attribution">
+            <div class="signature-container">
+                <div class="signature-line"></div>
+                <div class="signature-name">NDATTI</div>
+                <div class="signature-line"></div>
+            </div>
+            
+            <div class="org-badges-wrapper">
+    <img src="./logo.jpg" alt="NMD BESPOKE TECH Logo" class="org-logo">
+    <div class="org-badges">
+        
+        <!-- <span>5IRE</span>
+        <span>NMDATTI BESPOKE TECH</span>
+        <span>BALDOM INTERNATIONAL SCHOOL</span> -->
+    </div>
+</div>
+
+            
+            <div class="professional-details">
+                <p>Nuhu Muhammad Datti</p>
+                <div class="internship-highlight">
+                    NITDA/NCAIR Internship Program 2024
+                </div>
+            </div>
+            
+            <div class="powered-by">
+                Powered by NDATTI
+            </div>
+            
+            <div class="copyright">
+                © 2025 Cosmic Array Mastery | Designed to never grow old nor fade
+            </div>
+        </section>
+    </div>
+
+    <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    
+    <script>
+        // Create cosmic background
+        function createCosmicBackground() {
+            const cosmicCanvas = document.getElementById('cosmicCanvas');
+            
+            // Create stars
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random();
+                star.style.setProperty('--duration', `${4 + Math.random() * 6}s`);
+                star.style.setProperty('--delay', `${Math.random() * 5}s`);
+                cosmicCanvas.appendChild(star);
+            }
+            
+            // Create nebulas
+            for (let i = 0; i < 5; i++) {
+                const nebula = document.createElement('div');
+                nebula.classList.add('nebula');
+                nebula.style.width = `${100 + Math.random() * 300}px`;
+                nebula.style.height = nebula.style.width;
+                nebula.style.left = `${Math.random() * 100}%`;
+                nebula.style.top = `${Math.random() * 100}%`;
+                nebula.style.background = i % 2 === 0 ? 
+                    `radial-gradient(circle, rgba(139, 92, 246, 0.4), transparent)` : 
+                    `radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent)`;
+                cosmicCanvas.appendChild(nebula);
+            }
+            
+            // Create floating elements
+            for (let i = 0; i < 8; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                element.style.width = `${10 + Math.random() * 30}px`;
+                element.style.height = element.style.width;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+                element.style.background = `radial-gradient(circle, rgba(${
+                    Math.floor(Math.random() * 100) + 155
+                }, ${
+                    Math.floor(Math.random() * 100) + 155
+                }, ${
+                    Math.floor(Math.random() * 255)
+                }, 0.8), transparent)`;
+                cosmicCanvas.appendChild(element);
+            }
+        }
+        
+        // Initialize cosmic background
+        createCosmicBackground();
+        
+        // Interactive array generator
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const dimension = parseInt(document.getElementById('dimensionSelect').value);
+            const rows = parseInt(document.getElementById('rowsInput').value);
+            const cols = parseInt(document.getElementById('colsInput').value);
+            const dtype = document.getElementById('dtypeSelect').value;
+            
+            const preview = document.getElementById('arrayPreview');
+            preview.innerHTML = '';
+            
+            let gridColumns = cols;
+            let gridRows = rows;
+            let totalElements = rows * cols;
+            
+            if (dimension === 1) {
+                gridColumns = totalElements;
+                gridRows = 1;
+            } else if (dimension === 3) {
+                gridColumns = cols;
+                gridRows = rows * 2; // For 3D visualization
+            }
+            
+            preview.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
+            
+            for (let i = 0; i < totalElements; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('preview-cell');
+                
+                // Generate value based on data type
+                let value;
+                switch(dtype) {
+                    case 'int':
+                        value = Math.floor(Math.random() * 10);
+                        break;
+                    case 'float':
+                        value = (Math.random() * 10).toFixed(2);
+                        break;
+                    case 'bool':
+                        value = Math.random() > 0.5 ? 'T' : 'F';
+                        break;
+                    default:
+                        value = Math.floor(Math.random() * 10);
+                }
+                
+                cell.textContent = value;
+                
+                // Add edit functionality
+                cell.addEventListener('click', function() {
+                    const newValue = prompt('Enter new value:', cell.textContent);
+                    if (newValue !== null) {
+                        cell.textContent = newValue;
+                    }
+                });
+                
+                preview.appendChild(cell);
+            }
+            
+            // Update array info
+            const arrayInfo = document.getElementById('arrayInfo');
+            if (dimension === 1) {
+                arrayInfo.textContent = `Shape: (${totalElements},) | Data Type: ${dtype}`;
+            } else if (dimension === 2) {
+                arrayInfo.textContent = `Shape: (${rows}, ${cols}) | Data Type: ${dtype}`;
+            } else {
+                arrayInfo.textContent = `Shape: (2, ${rows}, ${cols}) | Data Type: ${dtype}`;
+            }
+        });
+        
+        // Initialize with default array
+        document.getElementById('generateBtn').click();
+        
+        // Copy button functionality
+        document.querySelectorAll('.code-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('.code-content');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalIcon = this.querySelector('i');
+                    const originalClass = originalIcon.classList[1];
+                    originalIcon.classList.remove(originalClass);
+                    originalIcon.classList.add('fa-check');
+                    
+                    setTimeout(() => {
+                        originalIcon.classList.remove('fa-check');
+                        originalIcon.classList.add(originalClass);
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Next module button functionality
+        document.getElementById('nextModuleBtn').addEventListener('click', function() {
+            // Create a flashy completion effect
+            this.innerHTML = '<i class="fas fa-check"></i> Module Completed!';
+            this.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+            
+            // Create confetti effect
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '1000';
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                // Remove confetti after animation
+                animation.onfinish = () => confetti.remove();
+            }
+            
+            // Scroll to attribution section
+            setTimeout(() => {
+                document.querySelector('.attribution').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

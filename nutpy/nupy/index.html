@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Array Creation & Manipulation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --secondary: #1e429f;
+            --accent: #3b82f6;
+            --light: #ebf5ff;
+            --dark: #1e293b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .code-header {
+            background: #1e1e1e;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #73787d;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+        }
+        
+        .keyword { color: #00bfff; }     /* Bright blue */
+        .function { color: #fdd835; }    /* Bright yellow */
+        .string { color: #ff8a65; }      /* Soft orange */
+        .comment { color: #6a9955; }     /* This is okay */
+        .operator { color: #ffffff; }    /* Pure white */
+        .variable { color: #82aaff; }    /* Blueish variable */
+        .value { color: #c3e88d; }       /* Light green for numbers */
+        
+        .explanation {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .concept-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+        
+        .array-visualization {
+            display: grid;
+            gap: 8px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .array-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .array-label {
+            text-align: center;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #dbeafe;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .floating-action {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn.active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--primary);
+        }
+        
+        .dimension-badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="gradient-header text-white shadow-xl">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="bg-white p-2 rounded-xl mr-4 shadow-md">
+                        <div class="bg-gradient-to-r from-blue-400 to-indigo-500 w-16 h-16 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-cubes text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">NumPy Arrays</h1>
+                        <p class="text-blue-200">Creation & Manipulation</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-xl md:text-2xl font-bold">Data Science Fundamentals</h2>
+                    <p class="text-blue-300">Mastering Numerical Computing</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- Section Header -->
+            <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl shadow-xl overflow-hidden mb-10">
+                <div class="p-8">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-3">Array Creation & Manipulation</h2>
+                            <p class="text-blue-200 max-w-3xl">Learn how to create and work with NumPy arrays - the fundamental data structure for scientific computing in Python.</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 floating-action">
+                            <div class="w-24 h-24 rounded-full bg-blue-500 bg-opacity-20 flex items-center justify-center">
+                                <i class="fas fa-cubes text-white text-4xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabs -->
+            <div class="bg-white rounded-t-2xl shadow-lg mb-1">
+                <div class="flex overflow-x-auto">
+                    <button class="tab-btn active px-6 py-4 font-medium text-gray-700">Array Creation</button>
+                    <button class="tab-btn px-6 py-4 font-medium text-gray-500 hover:text-gray-700">Array Manipulation</button>
+                    <button class="tab-btn px-6 py-4 font-medium text-gray-500 hover:text-gray-700">Visualization</button>
+                    <button class="tab-btn px-6 py-4 font-medium text-gray-500 hover:text-gray-700">Exercises</button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <section class="bg-white rounded-b-2xl shadow-lg p-6 mb-10">
+                <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="fas fa-magic mr-3 text-blue-500"></i>
+                    Creating NumPy Arrays
+                </h3>
+                
+                <div class="mb-8">
+                    <div class="flex items-start mb-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-list text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-blue-900 mb-2">Basic Array Creation</h4>
+                            <p class="text-gray-700 mb-4">The most straightforward way to create an array is from a Python list or tuple using <code class="bg-gray-100 px-2 py-1 rounded">np.array()</code>.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block mb-6">
+                        <div class="code-header">
+                            <span class="text-gray-300">array_creation.py</span>
+                            <button class="text-gray-400 hover:text-white transition-colors" id="copyBtn">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="line-number">1</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="line-number">2</span>
+<span class="line-number">3</span><span class="comment"># Create a 1-dimensional array</span>
+<span class="line-number">4</span>arr1d = np.<span class="function">array</span>([<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>, <span class="value">4</span>, <span class="value">5</span>])
+<span class="line-number">5</span>
+<span class="line-number">6</span><span class="comment"># Create a 2-dimensional array (matrix)</span>
+<span class="line-number">7</span>arr2d = np.<span class="function">array</span>([[<span class="value">1</span>, <span class="value">2</span>, <span class="value">3</span>], [<span class="value">4</span>, <span class="value">5</span>, <span class="value">6</span>]])
+<span class="line-number">8</span>
+<span class="line-number">9</span><span class="comment"># Create a 3-dimensional array</span>
+<span class="line-number">10</span>arr3d = np.<span class="function">array</span>([[[<span class="value">1</span>, <span class="value">2</span>], [<span class="value">3</span>, <span class="value">4</span>]], [[<span class="value">5</span>, <span class="value">6</span>], [<span class="value">7</span>, <span class="value">8</span>]]])</code></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Array Visualization -->
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <h4 class="text-lg font-bold text-gray-800 mr-3">Array Visualization</h4>
+                            <div class="dimension-badge">1D Array</div>
+                        </div>
+                        <div class="array-visualization grid grid-cols-5">
+                            <div class="array-cell">1</div>
+                            <div class="array-cell">2</div>
+                            <div class="array-cell">3</div>
+                            <div class="array-cell">4</div>
+                            <div class="array-cell">5</div>
+                        </div>
+                        
+                        <div class="flex items-center mb-4 mt-8">
+                            <h4 class="text-lg font-bold text-gray-800 mr-3">Array Visualization</h4>
+                            <div class="dimension-badge">2D Array (Matrix)</div>
+                        </div>
+                        <div class="array-visualization grid grid-cols-3">
+                            <div class="array-cell">1</div>
+                            <div class="array-cell">2</div>
+                            <div class="array-cell">3</div>
+                            <div class="array-cell">4</div>
+                            <div class="array-cell">5</div>
+                            <div class="array-cell">6</div>
+                        </div>
+                        
+                        <div class="flex items-center mb-4 mt-8">
+                            <h4 class="text-lg font-bold text-gray-800 mr-3">Array Visualization</h4>
+                            <div class="dimension-badge">3D Array</div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="text-sm font-medium text-gray-600 mb-2">Layer 1</div>
+                                <div class="array-visualization grid grid-cols-2">
+                                    <div class="array-cell">1</div>
+                                    <div class="array-cell">2</div>
+                                    <div class="array-cell">3</div>
+                                    <div class="array-cell">4</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600 mb-2">Layer 2</div>
+                                <div class="array-visualization grid grid-cols-2">
+                                    <div class="array-cell">5</div>
+                                    <div class="array-cell">6</div>
+                                    <div class="array-cell">7</div>
+                                    <div class="array-cell">8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 rounded-xl p-5 mb-6">
+                        <h5 class="font-bold text-blue-800 mb-3 flex items-center">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            Key Concepts
+                        </h5>
+                        <ul class="list-disc list-inside mt-2 text-gray-700 space-y-2">
+                            <li><span class="font-semibold">Dimensions:</span> Arrays can have multiple dimensions (1D, 2D, 3D, etc.)</li>
+                            <li><span class="font-semibold">Shape:</span> The structure of the array (e.g., (5,) for 1D, (2,3) for 2D)</li>
+                            <li><span class="font-semibold">Elements:</span> All elements in a NumPy array must be of the same type</li>
+                            <li><span class="font-semibold">Performance:</span> NumPy arrays are more efficient than Python lists for numerical operations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <div class="flex items-start mb-4">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-shapes text-purple-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-purple-900 mb-2">Special Array Creation</h4>
+                            <p class="text-gray-700 mb-4">NumPy provides functions to create arrays with specific initial values.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block mb-6">
+                        <div class="code-header">
+                            <span class="text-gray-300">special_arrays.py</span>
+                            <button class="text-gray-400 hover:text-white transition-colors" id="copyBtn2">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="line-number">1</span><span class="comment"># Array of zeros</span>
+<span class="line-number">2</span>zeros_arr = np.<span class="function">zeros</span>((<span class="value">3</span>, <span class="value">4</span>))  <span class="comment"># 3 rows, 4 columns</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span><span class="comment"># Array of ones</span>
+<span class="line-number">5</span>ones_arr = np.<span class="function">ones</span>((<span class="value">2</span>, <span class="value">2</span>, <span class="value">2</span>))  <span class="comment"># 3D array</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span><span class="comment"># Identity matrix</span>
+<span class="line-number">8</span>identity = np.<span class="function">eye</span>(<span class="value">3</span>)  <span class="comment"># 3x3 identity matrix</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span><span class="comment"># Array with a range of values</span>
+<span class="line-number">11</span>range_arr = np.<span class="function">arange</span>(<span class="value">0</span>, <span class="value">10</span>, <span class="value">2</span>)  <span class="comment"># [0, 2, 4, 6, 8]</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span><span class="comment"># Linearly spaced values</span>
+<span class="line-number">14</span>linspace_arr = np.<span class="function">linspace</span>(<span class="value">0</span>, <span class="value">1</span>, <span class="value">5</span>)  <span class="comment"># [0.0, 0.25, 0.5, 0.75, 1.0]</span></code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-purple-50 rounded-xl p-5">
+                            <h5 class="font-bold text-purple-800 mb-3">
+                                <i class="fas fa-check-circle text-purple-600 mr-2"></i>
+                                When to Use Special Arrays
+                            </h5>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                <li><code>zeros()</code>: Initialize arrays before filling with data</li>
+                                <li><code>ones()</code>: Create arrays with initial value 1</li>
+                                <li><code>eye()</code>: Create identity matrices for linear algebra</li>
+                                <li><code>arange()</code>: Generate sequences with fixed steps</li>
+                                <li><code>linspace()</code>: Create arrays with evenly spaced numbers</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-xl p-5">
+                            <h5 class="font-bold text-blue-800 mb-3">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                                Common Mistakes
+                            </h5>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                <li>Forgetting to import NumPy (<code>import numpy as np</code>)</li>
+                                <li>Mismatched dimensions in nested lists</li>
+                                <li>Confusing <code>arange()</code> and <code>linspace()</code></li>
+                                <li>Not specifying the shape correctly as a tuple</li>
+                                <li>Assuming arrays are mutable like Python lists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-green-500 to-green-700 rounded-2xl p-6 text-white">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-flask mr-3"></i>
+                        Interactive Array Explorer
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Array Dimensions</label>
+                                <select class="w-full p-2 rounded bg-green-700 border border-green-600 text-white">
+                                    <option>1D Array</option>
+                                    <option selected>2D Array</option>
+                                    <option>3D Array</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Array Size</label>
+                                <input type="range" min="2" max="6" value="3" class="w-full">
+                            </div>
+                            
+                            <button class="w-full bg-white text-green-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-100 transition">
+                                Generate Random Array
+                            </button>
+                        </div>
+                        
+                        <div class="bg-black bg-opacity-20 rounded-lg p-4">
+                            <div class="text-center mb-2 text-sm">Generated Array</div>
+                            <div class="array-visualization grid grid-cols-3">
+                                <div class="array-cell">3</div>
+                                <div class="array-cell">8</div>
+                                <div class="array-cell">1</div>
+                                <div class="array-cell">5</div>
+                                <div class="array-cell">9</div>
+                                <div class="array-cell">2</div>
+                            </div>
+                            <div class="mt-3 text-center text-sm">
+                                Shape: (2, 3) | Data Type: int32
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Next Steps -->
+            <section class="text-center mb-16">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Continue Your Learning Journey</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-6">Now that you understand array creation, explore more advanced NumPy concepts:</p>
+                
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-3 px-8 rounded-xl hover:from-blue-600 hover:to-blue-800 transition-all shadow-lg flex items-center">
+                        <i class="fas fa-book mr-2"></i> Array Manipulation
+                    </button>
+                    <button class="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold py-3 px-8 rounded-xl hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg flex items-center">
+                        <i class="fas fa-calculator mr-2"></i> Mathematical Operations
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-github text-xl"></i></a>
+                <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
+                <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-linkedin text-xl"></i></a>
+                <a href="#" class="text-blue-300 hover:text-white"><i class="fab fa-youtube text-xl"></i></a>
+            </div>
+            <p class="text-blue-300">© 2023 NumPy Tutorial | For Educational Purposes</p>
+            <p class="text-blue-400 text-sm mt-2">Created with HTML, CSS, and JavaScript</p>
+        </div>
+    </footer>
+
+    <script>
+        // Copy button functionality
+        document.querySelectorAll('.fa-copy').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.code-block').querySelector('.code-content');
+                const textToCopy = codeBlock.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalIcon = this.classList.contains('fa-copy') ? 'fa-copy' : 'fa-check';
+                    this.classList.replace(originalIcon, 'fa-check');
+                    
+                    // Create confirmation message
+                    const confirmation = document.createElement('div');
+                    confirmation.textContent = 'Code copied!';
+                    confirmation.className = 'absolute bg-green-500 text-white px-3 py-1 rounded-md text-sm';
+                    confirmation.style.top = '10px';
+                    confirmation.style.right = '10px';
+                    
+                    document.body.appendChild(confirmation);
+                    
+                    setTimeout(() => {
+                        this.classList.replace('fa-check', 'fa-copy');
+                        document.body.removeChild(confirmation);
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('text-gray-500');
+                });
+                
+                this.classList.add('active');
+                this.classList.remove('text-gray-500');
+            });
+        });
+        
+        // Interactive array generator (simplified)
+        document.querySelector('input[type="range"]').addEventListener('input', function() {
+            const size = this.value;
+            const container = document.querySelector('.array-visualization');
+            container.innerHTML = '';
+            
+            // Generate random array
+            for (let i = 0; i < size * size; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'array-cell';
+                cell.textContent = Math.floor(Math.random() * 10);
+                container.appendChild(cell);
+            }
+            
+            // Update grid columns
+            container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        });
+    </script>
+</body>
+</html>

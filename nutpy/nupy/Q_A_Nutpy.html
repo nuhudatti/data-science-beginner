@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Fundamentals: Agricultural Yield Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+            --agricultural-green: #4ade80;
+            --earth-brown: #a16207;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: var(--agricultural-green);
+            background: rgba(74, 222, 128, 0.2);
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--agricultural-green);
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--agricultural-green), #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--agricultural-green), #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, var(--agricultural-green), #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(74, 222, 128, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        .question-counter {
+            background: rgba(74, 222, 128, 0.15);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .section-btn {
+            background: rgba(20, 30, 80, 0.6);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .section-btn.active {
+            background: rgba(74, 30, 109, 0.7);
+            border-color: var(--agricultural-green);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        
+        .section-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .section-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .score-card {
+            background: rgba(15, 25, 65, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+        }
+        
+        .crop-icon {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body x-data="quizApp()" x-init="init()">
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <!-- Floating crop icons -->
+    <i class="crop-icon fas fa-seedling" style="top: 10%; left: 5%; color: var(--agricultural-green);"></i>
+    <i class="crop-icon fas fa-apple-alt" style="top: 20%; right: 10%; color: #dc2626;"></i>
+    <i class="crop-icon fas fa-wheat-alt" style="bottom: 15%; left: 15%; color: #eab308;"></i>
+    <i class="crop-icon fas fa-carrot" style="bottom: 25%; right: 20%; color: #ea580c;"></i>
+    
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-calculator mr-3"></i>NumPy Agricultural Yield Analysis
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                100 cosmic questions on NumPy fundamentals with real-world agricultural applications
+            </p>
+        </header>
+        
+        <!-- Progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-medium">Your Progress</span>
+                <span class="text-green-300" x-text="`${answeredCount}/${totalQuestions} (${Math.round((answeredCount/totalQuestions)*100)}%)`">0/100 (0%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(answeredCount/totalQuestions)*100}%`"></div>
+            </div>
+        </div>
+        
+        <!-- Section Navigation -->
+        <div class="grid grid-cols-5 gap-4 mb-8">
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 0}"
+                @click="currentSection = 0"
+            >
+                <div class="section-icon text-green-400">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <div>Arrays vs Lists</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 1}"
+                @click="currentSection = 1"
+            >
+                <div class="section-icon text-blue-400">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <div>Array Creation</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 2}"
+                @click="currentSection = 2"
+            >
+                <div class="section-icon text-yellow-400">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div>Vectorization</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 3}"
+                @click="currentSection = 3"
+            >
+                <div class="section-icon text-purple-400">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div>Statistics</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 4}"
+                @click="currentSection = 4"
+            >
+                <div class="section-icon text-red-400">
+                    <i class="fas fa-tractor"></i>
+                </div>
+                <div>Yield Analysis</div>
+            </div>
+        </div>
+        
+        <!-- Section Title -->
+        <h2 class="text-2xl font-bold mb-6 section-title border-b border-green-500/50 pb-2">
+            <i class="fas fa-caret-right mr-2"></i>
+            <span x-text="sections[currentSection].title"></span>
+        </h2>
+        
+        <!-- Quiz Content -->
+        <template x-if="!showResults">
+            <div>
+                <div class="space-y-6">
+                    <template x-for="(question, qIndex) in sections[currentSection].questions" :key="qIndex">
+                        <div class="question-card p-6">
+                            <div class="question-counter">
+                                <span x-text="`Question ${currentSection*20 + qIndex + 1} of ${totalQuestions}`"></span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-green-400 mr-3"></i>
+                                <span x-text="question.question"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[currentSection][qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[currentSection][qIndex] === oIndex && userAnswers[currentSection][qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(currentSection, qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers">
+                                <p class="font-semibold text-green-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="getAnswerStatus(currentSection, qIndex)"></span>
+                                </p>
+                                <p x-text="question.explanation"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <button class="submit-btn" @click="submitQuiz">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Answers
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Results Panel -->
+        <template x-if="showResults">
+            <div class="results-container">
+                <h2 class="section-title text-3xl text-center mb-8">Quiz Results</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${score}/${totalQuestions}`"></div>
+                        <div class="opacity-70">Correct Answers</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((score/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Overall Score</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Completion</div>
+                    </div>
+                </div>
+                
+                <!-- Section Scores -->
+                <div class="grid grid-cols-5 gap-4 mb-10">
+                    <template x-for="(section, sIndex) in sections" :key="sIndex">
+                        <div class="score-card">
+                            <div class="text-lg font-semibold mb-2" x-text="section.title.split(' ')[0]"></div>
+                            <div class="text-2xl font-bold" x-text="`${sectionScores[sIndex]}/${section.questions.length}`"></div>
+                            <div class="text-sm opacity-80 mt-1" x-text="`${Math.round((sectionScores[sIndex]/section.questions.length)*100)}%`"></div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="motivation-message mb-10">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-comment-dots text-yellow-400 mr-2"></i>
+                        Feedback
+                    </h3>
+                    <p class="text-lg" x-text="getMotivationMessage()"></p>
+                </div>
+                
+                <div class="text-center">
+                    <button class="submit-btn" @click="resetQuiz">
+                        <i class="fas fa-redo mr-2"></i>Retry Quiz
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(74, 222, 128, 0.4); --color2: rgba(74, 222, 128, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(0, 201, 255, 0.4); --color2: rgba(0, 201, 255, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+    
+    <script>
+        // Quiz data for NumPy Agricultural Analysis
+        const quizData = {
+            sections: [
+                {
+                    title: "NumPy Arrays vs Python Lists",
+                    questions: [
+                        {
+                            question: "What is a key advantage of NumPy arrays over Python lists for agricultural data?",
+                            options: [
+                                "Automatic garbage collection",
+                                "Built-in methods for string manipulation",
+                                "Memory efficiency and faster operations",
+                                "Dynamic resizing without performance cost"
+                            ],
+                            answer: 2,
+                            explanation: "NumPy arrays store homogeneous data contiguously in memory, enabling vectorized operations essential for large agricultural datasets."
+                        },
+                        {
+                            question: "When is a Python list preferable to a NumPy array for crop data?",
+                            options: [
+                                "Storing mixed data types (e.g., crop names and yields)",
+                                "Performing matrix multiplication on yield data",
+                                "Handling large datasets of soil measurements",
+                                "Calculating statistical metrics"
+                            ],
+                            answer: 0,
+                            explanation: "Python lists support heterogeneous data types, while NumPy arrays require homogeneous data."
+                        },
+                        {
+                            question: "How does memory usage compare between a list and an array of 10,000 crop yield values?",
+                            options: [
+                                "The array uses ~10× less memory",
+                                "The list uses ~2× less memory",
+                                "Memory usage is identical",
+                                "Arrays use more memory due to metadata"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy arrays avoid per-element type metadata, reducing memory overhead significantly."
+                        },
+                        {
+                            question: "What happens when you multiply a NumPy array of crop yields by 1.2?",
+                            options: [
+                                "Each element is multiplied by 1.2",
+                                "Array length increases by 20%",
+                                "A type error occurs",
+                                "Only integer yields are modified"
+                            ],
+                            answer: 0,
+                            explanation: "NumPy supports vectorized operations, applying arithmetic element-wise without loops."
+                        },
+                        {
+                            question: "Which operation is slower in Python lists vs. NumPy arrays for crop analysis?",
+                            options: [
+                                "Appending elements",
+                                "Element-wise addition of fertilizer amounts",
+                                "Iterating with for loops",
+                                "Slicing"
+                            ],
+                            answer: 1,
+                            explanation: "List element-wise operations require slow Python loops, while NumPy uses optimized C code."
+                        },
+                        {
+                            question: "How do Python lists store their elements in memory?",
+                            options: [
+                                "Contiguously like arrays",
+                                "As references to objects scattered in memory",
+                                "In a compressed format",
+                                "In a single memory block"
+                            ],
+                            answer: 1,
+                            explanation: "Python lists store references to objects, which may be scattered in memory, while arrays store data contiguously."
+                        },
+                        {
+                            question: "What is the main reason NumPy arrays are faster than Python lists for agricultural calculations?",
+                            options: [
+                                "They use less memory",
+                                "They are implemented in C",
+                                "They support vectorized operations",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "NumPy arrays are faster due to a combination of contiguous memory, C implementation, and vectorized operations."
+                        },
+                        {
+                            question: "Which data structure is better for numerical computations on soil pH data?",
+                            options: [
+                                "Python list",
+                                "NumPy array",
+                                "Python tuple",
+                                "Python set"
+                            ],
+                            answer: 1,
+                            explanation: "NumPy arrays are optimized for numerical computations with efficient storage and vectorized operations."
+                        },
+                        {
+                            question: "What does homogeneous data mean in the context of NumPy arrays for crop yields?",
+                            options: [
+                                "All elements have the same data type",
+                                "All elements have the same value",
+                                "The array is one-dimensional",
+                                "The array contains only numbers"
+                            ],
+                            answer: 0,
+                            explanation: "Homogeneous means all elements in the array are of the same data type, which allows for efficient storage."
+                        },
+                        {
+                            question: "How do you create a NumPy array from a Python list of crop yields?",
+                            options: [
+                                "np.array(yield_list)",
+                                "np.create(yield_list)",
+                                "np.from_list(yield_list)",
+                                "np.new_array(yield_list)"
+                            ],
+                            answer: 0,
+                            explanation: "The np.array() function is used to create an array from a Python list or other sequence-like objects."
+                        },
+                        {
+                            question: "What is vectorization in NumPy for agricultural data?",
+                            options: [
+                                "Converting arrays to vectors",
+                                "Applying operations to entire arrays without explicit loops",
+                                "Creating vector graphics from arrays",
+                                "Storing arrays in vector format"
+                            ],
+                            answer: 1,
+                            explanation: "Vectorization allows operations to be performed on entire arrays at once, without the need for explicit loops."
+                        },
+                        {
+                            question: "Which statement about Python lists is true?",
+                            options: [
+                                "They are optimized for numerical operations",
+                                "They store elements in contiguous memory",
+                                "They can contain elements of different data types",
+                                "They are faster than NumPy arrays for matrix operations"
+                            ],
+                            answer: 2,
+                            explanation: "Python lists can contain elements of different data types, unlike NumPy arrays which require homogeneous data."
+                        },
+                        {
+                            question: "What is the purpose of the np.ndarray dtype attribute for soil data?",
+                            options: [
+                                "To describe the shape of the array",
+                                "To specify the data type of the array elements",
+                                "To define the number of dimensions",
+                                "To store documentation about the array"
+                            ],
+                            answer: 1,
+                            explanation: "The dtype attribute describes the data type of the elements in the array."
+                        },
+                        {
+                            question: "Which operation would show the biggest performance difference between lists and arrays?",
+                            options: [
+                                "Accessing a single element",
+                                "Iterating through all elements",
+                                "Appending a new element",
+                                "Performing element-wise multiplication of fertilizer amounts"
+                            ],
+                            answer: 3,
+                            explanation: "Element-wise operations show the biggest performance difference due to NumPy's vectorization capabilities."
+                        },
+                        {
+                            question: "How does NumPy handle broadcasting for crop yield calculations?",
+                            options: [
+                                "By converting arrays to the same shape",
+                                "By transmitting data over networks",
+                                "By automatically expanding smaller arrays to match larger ones",
+                                "By compressing arrays to save memory"
+                            ],
+                            answer: 2,
+                            explanation: "Broadcasting allows NumPy to perform operations on arrays of different shapes by expanding smaller arrays."
+                        },
+                        {
+                            question: "What is the primary reason for NumPy's memory efficiency with large agricultural datasets?",
+                            options: [
+                                "Using compression algorithms",
+                                "Storing only primitive data types",
+                                "Avoiding per-element type metadata",
+                                "Using disk storage instead of RAM"
+                            ],
+                            answer: 2,
+                            explanation: "NumPy avoids per-element type metadata, storing only the raw data in contiguous memory blocks."
+                        },
+                        {
+                            question: "Which of these is NOT a NumPy array attribute?",
+                            options: [
+                                "shape",
+                                "dtype",
+                                "size",
+                                "length"
+                            ],
+                            answer: 3,
+                            explanation: "NumPy arrays have shape, dtype, and size attributes, but not 'length' (use size or len() instead)."
+                        },
+                        {
+                            question: "What happens when you add a scalar to a Python list of rainfall measurements?",
+                            options: [
+                                "The scalar is added to each element",
+                                "The scalar is appended to the list",
+                                "A TypeError occurs",
+                                "Only numeric lists are modified"
+                            ],
+                            answer: 2,
+                            explanation: "Python doesn't support vectorized operations on lists, so adding a scalar to a list raises a TypeError."
+                        },
+                        {
+                            question: "How do you get the dimensions of a NumPy array of field measurements?",
+                            options: [
+                                "array.dim",
+                                "array.shape",
+                                "array.size",
+                                "array.ndim"
+                            ],
+                            answer: 1,
+                            explanation: "The shape attribute returns a tuple representing the dimensions of the array."
+                        },
+                        {
+                            question: "Which data structure is more suitable for analyzing time-series crop data?",
+                            options: [
+                                "Python list",
+                                "NumPy array",
+                                "Python dictionary",
+                                "Python tuple"
+                            ],
+                            answer: 1,
+                            explanation: "NumPy arrays are the foundation for efficient time-series analysis in agricultural applications."
+                        }
+                    ]
+                },
+                {
+                    title: "Array Creation & Manipulation",
+                    questions: [
+                        {
+                            question: "How do you create a 2D array of zeros for a 5×5 field grid?",
+                            options: [
+                                "np.zeros(5,5)",
+                                "np.zeros((5,5))",
+                                "np.empty((5,5))",
+                                "np.array(5,5)"
+                            ],
+                            answer: 1,
+                            explanation: "np.zeros() creates an array filled with zeros, with dimensions specified as a tuple."
+                        },
+                        {
+                            question: "Which function creates an array with values from 0 to 10 in 0.5 increments?",
+                            options: [
+                                "np.arange(0, 10, 0.5)",
+                                "np.linspace(0, 10, 21)",
+                                "np.sequence(0, 10, 0.5)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both np.arange and np.linspace can create sequences, but with different approaches to specifying step vs. count."
+                        },
+                        {
+                            question: "How do you reshape a 1D array of 12 monthly rainfall values into 3×4?",
+                            options: [
+                                "array.reshape(3,4)",
+                                "np.reshape(array, (3,4))",
+                                "array.resize(3,4)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both methods reshape the array, but resize may modify the original array."
+                        },
+                        {
+                            question: "What does np.random.seed(42) do for agricultural simulations?",
+                            options: [
+                                "Creates 42 random numbers",
+                                "Ensures reproducible random results",
+                                "Initializes a random number generator with 42 bits",
+                                "Sets the maximum random number to 42"
+                            ],
+                            answer: 1,
+                            explanation: "Setting a seed ensures that random operations produce reproducible results, critical for scientific simulations."
+                        },
+                        {
+                            question: "How do you create an identity matrix for a 3×3 correlation analysis?",
+                            options: [
+                                "np.matrix('identity', 3)",
+                                "np.identity(3)",
+                                "np.eye(3)",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both np.identity and np.eye create identity matrices."
+                        },
+                        {
+                            question: "Which method creates an array from agricultural CSV data?",
+                            options: [
+                                "np.loadtxt('yields.csv')",
+                                "np.fromfile('yields.csv')",
+                                "np.import_csv('yields.csv')",
+                                "np.array_from_file('yields.csv')"
+                            ],
+                            answer: 0,
+                            explanation: "np.loadtxt loads data from text files, including CSVs with proper delimiters."
+                        },
+                        {
+                            question: "How do you access the yield value at row 2, column 3 in a field data array?",
+                            options: [
+                                "array[2,3]",
+                                "array[1,2]",
+                                "array[2][3]",
+                                "array[1][2]"
+                            ],
+                            answer: 1,
+                            explanation: "NumPy uses zero-based indexing, so the third row (index 2) and fourth column (index 3) is at position [2,3]."
+                        },
+                        {
+                            question: "What is the purpose of np.meshgrid() in precision agriculture?",
+                            options: [
+                                "To create grid coordinates for spatial analysis",
+                                "To convert scattered data to grid format",
+                                "To visualize field topography",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "meshgrid is essential for creating coordinate matrices from coordinate vectors."
+                        },
+                        {
+                            question: "How do you extract all values above 50 from a yield array?",
+                            options: [
+                                "array[array > 50]",
+                                "np.where(array > 50)",
+                                "array.filter(lambda x: x > 50)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Boolean indexing and np.where both allow filtering based on conditions."
+                        },
+                        {
+                            question: "Which function stacks multiple field data arrays vertically?",
+                            options: [
+                                "np.hstack()",
+                                "np.vstack()",
+                                "np.concatenate(axis=0)",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "vstack and concatenate with axis=0 both stack arrays vertically."
+                        },
+                        {
+                            question: "How do you create a 3D array for multi-year crop data?",
+                            options: [
+                                "np.array([year1, year2, year3])",
+                                "np.dstack((year1, year2, year3))",
+                                "np.volume(year1, year2, year3)",
+                                "np.3d_array(year1, year2, year3)"
+                            ],
+                            answer: 0,
+                            explanation: "Passing a list of 2D arrays to np.array creates a 3D array."
+                        },
+                        {
+                            question: "What does array.flatten() do to a 2D field data array?",
+                            options: [
+                                "Returns a 1D copy of the array",
+                                "Returns a 1D view of the array",
+                                "Compresses the array",
+                                "Transposes the array"
+                            ],
+                            answer: 0,
+                            explanation: "flatten always returns a copy, while ravel may return a view."
+                        },
+                        {
+                            question: "How do you save a NumPy array of soil data to disk?",
+                            options: [
+                                "np.save('soil_data.npy', array)",
+                                "np.savetxt('soil_data.txt', array)",
+                                "np.export('soil_data', array)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "save for binary format, savetxt for human-readable text."
+                        },
+                        {
+                            question: "Which method copies an array to avoid modifying original crop data?",
+                            options: [
+                                "array.clone()",
+                                "array.copy()",
+                                "np.copy(array)",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both array.copy() and np.copy() create a deep copy."
+                        },
+                        {
+                            question: "How do you create an array of 100 normally distributed rainfall values?",
+                            options: [
+                                "np.random.randn(100)",
+                                "np.random.normal(size=100)",
+                                "np.random.random(100)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both randn and normal generate normally distributed values."
+                        },
+                        {
+                            question: "What does array.T do to a field data matrix?",
+                            options: [
+                                "Transposes rows and columns",
+                                "Calculates the trace",
+                                "Computes the transpose",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: ".T is the attribute for the transpose operation."
+                        },
+                        {
+                            question: "How do you sort an array of crop yields in descending order?",
+                            options: [
+                                "np.sort(array)[::-1]",
+                                "array.sort(descending=True)",
+                                "np.sort(-array)",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Reversing a sorted array or sorting negative values are common techniques."
+                        },
+                        {
+                            question: "Which function creates an array with the same shape as field_data but filled with NaN?",
+                            options: [
+                                "np.empty_like(field_data)",
+                                "np.full_like(field_data, np.nan)",
+                                "np.nan_array(field_data.shape)",
+                                "np.empty(field_data.shape) * np.nan"
+                            ],
+                            answer: 1,
+                            explanation: "np.full_like creates an array with the same shape and type, filled with a specified value."
+                        },
+                        {
+                            question: "How do you combine temperature and rainfall arrays into a single structured array?",
+                            options: [
+                                "np.stack((temp, rain), axis=-1)",
+                                "np.column_stack((temp, rain))",
+                                "np.concatenate((temp, rain))",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both stack and column_stack can combine arrays column-wise."
+                        },
+                        {
+                            question: "What is the purpose of np.unique() for crop type data?",
+                            options: [
+                                "Removes duplicate crop names",
+                                "Finds unique crop categories",
+                                "Counts occurrences of each crop",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "np.unique returns sorted unique elements and can return counts and indices."
+                        }
+                    ]
+                },
+                {
+                    title: "Vectorized Operations & Broadcasting",
+                    questions: [
+                        {
+                            question: "What is vectorization in the context of agricultural data processing?",
+                            options: [
+                                "Converting data to vector graphics",
+                                "Applying operations to entire arrays without loops",
+                                "Storing data in vector format",
+                                "Calculating vector magnitudes"
+                            ],
+                            answer: 1,
+                            explanation: "Vectorization leverages optimized low-level operations for performance gains."
+                        },
+                        {
+                            question: "How do you calculate the element-wise square root of crop yields?",
+                            options: [
+                                "np.sqrt(yields)",
+                                "[math.sqrt(y) for y in yields]",
+                                "yields ** 0.5",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both NumPy's sqrt and exponentiation are vectorized operations."
+                        },
+                        {
+                            question: "What happens when you add a scalar fertilizer amount to an array of field measurements?",
+                            options: [
+                                "The scalar is added to each element",
+                                "The array length increases",
+                                "A broadcasting error occurs",
+                                "Only the first element is modified"
+                            ],
+                            answer: 0,
+                            explanation: "Broadcasting automatically applies the operation to all elements."
+                        },
+                        {
+                            question: "How do you compute element-wise multiplication of fertilizer and rainfall arrays?",
+                            options: [
+                                "fertilizer * rainfall",
+                                "np.multiply(fertilizer, rainfall)",
+                                "np.array([f*r for f,r in zip(fertilizer, rainfall)])",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods work, but vectorized operations are most efficient."
+                        },
+                        {
+                            question: "Which operation demonstrates broadcasting with a 3×4 field data array and a 1×4 fertilizer array?",
+                            options: [
+                                "field_data + fertilizer",
+                                "field_data * fertilizer",
+                                "np.add(field_data, fertilizer)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Broadcasting rules allow operations between arrays with compatible shapes."
+                        },
+                        {
+                            question: "How do you calculate the dot product of soil nutrient and crop coefficient vectors?",
+                            options: [
+                                "np.dot(nutrients, coefficients)",
+                                "nutrients @ coefficients",
+                                "np.sum(nutrients * coefficients)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the dot product of two vectors."
+                        },
+                        {
+                            question: "What is the purpose of np.vectorize() for agricultural functions?",
+                            options: [
+                                "Optimizes existing vectorized functions",
+                                "Converts scalar functions to vectorized versions",
+                                "Creates vector graphics from arrays",
+                                "Computes vector magnitudes"
+                            ],
+                            answer: 1,
+                            explanation: "np.vectorize provides a convenience function for vectorizing Python functions."
+                        },
+                        {
+                            question: "How do you compute the Euclidean distance between two field locations?",
+                            options: [
+                                "np.sqrt(np.sum((loc1 - loc2)**2))",
+                                "np.linalg.norm(loc1 - loc2)",
+                                "distance.euclidean(loc1, loc2)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods calculate Euclidean distance, with varying levels of optimization."
+                        },
+                        {
+                            question: "Which operation applies a growth factor to each row of a crop data matrix?",
+                            options: [
+                                "crop_data * growth_factors[:, np.newaxis]",
+                                "crop_data * growth_factors.reshape(-1,1)",
+                                "np.multiply(crop_data, growth_factors[:, None])",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All reshape the growth_factors vector to enable broadcasting across rows."
+                        },
+                        {
+                            question: "How do you calculate element-wise maximum between two arrays of yield predictions?",
+                            options: [
+                                "np.maximum(pred1, pred2)",
+                                "np.where(pred1 > pred2, pred1, pred2)",
+                                "np.fmax(pred1, pred2)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the element-wise maximum of two arrays."
+                        },
+                        {
+                            question: "What is the purpose of the @ operator for agricultural models?",
+                            options: [
+                                "Element-wise multiplication",
+                                "Matrix multiplication",
+                                "Array concatenation",
+                                "Dot product for 1D arrays"
+                            ],
+                            answer: 1,
+                            explanation: "The @ operator performs matrix multiplication for 2D arrays."
+                        },
+                        {
+                            question: "How do you apply a sigmoid growth function to an array of temperatures?",
+                            options: [
+                                "1 / (1 + np.exp(-temperatures))",
+                                "np.vectorize(sigmoid)(temperatures)",
+                                "[sigmoid(t) for t in temperatures]",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All work, but the vectorized expression is most efficient."
+                        },
+                        {
+                            question: "Which broadcasting rule allows a 5×3 array to be multiplied by a 1×3 array?",
+                            options: [
+                                "Dimensions are equal",
+                                "One dimension is 1",
+                                "Trailing dimensions match",
+                                "Shapes are identical"
+                            ],
+                            answer: 1,
+                            explanation: "Broadcasting requires dimensions to be equal or one of them to be 1."
+                        },
+                        {
+                            question: "How do you calculate cumulative rainfall over time?",
+                            options: [
+                                "np.cumsum(rainfall)",
+                                "rainfall.cumsum()",
+                                "np.add.accumulate(rainfall)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods compute the cumulative sum."
+                        },
+                        {
+                            question: "What does np.clip(yields, 0, 100) do?",
+                            options: [
+                                "Sets all values below 0 to 0 and above 100 to 100",
+                                "Removes values outside [0,100]",
+                                "Scales values to [0,100] range",
+                                "Rounds values to nearest integer"
+                            ],
+                            answer: 0,
+                            explanation: "clip limits values to a specified range."
+                        },
+                        {
+                            question: "How do you compute pairwise differences between soil samples?",
+                            options: [
+                                "samples[:, np.newaxis] - samples",
+                                "np.subtract.outer(samples, samples)",
+                                "np.diff(samples)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both methods compute all pairwise differences efficiently."
+                        },
+                        {
+                            question: "Which function applies a moving average to time-series yield data?",
+                            options: [
+                                "np.convolve(yields, np.ones(3)/3, mode='valid')",
+                                "np.lib.stride_tricks.sliding_window_view(yields, 3).mean(axis=1)",
+                                "pd.Series(yields).rolling(3).mean().to_numpy()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute a 3-point moving average with different approaches."
+                        },
+                        {
+                            question: "How do you calculate element-wise natural log of growth rates?",
+                            options: [
+                                "np.log(growth_rates)",
+                                "np.vectorize(math.log)(growth_rates)",
+                                "[math.log(g) for g in growth_rates]",
+                                "All of the above"
+                            ],
+                            answer: 0,
+                            explanation: "np.log is the vectorized natural logarithm function."
+                        },
+                        {
+                            question: "What does np.isclose() do when comparing simulated and actual yields?",
+                            options: [
+                                "Checks exact equality",
+                                "Checks equality within a tolerance",
+                                "Calculates similarity percentage",
+                                "Finds closest values"
+                            ],
+                            answer: 1,
+                            explanation: "isclose checks if values are equal within a tolerance, useful for floating-point comparisons."
+                        },
+                        {
+                            question: "How do you apply a custom growth model to each element in a temperature array?",
+                            options: [
+                                "np.vectorize(growth_model)(temperatures)",
+                                "[growth_model(t) for t in temperatures]",
+                                "growth_model(temperatures)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both vectorize and list comprehensions work for element-wise application."
+                        }
+                    ]
+                },
+                {
+                    title: "Statistical Operations on Arrays",
+                    questions: [
+                        {
+                            question: "How do you calculate the mean yield across all fields?",
+                            options: [
+                                "np.mean(yields)",
+                                "yields.mean()",
+                                "np.average(yields)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the arithmetic mean."
+                        },
+                        {
+                            question: "Which function computes the median rainfall value?",
+                            options: [
+                                "np.median(rainfall)",
+                                "np.percentile(rainfall, 50)",
+                                "np.quantile(rainfall, 0.5)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods calculate the median value."
+                        },
+                        {
+                            question: "How do you find the highest yield in the dataset?",
+                            options: [
+                                "np.max(yields)",
+                                "yields.max()",
+                                "np.amax(yields)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All return the maximum value in the array."
+                        },
+                        {
+                            question: "What does np.std(soil_ph) calculate?",
+                            options: [
+                                "Standard deviation of soil pH values",
+                                "Sum of squared differences",
+                                "Statistical distribution",
+                                "Standard error"
+                            ],
+                            answer: 0,
+                            explanation: "std computes the standard deviation, a measure of dispersion."
+                        },
+                        {
+                            question: "How do you compute the variance of crop yields?",
+                            options: [
+                                "np.var(yields)",
+                                "yields.var()",
+                                "np.mean((yields - yields.mean())**2)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate the variance."
+                        },
+                        {
+                            question: "Which function calculates the 90th percentile of rainfall?",
+                            options: [
+                                "np.percentile(rainfall, 90)",
+                                "np.quantile(rainfall, 0.9)",
+                                "np.scoreatpercentile(rainfall, 90)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "percentile and quantile are equivalent for this calculation."
+                        },
+                        {
+                            question: "How do you compute the correlation between rainfall and yields?",
+                            options: [
+                                "np.corrcoef(rainfall, yields)[0,1]",
+                                "np.correlate(rainfall, yields)",
+                                "np.cov(rainfall, yields)[0,1] / (np.std(rainfall)*np.std(yields))",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both methods compute Pearson's correlation coefficient."
+                        },
+                        {
+                            question: "What does np.histogram(heights) return?",
+                            options: [
+                                "Counts and bin edges",
+                                "Probability density function",
+                                "Cumulative distribution",
+                                "Sorted values"
+                            ],
+                            answer: 0,
+                            explanation: "histogram returns the counts of values in bins and the bin edges."
+                        },
+                        {
+                            question: "How do you compute the mode of crop maturity days?",
+                            options: [
+                                "np.mode(days)",
+                                "scipy.stats.mode(days)",
+                                "np.unique(days, return_counts=True)",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "NumPy doesn't have a direct mode function, but these methods can find it."
+                        },
+                        {
+                            question: "Which function calculates the interquartile range (IQR) of yields?",
+                            options: [
+                                "np.percentile(yields, 75) - np.percentile(yields, 25)",
+                                "scipy.stats.iqr(yields)",
+                                "np.subtract(*np.percentile(yields, [75, 25]))",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the IQR, a measure of statistical dispersion."
+                        },
+                        {
+                            question: "How do you compute a rolling average of daily temperatures?",
+                            options: [
+                                "np.convolve(temps, np.ones(7)/7, mode='valid')",
+                                "np.lib.stride_tricks.sliding_window_view(temps, 7).mean(axis=1)",
+                                "pd.Series(temps).rolling(7).mean().to_numpy()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate a 7-day moving average."
+                        },
+                        {
+                            question: "What does np.cov(rainfall, yields) return?",
+                            options: [
+                                "Correlation matrix",
+                                "Covariance matrix",
+                                "Variance vector",
+                                "Covariance value"
+                            ],
+                            answer: 1,
+                            explanation: "cov returns the covariance matrix for multiple variables."
+                        },
+                        {
+                            question: "How do you compute the skewness of yield distribution?",
+                            options: [
+                                "scipy.stats.skew(yields)",
+                                "Manual calculation using moments",
+                                "np.mean(((yields - yields.mean())/yields.std())**3)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods calculate skewness, a measure of distribution asymmetry."
+                        },
+                        {
+                            question: "Which function calculates the cumulative distribution function?",
+                            options: [
+                                "np.cumsum(np.histogram(data)[0]) / len(data)",
+                                "np.sort(data)",
+                                "scipy.stats.ecdf(data)",
+                                "Both 1 and 3"
+                            ],
+                            answer: 0,
+                            explanation: "The empirical CDF can be computed from sorted data and cumulative counts."
+                        },
+                        {
+                            question: "How do you compute the geometric mean of growth rates?",
+                            options: [
+                                "scipy.stats.gmean(growth_rates)",
+                                "np.exp(np.mean(np.log(growth_rates)))",
+                                "np.prod(growth_rates)**(1/len(growth_rates))",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate the geometric mean, appropriate for multiplicative processes."
+                        },
+                        {
+                            question: "What does np.quantile(yields, [0.25, 0.5, 0.75]) return?",
+                            options: [
+                                "Quartiles of the yield distribution",
+                                "25th, 50th, and 75th percentiles",
+                                "Interquartile range boundaries",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "These values define the quartiles and IQR."
+                        },
+                        {
+                            question: "How do you compute the root mean square error (RMSE) between predicted and actual yields?",
+                            options: [
+                                "np.sqrt(np.mean((predicted - actual)**2))",
+                                "np.linalg.norm(predicted - actual) / np.sqrt(len(actual))",
+                                "math.sqrt(mean_squared_error(predicted, actual))",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate RMSE, a common regression metric."
+                        },
+                        {
+                            question: "Which function computes the pairwise correlation between multiple crop traits?",
+                            options: [
+                                "np.corrcoef(traits, rowvar=False)",
+                                "pd.DataFrame(traits).corr().to_numpy()",
+                                "scipy.stats.pearsonr for each pair",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both NumPy and pandas can compute correlation matrices efficiently."
+                        },
+                        {
+                            question: "How do you calculate the coefficient of variation for yields?",
+                            options: [
+                                "np.std(yields) / np.mean(yields)",
+                                "yields.std() / yields.mean()",
+                                "scipy.stats.variation(yields)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the CV, a normalized measure of dispersion."
+                        },
+                        {
+                            question: "What does np.diff(heights) compute?",
+                            options: [
+                                "Discrete differences between elements",
+                                "Derivative of height progression",
+                                "Slope between consecutive points",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "diff calculates the difference between consecutive elements."
+                        }
+                    ]
+                },
+                {
+                    title: "Real Application: Agricultural Yield Analysis",
+                    questions: [
+                        {
+                            question: "How would you load multiple years of yield data into a 3D array?",
+                            options: [
+                                "years = np.array([np.loadtxt(f'{y}.csv') for y in range(2010,2020)])",
+                                "years = np.stack([np.loadtxt(f'{y}.csv') for y in range(2010,2020)])",
+                                "years = np.dstack([np.loadtxt(f'{y}.csv') for y in range(2010,2020)])",
+                                "Both 1 and 2"
+                            ],
+                            answer: 1,
+                            explanation: "stack creates a new dimension, suitable for time-series data."
+                        },
+                        {
+                            question: "How do you calculate the average yield per field across 10 years?",
+                            options: [
+                                "np.mean(years, axis=0)",
+                                "years.mean(axis=0)",
+                                "np.average(years, axis=0)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute the mean along the time dimension."
+                        },
+                        {
+                            question: "How would you identify fields with consistently high yields?",
+                            options: [
+                                "np.all(years > threshold, axis=0)",
+                                "(years > threshold).all(axis=0)",
+                                "np.mean(years > threshold, axis=0) == 1",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All identify fields where yield exceeded threshold every year."
+                        },
+                        {
+                            question: "How do you compute year-over-year yield change percentage?",
+                            options: [
+                                "100 * np.diff(years, axis=0) / years[:-1]",
+                                "100 * (years[1:] - years[:-1]) / years[:-1]",
+                                "np.diff(years, axis=0) / years[:-1] * 100",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate the percentage change between consecutive years."
+                        },
+                        {
+                            question: "How would you normalize yields to z-scores per year?",
+                            options: [
+                                "(years - years.mean(axis=1, keepdims=True)) / years.std(axis=1, keepdims=True)",
+                                "scipy.stats.zscore(years, axis=1)",
+                                "Manual calculation using per-year statistics",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All standardize data to mean=0, std=1 within each year."
+                        },
+                        {
+                            question: "How do you calculate the correlation between rainfall and yield per field?",
+                            options: [
+                                "[np.corrcoef(rain[i], yield[i])[0,1] for i in range(n_fields)]",
+                                "np.array([np.corrcoef(r, y)[0,1] for r,y in zip(rain.T, yield.T))",
+                                "scipy.stats.pearsonr for each field",
+                                "Both 1 and 2"
+                            ],
+                            answer: 1,
+                            explanation: "Vectorized approach computes correlations efficiently for all fields."
+                        },
+                        {
+                            question: "How would you identify outlier fields based on yield stability?",
+                            options: [
+                                "fields[np.argsort(yields.std(axis=0))[-5:]]",
+                                "fields[yields.std(axis=0) > threshold]",
+                                "np.where(yields.std(axis=0) > threshold)[0]",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both identify fields with high yield variability."
+                        },
+                        {
+                            question: "How do you compute a yield trend line for each field?",
+                            options: [
+                                "np.polyfit(np.arange(10), yields[:,i], 1)[0] for i in range(n_fields)",
+                                "np.linalg.lstsq(np.vstack([np.arange(10), np.ones(10)]).T, yields[:,i])[0][0]",
+                                "scipy.stats.linregress for each field",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute linear regression slopes (trends)."
+                        },
+                        {
+                            question: "How would you predict yields based on temperature and rainfall?",
+                            options: [
+                                "coeffs = np.linalg.lstsq(np.column_stack([temps, rain, np.ones_like(temps)]), yields)[0]",
+                                "from sklearn.linear_model import LinearRegression",
+                                "np.polyfit(np.column_stack([temps, rain]), yields, 1)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All perform multivariate linear regression."
+                        },
+                        {
+                            question: "How do you calculate the average yield for different soil types?",
+                            options: [
+                                "[yields[soil==t].mean() for t in soil_types]",
+                                "np.array([yields[soil==t].mean() for t in np.unique(soil)])",
+                                "np.bincount(soil, weights=yields) / np.bincount(soil)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All compute group means efficiently."
+                        },
+                        {
+                            question: "How would you fill missing yield values with the field average?",
+                            options: [
+                                "yields[np.isnan(yields)] = np.nanmean(yields, axis=0)[np.isnan(yields)]",
+                                "field_means = np.nanmean(yields, axis=0)",
+                                "for i in range(yields.shape[1]): yields[np.isnan(yields[:,i]), i] = field_means[i]",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both replace NaNs with the column mean."
+                        },
+                        {
+                            question: "How do you compute the efficiency of water usage (yield per unit water)?",
+                            options: [
+                                "yields / water",
+                                "np.divide(yields, water)",
+                                "np.where(water > 0, yields/water, 0)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate water use efficiency, with protection against division by zero."
+                        },
+                        {
+                            question: "How would you identify fields that responded best to a new fertilizer?",
+                            options: [
+                                "treatment_effect = treatment_yield - control_yield",
+                                "fields[np.argsort(treatment_effect)[-10:]]",
+                                "fields[treatment_effect > np.percentile(treatment_effect, 90)]",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All identify fields with the largest treatment effects."
+                        },
+                        {
+                            question: "How do you compute the cumulative yield over time for each field?",
+                            options: [
+                                "np.cumsum(yields, axis=0)",
+                                "yields.cumsum(axis=0)",
+                                "np.add.accumulate(yields, axis=0)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both calculate cumulative sums along the time axis."
+                        },
+                        {
+                            question: "How would you visualize the spatial distribution of yields?",
+                            options: [
+                                "plt.imshow(yields)",
+                                "plt.contourf(lons, lats, yields)",
+                                "plt.scatter(x, y, c=yields)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All create spatial visualizations of yield data."
+                        },
+                        {
+                            question: "How do you calculate yield stability (inverse of standard deviation)?",
+                            options: [
+                                "1 / yields.std(axis=0)",
+                                "-yields.std(axis=0)",
+                                "yields.mean(axis=0) / yields.std(axis=0)",
+                                "Coefficient of variation"
+                            ],
+                            answer: 2,
+                            explanation: "Mean divided by standard deviation measures stability relative to average yield."
+                        },
+                        {
+                            question: "How would you optimize fertilizer allocation across fields?",
+                            options: [
+                                "np.linprog(-response_coeffs, ...)",
+                                "scipy.optimize.minimize with constraints",
+                                "Greedy allocation to highest response fields",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All are optimization approaches for resource allocation."
+                        },
+                        {
+                            question: "How do you compute the profit per field considering costs and prices?",
+                            options: [
+                                "yields * price - costs",
+                                "np.subtract(np.multiply(yields, price), costs)",
+                                "np.fma(yields, price, -costs)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All calculate profit using vectorized operations."
+                        },
+                        {
+                            question: "How would you detect anomalous yield patterns?",
+                            options: [
+                                "z = (yields - yields.mean()) / yields.std(); z > 3",
+                                "isolation forest on yield features",
+                                "moving average deviation",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All are valid anomaly detection techniques."
+                        },
+                        {
+                            question: "How do you prepare data for machine learning models?",
+                            options: [
+                                "X = np.column_stack([rain, temp, soil])",
+                                "X = np.hstack([rain[:, None], temp[:, None], soil[:, None]])",
+                                "X = np.stack([rain, temp, soil], axis=1)",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All create a feature matrix from multiple variables."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Quiz app functionality
+        function quizApp() {
+            return {
+                // Quiz state
+                sections: quizData.sections,
+                currentSection: 0,
+                showAnswers: false,
+                showResults: false,
+                score: 0,
+                answeredCount: 0,
+                userAnswers: Array(quizData.sections.length).fill().map(() => []),
+                sectionScores: Array(quizData.sections.length).fill(0),
+                
+                // Get total questions
+                get totalQuestions() {
+                    return this.sections.reduce((total, section) => total + section.questions.length, 0);
+                },
+                
+                // Get answer status text
+                getAnswerStatus(sectionIndex, qIndex) {
+                    const userAnswer = this.userAnswers[sectionIndex][qIndex];
+                    const question = this.sections[sectionIndex].questions[qIndex];
+                    
+                    if (userAnswer === undefined) {
+                        return "Not answered. The correct answer is highlighted below.";
+                    } else if (userAnswer === question.answer) {
+                        return "Correct!";
+                    } else {
+                        return "Incorrect. The correct answer is highlighted below.";
+                    }
+                },
+                
+                // Select answer
+                selectAnswer(sectionIndex, qIndex, optionIndex) {
+                    if (this.showAnswers) return; // Prevent changing after submission
+                    
+                    // Save answer
+                    this.userAnswers[sectionIndex][qIndex] = optionIndex;
+                    
+                    // Update answered count
+                    this.calculateAnsweredCount();
+                },
+                
+                // Calculate how many questions have been answered
+                calculateAnsweredCount() {
+                    let count = 0;
+                    for (const section of this.userAnswers) {
+                        for (const answer of section) {
+                            if (answer !== undefined) count++;
+                        }
+                    }
+                    this.answeredCount = count;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    
+                    // Calculate score
+                    this.score = 0;
+                    this.sections.forEach((section, sIdx) => {
+                        let sectionScore = 0;
+                        section.questions.forEach((question, qIdx) => {
+                            if (this.userAnswers[sIdx][qIdx] === question.answer) {
+                                this.score++;
+                                sectionScore++;
+                            }
+                        });
+                        this.sectionScores[sIdx] = sectionScore;
+                    });
+                    
+                    // Show results after a delay
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1000);
+                },
+                
+                // Reset quiz
+                resetQuiz() {
+                    this.userAnswers = Array(quizData.sections.length).fill().map(() => []);
+                    this.sections.forEach((section, sIdx) => {
+                        this.userAnswers[sIdx] = Array(section.questions.length).fill(undefined);
+                    });
+                    this.showAnswers = false;
+                    this.showResults = false;
+                    this.score = 0;
+                    this.answeredCount = 0;
+                    this.sectionScores = Array(quizData.sections.length).fill(0);
+                },
+                
+                // Get motivation message based on score
+                getMotivationMessage() {
+                    const percentage = this.score / this.totalQuestions;
+                    
+                    if (percentage >= 0.9) {
+                        return "Exceptional mastery! Your NumPy skills are ready for complex agricultural analysis.";
+                    } else if (percentage >= 0.7) {
+                        return "Strong expertise! You're well-equipped to handle real-world yield optimization problems.";
+                    } else if (percentage >= 0.5) {
+                        return "Solid foundation! Keep practicing to master advanced array operations.";
+                    } else {
+                        return "Good start! Review the concepts and try again to cultivate your NumPy skills.";
+                    }
+                },
+                
+                // Create cosmic background
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                },
+                
+                // Initialize the quiz
+                init() {
+                    this.createCosmicBackground();
+                    this.calculateAnsweredCount();
+                    // Initialize answer arrays
+                    this.sections.forEach((section, sIdx) => {
+                        this.userAnswers[sIdx] = Array(section.questions.length).fill(undefined);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Explanation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #0078d7;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    #explanation {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-left: 4px solid #0078d7;
+      display: none; /* hidden by default */
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Python Code Explanation</h2>
+  <button onclick="showExplanation()">Click to Explain Code</button>
+
+  <div id="explanation">
+    <h3>Step-by-Step Explanation:</h3>
+    <ul>
+      <li><b>1.</b> We import <code>pandas</code> and <code>numpy</code> → tools that help us work with data.</li>
+      <li><b>2.</b> We load 3 files:
+        <ul>
+          <li>CSV file → contains screen time data.</li>
+          <li>Excel file → contains mental wellbeing survey results.</li>
+          <li>JSON file → contains participant demographics (age, gender, etc).</li>
+        </ul>
+      </li>
+      <li><b>3.</b> We combine (merge) these datasets using each person’s ID so everything matches up correctly.</li>
+      <li><b>4.</b> We handle missing answers:
+        <ul>
+          <li>If “social media time” is missing → replace it with the median (middle value).</li>
+          <li>If “wellbeing score” is missing → replace it with the average score.</li>
+        </ul>
+      </li>
+      <li><b>👉 Result:</b> We now have one clean dataset with all information ready for analysis.</li>
+    </ul>
+  </div>
+
+  <script>
+    function showExplanation() {
+      const box = document.getElementById("explanation");
+      box.style.display = (box.style.display === "none") ? "block" : "none";
+    }
+  </script>
+
+</body>
+</html>

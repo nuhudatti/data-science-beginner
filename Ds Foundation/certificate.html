@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR Certificate Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        nigeriagreen: '#006b3f',
+                        nigeriayellow: '#fcd116',
+                        gold: '#d4af37',
+                        certificate: '#f8f4e8'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .certificate-container {
+            background: linear-gradient(135deg, #f8f4e8 0%, #fffbf0 100%);
+            border: 20px solid transparent;
+            border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10,10 L90,10 L90,90 L10,90 Z' fill='none' stroke='%23d4af37' stroke-width='2' stroke-dasharray='10,5'/%3E%3C/svg%3E") 30 round;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 100 Q 75 50, 100 100 T 150 100' fill='none' stroke='rgba(0,107,63,0.05)' stroke-width='2'/%3E%3C/svg%3E");
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .seal {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #fcd116 0%, #d4af37 100%);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #1a202c;
+        }
+        
+        .gold-text {
+            background: linear-gradient(135deg, #d4af37 0%, #f9e076 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .ornament {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+        
+        .certificate-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+        }
+        
+        .ribbon span {
+            position: absolute;
+            top: 30px;
+            right: -30px;
+            width: 200px;
+            padding: 10px 0;
+            background: linear-gradient(135deg, #006b3f 0%, #008552 100%);
+            color: white;
+            text-align: center;
+            transform: rotate(45deg);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <div class="inline-block bg-white rounded-lg px-6 py-4 shadow-lg mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">NITDA/NCAIR Certificate Generator</h1>
+                <p class="text-gray-600 mb-4">Create your official certificate of completion</p>
+            </div>
+            
+            <div class="badge inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>Official NITDA/NCAIR Recognition
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6 text-center">Create Your Certificate</h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                        <input type="text" id="name-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Program</label>
+                        <select id="program-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="Data Science Cohort 27">Data Science Cohort 27</option>
+                            <option value="AI for National Development">AI for National Development</option>
+                            <option value="Cybersecurity Fundamentals">Cybersecurity Fundamentals</option>
+                            <option value="Digital Transformation Leadership">Digital Transformation Leadership</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Date of Completion</label>
+                        <input type="date" id="date-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Certificate ID</label>
+                        <input type="text" id="cert-id-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="NCA-2023-XXXXX">
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button id="generate-btn" class="w-full bg-gradient-to-r from-nigeriagreen to-nigeriayellow hover:from-nigeriagreen hover:to-nigeriagreen text-white font-bold py-4 rounded-lg text-lg transition-all transform hover:scale-[1.02]">
+                            Generate Certificate
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-lg font-bold mb-4">Certificate Preview</h3>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+                        <p class="text-gray-500 text-center">Your certificate will appear here after generation</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificate Template -->
+            <div>
+                <div class="certificate-container w-full aspect-[4/3] p-12 relative">
+                    <div class="watermark"></div>
+                    
+                    <!-- Official Ribbon -->
+                    <div class="ribbon">
+                        <span>OFFICIAL</span>
+                    </div>
+                    
+                    <!-- Ornamental elements -->
+                    <div class="ornament top-6 left-6">✦</div>
+                    <div class="ornament top-6 right-6">✦</div>
+                    <div class="ornament bottom-6 left-6">✦</div>
+                    <div class="ornament bottom-6 right-6">✦</div>
+                    
+                    <!-- Seal of Excellence -->
+                    <div class="seal top-12 right-12">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
+                                <span class="text-white font-bold text-xs">NITDA<br>NCAIR<br>SEAL</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="certificate-content flex flex-col items-center justify-center h-full">
+                        <!-- Header -->
+                        <div class="text-center mb-2">
+                            <h2 class="text-5xl font-serif font-bold text-nigeriagreen mb-2">CERTIFICATE</h2>
+                            <div class="w-32 h-1 bg-gradient-to-r from-nigeriayellow to-nigeriagreen mx-auto mb-4"></div>
+                            <p class="text-lg text-gray-600">OF EXCELLENCE & ACHIEVEMENT</p>
+                        </div>
+                        
+                        <!-- Body -->
+                        <div class="text-center my-8">
+                            <p class="text-gray-600 mb-6">This is to certify that</p>
+                            <h3 id="cert-name" class="text-4xl md:text-5xl font-serif font-bold mb-8 gold-text">[Your Name Here]</h3>
+                            <p class="text-gray-600 mb-6">has successfully completed the program</p>
+                            <h4 id="cert-program" class="text-2xl font-semibold text-nigeriagreen mb-8">Data Science Cohort 27</h4>
+                            <p class="text-gray-600 max-w-2xl mx-auto">demonstrating exceptional skill, dedication, and mastery in the field of data science through the National Information Technology Development Agency's Universal Learning Archive initiative.</p>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="grid grid-cols-2 gap-8 w-full mt-12">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <div class="w-24 h-1 bg-nigeriagreen mx-auto"></div>
+                                </div>
+                                <p class="font-semibold">Kashifu Inuwa Abdullahi</p>
+                                <p class="text-sm text-gray-600">Director General, NITDA</p>
+                                <div class="signature mt-2" id="signature1">K. I. Abdullahi</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <div class="w-24 h-1 bg-nigeriagreen mx-auto"></div>
+                                </div>
+                                <p class="font-semibold">Dr. Amina Sambo-Magaji</p>
+                                <p class="text-sm text-gray-600">National Coordinator, NCAIR</p>
+                                <div class="signature mt-2" id="signature2">A. Sambo-Magaji</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Certificate Details -->
+                        <div class="flex justify-between w-full mt-8 text-sm">
+                            <div>
+                                <p>Certificate ID: <span id="cert-id" class="font-semibold">NCA-2023-00000</span></p>
+                            </div>
+                            <div>
+                                <p>Date of Issue: <span id="cert-date" class="font-semibold">September 30, 2023</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-center space-x-4">
+                    <button id="download-btn" class="bg-gradient-to-r from-nigeriagreen to-nigeriagreen hover:to-nigeriayellow text-white font-bold py-3 px-6 rounded-lg transition-all">
+                        <i class="fas fa-download mr-2"></i> Download Certificate
+                    </button>
+                    <button id="print-btn" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                        <i class="fas fa-print mr-2"></i> Print Certificate
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Verification Section -->
+        <div class="mt-16 bg-gradient-to-r from-nigeriagreen to-nigeriayellow text-white rounded-xl shadow-lg p-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Certificate Verification System</h2>
+            <p class="text-xl mb-6">All certificates are securely stored on the blockchain for lifetime verification</p>
+            
+            <div class="max-w-2xl mx-auto bg-white bg-opacity-20 p-6 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white bg-opacity-10 p-4 rounded">
+                        <i class="fas fa-shield-alt text-2xl mb-2"></i>
+                        <p>Immutable Record</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 p-4 rounded">
+                        <i class="fas fa-qrcode text-2xl mb-2"></i>
+                        <p>QR Code Verification</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 p-4 rounded">
+                        <i class="fas fa-globe text-2xl mb-2"></i>
+                        <p>Global Recognition</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <div class="bg-white p-4 rounded-lg inline-block">
+                        <div class="w-32 h-32 bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-qrcode text-4xl text-nigeriagreen"></i>
+                        </div>
+                        <p class="text-sm text-gray-800 mt-2">Scan to Verify</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('date-input').value = formattedDate;
+            
+            // Generate certificate ID
+            const certId = `NCA-${today.getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+            document.getElementById('cert-id-input').value = certId;
+            document.getElementById('cert-id').textContent = certId;
+            
+            // Format date for display
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const displayDate = today.toLocaleDateString('en-US', options);
+            document.getElementById('cert-date').textContent = displayDate;
+            
+            // Generate certificate function
+            document.getElementById('generate-btn').addEventListener('click', function() {
+                const name = document.getElementById('name-input').value || '[Your Name Here]';
+                const program = document.getElementById('program-select').value;
+                const date = new Date(document.getElementById('date-input').value);
+                const certId = document.getElementById('cert-id-input').value;
+                
+                // Update certificate
+                document.getElementById('cert-name').textContent = name;
+                document.getElementById('cert-program').textContent = program;
+                document.getElementById('cert-id').textContent = certId;
+                
+                // Format date for display
+                const displayDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('cert-date').textContent = displayDate;
+                
+                // Add animation to name
+                const nameElement = document.getElementById('cert-name');
+                nameElement.classList.remove('gold-text');
+                setTimeout(() => {
+                    nameElement.classList.add('gold-text');
+                }, 100);
+            });
+            
+            // Download button functionality
+            document.getElementById('download-btn').addEventListener('click', function() {
+                alert("Certificate downloaded successfully! This would generate a PDF in a real implementation.");
+            });
+            
+            // Print button functionality
+            document.getElementById('print-btn').addEventListener('click', function() {
+                alert("Printing certificate... This would open print dialog in a real implementation.");
+            });
+        });
+    </script>
+</body>
+</html>

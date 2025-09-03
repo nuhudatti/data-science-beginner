@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosmicLearn | Nigerian Data Science Journey</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --cosmic-dark: #0a0e29;
+            --cosmic-purple: #3a1d6d;
+            --cosmic-blue: #1d3a6d;
+            --cosmic-pink: #6d1d5a;
+            --nigerian-green: #008751;
+            --star-glow: #ffffff;
+            --text-light: #f0f8ff;
+            --card-bg: rgba(10, 14, 41, 0.8);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--cosmic-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Cosmic Background Elements */
+        #cosmic-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+        }
+        
+        .nebula {
+            position: fixed;
+            z-index: -2;
+            opacity: 0.3;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+        
+        #nebula-1 {
+            top: 10%;
+            left: 15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--cosmic-purple), transparent 70%);
+        }
+        
+        #nebula-2 {
+            bottom: 10%;
+            right: 15%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--cosmic-blue), transparent 70%);
+        }
+        
+        .floating-element {
+            position: fixed;
+            z-index: -1;
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        #element-1 {
+            top: 30%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6b6b, #ff8e53);
+            animation-delay: 0s;
+        }
+        
+        #element-2 {
+            bottom: 20%;
+            left: 10%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #4ecdc4, #1a936f);
+            animation-delay: 3s;
+        }
+        
+        #element-3 {
+            top: 15%;
+            left: 25%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #f9c74f, #f8961e);
+            animation-delay: 6s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(10px) translateX(-15px); }
+            75% { transform: translateY(-15px) translateX(-10px); }
+        }
+        
+        
+        /* Main Content */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar Navigation */
+        
+        /* Main Content Area */
+        .content {
+            flex: 1;
+            padding: 30px 40px;
+            position: relative;
+        }
+        
+       .welcome-container {
+            max-width: 900px;
+            margin: 0 auto 40px auto; /* Center and add bottom space */
+            text-align: center;
+            padding: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+             background: linear-gradient(to right, #f0f8ff, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Smooth fade-in upward animation */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        
+        .highlight {
+            color: var(--nigerian-green);
+            font-weight: bold;
+        }
+        
+        .nigerian-flag {
+            display: inline-block;
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(to right, #008751 33%, white 33%, white 66%, #008751 66%);
+            margin: 0 5px;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+        
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 135, 81, 0.3);
+            border-color: rgba(0, 135, 81, 0.3);
+        }
+        
+        .module-header {
+            padding: 20px;
+            background: rgba(0, 135, 81, 0.1);
+            border-bottom: 1px solid rgba(0, 135, 81, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 135, 81, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .module-icon i {
+            font-size: 1.8rem;
+            color: var(--nigerian-green);
+        }
+        
+        .module-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .module-content {
+            padding: 20px;
+        }
+        
+        .module-description {
+            color: #a0aec0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .module-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .module-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: rgba(0, 135, 81, 0.2);
+            color: var(--nigerian-green);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 135, 81, 0.3);
+        }
+        
+        .module-button:hover {
+            background: rgba(0, 135, 81, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .module-button i {
+            margin-left: 8px;
+        }
+        
+        .achievements-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--nigerian-green);
+        }
+        
+        .badges-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f0f0f0);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .badge i {
+            font-size: 2rem;
+            color: #2d3748;
+        }
+        
+        .badge.unlocked {
+            background: radial-gradient(circle at 30% 30%, #f9c74f, #f8961e);
+            box-shadow: 0 0 20px #f9c74f;
+        }
+        
+        .badge.locked {
+            opacity: 0.4;
+            filter: grayscale(80%);
+        }
+        
+        .badge-name {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            color: #a0aec0;
+        }
+        
+        .badge.unlocked .badge-name {
+            color: #f9c74f;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background: rgba(10, 14, 41, 0.9);
+            padding: 30px 5%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .contact-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a0aec0;
+        }
+        
+        .contact-item i {
+            color: var(--nigerian-green);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--nigerian-green);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: var(--nigerian-green);
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+            
+            .progress-bar {
+                width: 150px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .modules-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        /* home icons */
+         .home-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .home-icon:hover {
+            transform: scale(1.1);
+            background: rgba(74, 30, 109, 0.7);
+            border-color: var(--array-green);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+       
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Elements -->
+    <canvas id="cosmic-canvas"></canvas>
+    <div id="nebula-1" class="nebula"></div>
+    <div id="nebula-2" class="nebula"></div>
+    <div id="element-1" class="floating-element"></div>
+    <div id="element-2" class="floating-element"></div>
+    <div id="element-3" class="floating-element"></div>
+
+     <!-- Home Button -->
+    <a href="../index.html#pandas" class="home-icon" @click="goHome">
+        <i class="fas fa-home text-xl text-blue-300"></i>
+    </a>
+
+    
+    <!-- Header -->
+    <!-- <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-stars"></i>
+            </div>
+            <div>
+                <div class="logo-text">CosmicLearn</div>
+                <div class="logo-subtext">Data Science for Nigerian Context</div>
+            </div>
+        </div>
+        
+        <div class="user-actions">
+            <div class="progress-container">
+                <div class="progress-label">Course Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="achievement-badge">
+                <i class="fas fa-trophy"></i>
+                <div class="badge-count">7</div>
+            </div>
+        </div>
+    </header> -->
+    
+    <!-- Main Content -->
+    <div class="main-container">  
+        <!-- Content Area -->
+        <div class="content">
+           <div class="welcome-container">
+            <h1 class="welcome-title">
+                Pandas Foundations: Nigerian Economic Insights
+            </h1>
+            <p class="welcome-subtitle">
+                Embark on a focused journey through pandas from mastering Series and DataFrames to cleaning, filtering, and merging real Nigerian economic datasets. Learn with hands-on examples from Lagos, Abuja, Kano, and beyond, turning raw data into powerful insights that drive real-world solutions.
+            </p>
+        </div>
+
+            
+            <div class="modules-container">
+                <!-- Module 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="module-title">Pandas Foundations</h3>
+                    </div>
+                    <div class="module-content">
+                        <p class="module-description">Master the core pandas data structures - Series and DataFrames. Learn to manipulate and analyze Nigerian economic datasets.</p>
+                        <div class="module-stats">
+                               <span><i class="fas fa-database"></i> Core Concepts</span>
+                               <span><i class="fas fa-signal"></i> Beginner</span>
+                        </div>
+                        <a href="./Pandas Foundations.html" class="module-button">Continue Learning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Module 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">
+                            <i class="fas fa-broom"></i>
+                        </div>
+                        <h3 class="module-title">Data Cleaning</h3>
+                    </div>
+                    <div class="module-content">
+                        <p class="module-description">Clean messy Nigerian economic data. Handle missing values, outliers, and inconsistencies in Lagos GDP data.</p>
+                        <div class="module-stats">
+                             <span><i class="fas fa-broom"></i> Data Quality Skills</span>
+                             <span><i class="fas fa-signal"></i> Beginner–Intermediate</span>
+                        </div>
+                        <a href="./Data Cleaning.html" class="module-button">Start Learning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Module 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <h3 class="module-title">Filtering & Aggregation</h3>
+                    </div>
+                    <div class="module-content">
+                        <p class="module-description">Group and summarize Nigerian population data. Analyze trends across different states and cities.</p>
+                        <div class="module-stats">
+                             <span><i class="fas fa-filter"></i> Analysis Skills</span>
+    <span><i class="fas fa-signal"></i> Intermediate</span>
+                        </div>
+                        <a href="Filtering and Aggregation.html" class="module-button">Start Learning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Module 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <h3 class="module-title">Merging & Time Series</h3>
+                    </div>
+                    <div class="module-content">
+                        <p class="module-description">Combine datasets from different Nigerian sources. Analyze economic trends over time with Abuja data.</p>
+                        <div class="module-stats">
+                             <span><i class="fas fa-link"></i> Data Integration</span>
+    <span><i class="fas fa-signal"></i> Intermediate</span>
+                        </div>
+                        <a href="Merging and Time Series.html" class="module-button">Start Learning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Module 5 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="module-title">Nigerian Economic Analysis</h3>
+                    </div>
+                    <div class="module-content">
+                        <p class="module-description">Apply your skills to real Nigerian economic challenges. Analyze GDP, population, and development data.</p>
+                        <div class="module-stats">
+                             <span><i class="fas fa-chart-line"></i> Real-World Projects</span>
+    <span><i class="fas fa-signal"></i> Advanced</span>
+                        </div>
+                        <a href="Nigerian Economic Analysis.html" class="module-button">Start Learning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quizzes Section -->
+<div class="module-card">
+    <div class="module-header">
+        <div class="module-icon">
+            <i class="fas fa-question-circle"></i> <!-- Quiz icon -->
+        </div>
+        <h3 class="module-title">100 Quizzes – Test Your Skills</h3>
+    </div>
+    <div class="module-content">
+        <p class="module-description">
+            Challenge yourself with 100 quizzes covering all five modules — from Pandas Foundations to Nigerian Economic Analysis. 
+            Reinforce your learning, identify gaps, and build confidence through practical, Nigerian-focused questions.
+        </p>
+        <div class="module-stats">
+               <span><i class="fas fa-list-ol"></i> 100 Quizzes</span>
+            <span><i class="fas fa-signal"></i> Mixed Difficulty</span>
+        </div>
+        <a href="./Quize.html" class="module-button">
+            Start Quizzing <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+
+            </div>
+            
+            
+          
+
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="footer-logo-text">CosmicLearn</div>
+            </div>
+            
+            <div class="footer-info">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>nuhumuhammaddatti@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+234 808 844 0095</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Abuja, Nigeria</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#" class="social-link">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            © 2025 CosmicLearn - Data Science Platform for Nigerian Context. All rights reserved.
+        </div>
+    </footer>
+    
+    <script>
+        // Cosmic background animation
+        const canvas = document.getElementById('cosmic-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to window size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Create stars
+        const stars = [];
+        const starCount = 200;
+        
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 3,
+                speed: Math.random() * 0.5,
+                opacity: Math.random()
+            });
+        }
+        
+        // Animation function
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                
+                // Create twinkling effect
+                const twinkle = Math.sin(Date.now() * 0.001 * (1 + star.speed)) * 0.5 + 0.5;
+                const opacity = star.opacity * twinkle;
+                
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.fill();
+                
+                // Move stars for parallax effect
+                star.x -= star.speed;
+                if (star.x < 0) {
+                    star.x = canvas.width;
+                    star.y = Math.random() * canvas.height;
+                }
+            });
+            
+            requestAnimationFrame(animateStars);
+        }
+        
+        // Start animation
+        animateStars();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Interactive module cards
+        const moduleCards = document.querySelectorAll('.module-card');
+        moduleCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const angleY = (x - centerX) / 8;
+                const angleX = (centerY - y) / 8;
+                
+                card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+        
+        // Learning trail interaction
+        const trailItems = document.querySelectorAll('.trail-item');
+        trailItems.forEach(item => {
+            item.addEventListener('click', () => {
+                trailItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

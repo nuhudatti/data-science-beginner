@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Data Visualization Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap');
+        
+        :root {
+            --cosmic-blue: #0c1445;
+            --nebula-purple: #4a1e6d;
+            --star-yellow: #ffd700;
+            --galaxy-pink: #ff2a6d;
+            --space-black: #050517;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, var(--space-black), var(--cosmic-blue));
+            color: #e0f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, 
+                rgba(12, 20, 69, 0.9) 0%, 
+                rgba(10, 15, 46, 0.9) 40%, 
+                rgba(5, 5, 23, 0.95) 100%);
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .question-card {
+            background: rgba(10, 15, 46, 0.5);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            border-color: rgba(96, 130, 182, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(15, 25, 65, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(74, 30, 109, 0.5);
+            border-color: rgba(96, 130, 182, 0.5);
+        }
+        
+        .option.selected {
+            border-color: #00c9ff;
+            background: rgba(0, 201, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 201, 255, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #00ff9d;
+            background: rgba(0, 255, 157, 0.15);
+        }
+        
+        .option.incorrect {
+            border-color: #ff2a6d;
+            background: rgba(255, 42, 109, 0.15);
+        }
+        
+        .explanation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #00c9ff;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            transition: width 0.5s ease;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #ff2a6d, #00c9ff);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .results-container {
+            background: rgba(10, 15, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .motivation-message {
+            background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), rgba(0, 201, 255, 0.2));
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff9d;
+        }
+        
+        .question-counter {
+            background: rgba(0, 201, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .section-btn {
+            background: rgba(20, 30, 80, 0.6);
+            border: 1px solid rgba(96, 130, 182, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .section-btn.active {
+            background: rgba(74, 30, 109, 0.7);
+            border-color: #00c9ff;
+            box-shadow: 0 0 15px rgba(0, 201, 255, 0.4);
+        }
+        
+        .section-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .section-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .score-card {
+            background: rgba(15, 25, 65, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(96, 130, 182, 0.3);
+        }
+    </style>
+</head>
+<body x-data="quizApp()" x-init="init()">
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-bg" id="cosmicCanvas"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 mt-6">
+            <div class="floating">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 section-title">
+                    <i class="fas fa-chart-line mr-3"></i>Nigerian Data Visualization Mastery
+                </h1>
+            </div>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                100 questions on visualizing Nigerian health data with Matplotlib, Seaborn & Plotly
+            </p>
+        </header>
+        
+        <!-- Progress -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-medium">Your Progress</span>
+                <span class="text-blue-300" x-text="`${answeredCount}/${totalQuestions} (${Math.round((answeredCount/totalQuestions)*100)}%)`">0/100 (0%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(answeredCount/totalQuestions)*100}%`"></div>
+            </div>
+        </div>
+        
+        <!-- Section Navigation -->
+        <div class="grid grid-cols-5 gap-4 mb-8 sticky top-3 bg-slate-900 z-50">
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 0}"
+                @click="currentSection = 0"
+            >
+                <div class="section-icon text-green-400">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div>Matplotlib</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 1}"
+                @click="currentSection = 1"
+            >
+                <div class="section-icon text-purple-400">
+                    <i class="fas fa-chart-area"></i>
+                </div>
+                <div>Seaborn</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 2}"
+                @click="currentSection = 2"
+            >
+                <div class="section-icon text-yellow-400">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <div>Customization</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 3}"
+                @click="currentSection = 3"
+            >
+                <div class="section-icon text-pink-400">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+                <div>Plotly</div>
+            </div>
+            
+            <div 
+                class="section-btn" 
+                :class="{'active': currentSection === 4}"
+                @click="currentSection = 4"
+            >
+                <div class="section-icon text-red-400">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div>Health Project</div>
+            </div>
+        </div>
+        
+        <!-- Section Title -->
+        <h2 class="text-2xl font-bold mb-6 section-title border-b border-blue-500/50 pb-2">
+            <i class="fas fa-caret-right mr-2"></i>
+            <span x-text="sections[currentSection].title"></span>
+        </h2>
+        
+        <!-- Quiz Content -->
+        <template x-if="!showResults">
+            <div>
+                <div class="space-y-6">
+                    <template x-for="(question, qIndex) in sections[currentSection].questions" :key="qIndex">
+                        <div class="question-card p-6">
+                            <div class="question-counter">
+                                <span x-text="`Question ${currentSection*20 + qIndex + 1} of ${totalQuestions}`"></span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                                <span x-text="question.question"></span>
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <template x-for="(option, oIndex) in question.options" :key="oIndex">
+                                    <div 
+                                        class="option"
+                                        :class="{
+                                            'selected': userAnswers[currentSection][qIndex] === oIndex,
+                                            'correct': showAnswers && oIndex === question.answer,
+                                            'incorrect': showAnswers && userAnswers[currentSection][qIndex] === oIndex && userAnswers[currentSection][qIndex] !== question.answer
+                                        }"
+                                        @click="selectAnswer(currentSection, qIndex, oIndex)"
+                                    >
+                                        <span x-text="option"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <div class="explanation mt-4" x-show="showAnswers">
+                                <p class="font-semibold text-blue-300 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span x-text="getAnswerStatus(currentSection, qIndex)"></span>
+                                </p>
+                                <p x-text="question.explanation"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                
+                
+                
+                <div class="text-center mt-10">
+                    <button class="submit-btn" @click="submitQuiz">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Answers
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Results Panel -->
+        <template x-if="showResults">
+            <div class="results-container">
+                <h2 class="section-title text-3xl text-center mb-8">Quiz Results</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${score}/${totalQuestions}`"></div>
+                        <div class="opacity-70">Correct Answers</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((score/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Overall Score</div>
+                    </div>
+                    
+                    <div class="score-card">
+                        <div class="text-3xl font-bold mb-2" x-text="`${Math.round((answeredCount/totalQuestions)*100)}%`"></div>
+                        <div class="opacity-70">Completion</div>
+                    </div>
+                </div>
+                
+                <!-- Section Scores -->
+                <div class="grid grid-cols-5 gap-4 mb-10">
+                    <template x-for="(section, sIndex) in sections" :key="sIndex">
+                        <div class="score-card">
+                            <div class="text-lg font-semibold mb-2" x-text="section.title.split(' ')[0]"></div>
+                            <div class="text-2xl font-bold" x-text="`${sectionScores[sIndex]}/${section.questions.length}`"></div>
+                            <div class="text-sm opacity-80 mt-1" x-text="`${Math.round((sectionScores[sIndex]/section.questions.length)*100)}%`"></div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="motivation-message mb-10">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <i class="fas fa-comment-dots text-yellow-400 mr-2"></i>
+                        Feedback
+                    </h3>
+                    <p class="text-lg" x-text="getMotivationMessage()"></p>
+                </div>
+                
+                <div class="text-center">
+                    <button class="submit-btn" @click="resetQuiz">
+                        <i class="fas fa-redo mr-2"></i>Retry Quiz
+                    </button>
+                </div>
+            </div>
+        </template>
+        
+    </div>
+
+    
+    
+    <!-- Floating cosmic elements -->
+    <div class="floating-icon" style="--color1: rgba(255, 42, 109, 0.4); --color2: rgba(255, 42, 109, 0); width: 200px; height: 200px; top: 10%; right: 5%; animation-delay: 0s;"></div>
+    <div class="floating-icon" style="--color1: rgba(0, 201, 255, 0.4); --color2: rgba(0, 201, 255, 0); width: 150px; height: 150px; top: 40%; left: 5%; animation-delay: 2s;"></div>
+    <div class="floating-icon" style="--color1: rgba(106, 13, 173, 0.4); --color2: rgba(106, 13, 173, 0); width: 120px; height: 120px; bottom: 20%; right: 15%; animation-delay: 4s;"></div>
+
+     <!-- Font Awesome for the Home Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Floating Home Button */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(43, 108, 176, 0.6);
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    
+    <script>
+        // Quiz data for Nigerian Data Visualization
+        const quizData = {
+            sections: [
+                {
+                    title: "Matplotlib Fundamentals",
+                    questions: [
+                        {
+                            question: "Which Matplotlib function creates a figure and axes for plotting?",
+                            options: [
+                                "plt.create_plot()",
+                                "plt.subplots()",
+                                "plt.initialize()",
+                                "plt.new_figure()"
+                            ],
+                            answer: 1,
+                            explanation: "plt.subplots() creates a figure and a set of subplots, which is the foundation for most Matplotlib visualizations."
+                        },
+                        {
+                            question: "To create a bar chart showing malaria cases by Nigerian state, which function would you use?",
+                            options: [
+                                "plt.scatter()",
+                                "plt.bar()",
+                                "plt.pie()",
+                                "plt.hist()"
+                            ],
+                            answer: 1,
+                            explanation: "plt.bar() is used for creating bar charts, which are ideal for comparing categorical data like state-wise health statistics."
+                        },
+                        {
+                            question: "How do you set the title of a plot showing Nigerian immunization rates?",
+                            options: [
+                                "plt.set_title('Immunization Rates')",
+                                "plt.title('Immunization Rates')",
+                                "plt.heading('Immunization Rates')",
+                                "plt.label('Immunization Rates')"
+                            ],
+                            answer: 1,
+                            explanation: "The plt.title() function sets the main title for the current axes in Matplotlib."
+                        },
+                        {
+                            question: "Which function adds a legend to differentiate between multiple Nigerian regions?",
+                            options: [
+                                "plt.show_legend()",
+                                "plt.add_legend()",
+                                "plt.legend()",
+                                "plt.key()"
+                            ],
+                            answer: 2,
+                            explanation: "plt.legend() places a legend on the axes to identify different elements in the plot."
+                        },
+                        {
+                            question: "To save a plot of Nigerian disease outbreaks as a PNG file, which function is used?",
+                            options: [
+                                "plt.export('outbreak.png')",
+                                "plt.savefig('outbreak.png')",
+                                "plt.write('outbreak.png')",
+                                "plt.download('outbreak.png')"
+                            ],
+                            answer: 1,
+                            explanation: "plt.savefig() saves the current figure to a file, supporting formats like PNG, JPG, SVG, and PDF."
+                        },
+                        {
+                            question: "How do you set the x-axis label for a plot showing monthly health facility visits?",
+                            options: [
+                                "plt.xlabel('Months')",
+                                "plt.x_label('Months')",
+                                "plt.axis_x('Months')",
+                                "plt.label_x('Months')"
+                            ],
+                            answer: 0,
+                            explanation: "plt.xlabel() sets the label for the x-axis of the current axes."
+                        },
+                        {
+                            question: "Which Matplotlib component represents the entire figure?",
+                            options: [
+                                "Axes",
+                                "Canvas",
+                                "Figure",
+                                "Subplot"
+                            ],
+                            answer: 2,
+                            explanation: "The Figure object is the top-level container for all plot elements in Matplotlib."
+                        },
+                        {
+                            question: "To create a histogram of patient ages in Nigerian hospitals, which function is appropriate?",
+                            options: [
+                                "plt.hist()",
+                                "plt.bar()",
+                                "plt.dist()",
+                                "plt.distribution()"
+                            ],
+                            answer: 0,
+                            explanation: "plt.hist() computes and draws a histogram of data, perfect for showing age distributions."
+                        },
+                        {
+                            question: "How do you adjust the size of a Matplotlib figure for a Nigerian health report?",
+                            options: [
+                                "plt.size(10, 8)",
+                                "plt.figsize(10, 8)",
+                                "plt.figure(figsize=(10, 8))",
+                                "plt.set_size(10, 8)"
+                            ],
+                            answer: 2,
+                            explanation: "The figsize parameter in plt.figure() sets the width and height of the figure in inches."
+                        },
+                        {
+                            question: "Which function displays all open figures in Matplotlib?",
+                            options: [
+                                "plt.show()",
+                                "plt.display()",
+                                "plt.render()",
+                                "plt.view()"
+                            ],
+                            answer: 0,
+                            explanation: "plt.show() displays all figures and blocks until they are closed."
+                        },
+                        {
+                            question: "To set the y-axis limits for a plot of Nigerian vaccination rates, you would use:",
+                            options: [
+                                "plt.y_lim(0, 100)",
+                                "plt.ylim(0, 100)",
+                                "plt.set_ylim(0, 100)",
+                                "plt.yscale(0, 100)"
+                            ],
+                            answer: 1,
+                            explanation: "plt.ylim() sets the y-axis limits of the current axes."
+                        },
+                        {
+                            question: "Which function adds grid lines to a plot of Nigerian disease prevalence?",
+                            options: [
+                                "plt.add_grid()",
+                                "plt.grid(True)",
+                                "plt.show_grid()",
+                                "plt.enable_grid()"
+                            ],
+                            answer: 1,
+                            explanation: "plt.grid(True) adds grid lines to the current axes, improving readability."
+                        },
+                        {
+                            question: "To create a scatter plot comparing doctor density and infant mortality across Nigerian states, you would use:",
+                            options: [
+                                "plt.scatter()",
+                                "plt.plot()",
+                                "plt.dots()",
+                                "plt.points()"
+                            ],
+                            answer: 0,
+                            explanation: "plt.scatter() creates a scatter plot for visualizing relationships between two variables."
+                        },
+                        {
+                            question: "Which parameter in plt.plot() changes the line style for Nigerian health trend data?",
+                            options: [
+                                "color",
+                                "marker",
+                                "linestyle",
+                                "width"
+                            ],
+                            answer: 2,
+                            explanation: "The linestyle parameter controls whether the line is solid, dashed, dotted, etc."
+                        },
+                        {
+                            question: "How do you add text annotations to a plot showing malaria hotspots in Nigeria?",
+                            options: [
+                                "plt.note()",
+                                "plt.annotate()",
+                                "plt.text()",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both plt.text() and plt.annotate() can add text to plots, with annotate offering more features for arrows."
+                        },
+                        {
+                            question: "To create subplots for different Nigerian health indicators, which approach is best?",
+                            options: [
+                                "plt.subplot(2, 2, 1)",
+                                "fig, axs = plt.subplots(2, 2)",
+                                "plt.subplots_adjust()",
+                                "plt.multiplot()"
+                            ],
+                            answer: 1,
+                            explanation: "plt.subplots() creates a figure and a grid of subplots, returning them in a convenient array."
+                        },
+                        {
+                            question: "Which function customizes tick labels for a plot of Nigerian health facility data?",
+                            options: [
+                                "plt.xticks()",
+                                "plt.ticklabels()",
+                                "plt.set_ticks()",
+                                "plt.label_ticks()"
+                            ],
+                            answer: 0,
+                            explanation: "plt.xticks() sets the locations and labels of the tick marks on the x-axis."
+                        },
+                        {
+                            question: "To make a plot of Nigerian immunization rates more accessible for colorblind viewers:",
+                            options: [
+                                "Use high-contrast colors",
+                                "Use different line styles",
+                                "Add text annotations",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Combining color, pattern, and text ensures accessibility for all viewers."
+                        },
+                        {
+                            question: "Which Matplotlib function creates a pie chart of disease prevalence in Nigeria?",
+                            options: [
+                                "plt.pie()",
+                                "plt.circle()",
+                                "plt.donut()",
+                                "plt.chart_pie()"
+                            ],
+                            answer: 0,
+                            explanation: "plt.pie() generates a pie chart, useful for showing proportional data."
+                        },
+                        {
+                            question: "How do you add a horizontal line at the national average on a plot of state health budgets?",
+                            options: [
+                                "plt.hline()",
+                                "plt.axhline()",
+                                "plt.line(y=avg)",
+                                "plt.add_line()"
+                            ],
+                            answer: 1,
+                            explanation: "plt.axhline() adds a horizontal line across the axes at a specified y-value."
+                        }
+                    ]
+                },
+                {
+                    title: "Seaborn for Statistical Visualization",
+                    questions: [
+                        {
+                            question: "Which Seaborn function creates a statistical summary plot of Nigerian health indicators?",
+                            options: [
+                                "sns.summaryplot()",
+                                "sns.distplot()",
+                                "sns.catplot()",
+                                "sns.boxplot()"
+                            ],
+                            answer: 3,
+                            explanation: "sns.boxplot() shows the distribution of quantitative data through quartiles, highlighting outliers."
+                        },
+                        {
+                            question: "To visualize the relationship between GDP and life expectancy across Nigerian states, which plot is best?",
+                            options: [
+                                "sns.scatterplot()",
+                                "sns.lineplot()",
+                                "sns.barplot()",
+                                "sns.heatmap()"
+                            ],
+                            answer: 0,
+                            explanation: "scatterplot is ideal for showing relationships between two continuous variables."
+                        },
+                        {
+                            question: "Which Seaborn function creates a correlation heatmap for Nigerian health metrics?",
+                            options: [
+                                "sns.heatmap()",
+                                "sns.corrplot()",
+                                "sns.matrix()",
+                                "sns.correlation()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.heatmap() visualizes matrix-like data, perfect for correlation matrices."
+                        },
+                        {
+                            question: "To compare malaria prevalence across Nigerian geopolitical zones over time, which plot is most effective?",
+                            options: [
+                                "sns.lineplot()",
+                                "sns.barplot()",
+                                "sns.boxplot()",
+                                "sns.violinplot()"
+                            ],
+                            answer: 0,
+                            explanation: "lineplot shows trends over time for multiple categories."
+                        },
+                        {
+                            question: "How do you add a regression line to a scatter plot of Nigerian health data?",
+                            options: [
+                                "sns.regplot()",
+                                "sns.lmplot()",
+                                "sns.lineplot(fit_reg=True)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both sns.regplot() and sns.lmplot() can add regression lines to scatter plots."
+                        },
+                        {
+                            question: "Which Seaborn function visualizes the distribution of a single Nigerian health variable?",
+                            options: [
+                                "sns.distplot()",
+                                "sns.histplot()",
+                                "sns.kdeplot()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All these functions can visualize univariate distributions in different ways."
+                        },
+                        {
+                            question: "To create a pair plot comparing multiple Nigerian health indicators, which function is used?",
+                            options: [
+                                "sns.pairplot()",
+                                "sns.matrixplot()",
+                                "sns.multiplots()",
+                                "sns.correlogram()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.pairplot() creates a grid of scatter plots for multiple variables."
+                        },
+                        {
+                            question: "How do you change the color palette for a Seaborn plot of Nigerian regions?",
+                            options: [
+                                "sns.set_palette()",
+                                "palette parameter in plotting functions",
+                                "sns.color_palette()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Seaborn offers multiple ways to customize color palettes."
+                        },
+                        {
+                            question: "Which plot shows the relationship between three Nigerian health variables?",
+                            options: [
+                                "sns.scatterplot() with hue",
+                                "sns.relplot() with col",
+                                "sns.jointplot()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All can incorporate a third variable through color, facets, or marginal distributions."
+                        },
+                        {
+                            question: "To visualize the distribution of immunization rates across Nigerian states and rural/urban areas, which plot is best?",
+                            options: [
+                                "sns.boxplot(x='state', y='rate', hue='area')",
+                                "sns.violinplot(x='state', y='rate', hue='area')",
+                                "sns.stripplot(x='state', y='rate', hue='area')",
+                                "Any of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All can effectively show distributions across multiple categorical variables."
+                        },
+                        {
+                            question: "How do you add titles and axis labels to a Seaborn plot?",
+                            options: [
+                                "Using Seaborn-specific functions",
+                                "Using standard Matplotlib functions",
+                                "Through parameters in Seaborn functions",
+                                "Both 2 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Seaborn builds on Matplotlib, so both approaches work."
+                        },
+                        {
+                            question: "Which function creates a categorical plot for Nigerian health facility types?",
+                            options: [
+                                "sns.catplot()",
+                                "sns.categorical()",
+                                "sns.categoryplot()",
+                                "sns.factorplot()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.catplot() provides a high-level interface for categorical plots."
+                        },
+                        {
+                            question: "To visualize Nigerian time-series health data with confidence intervals, which plot is best?",
+                            options: [
+                                "sns.lineplot()",
+                                "sns.tsplot()",
+                                "sns.timeseries()",
+                                "sns.regplot()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.lineplot() automatically calculates and visualizes confidence intervals."
+                        },
+                        {
+                            question: "How do you save a Seaborn plot as a high-resolution PNG for a Nigerian health report?",
+                            options: [
+                                "sns.savefig()",
+                                "plt.savefig() with dpi parameter",
+                                "sns.export()",
+                                "plt.download()"
+                            ],
+                            answer: 1,
+                            explanation: "Use Matplotlib's savefig() with dpi parameter for high-resolution output."
+                        },
+                        {
+                            question: "Which plot shows the relationship between two variables and their distributions?",
+                            options: [
+                                "sns.jointplot()",
+                                "sns.pairplot()",
+                                "sns.relplot()",
+                                "sns.scatterplot()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.jointplot() combines scatter plot with histograms or KDE plots."
+                        },
+                        {
+                            question: "To create a clustered bar chart of Nigerian health indicators by state and year, which plot is best?",
+                            options: [
+                                "sns.barplot() with hue",
+                                "sns.catplot(kind='bar')",
+                                "sns.countplot()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both can create clustered bar charts for categorical data."
+                        },
+                        {
+                            question: "Which function resets Seaborn styling to Matplotlib defaults?",
+                            options: [
+                                "sns.reset_defaults()",
+                                "sns.set_style('default')",
+                                "sns.reset()",
+                                "sns.set()"
+                            ],
+                            answer: 0,
+                            explanation: "sns.reset_defaults() resets all styling to Matplotlib defaults."
+                        },
+                        {
+                            question: "To visualize Nigerian health survey data with many categories, which plot avoids clutter?",
+                            options: [
+                                "sns.swarmplot()",
+                                "sns.stripplot()",
+                                "sns.violinplot()",
+                                "sns.boxplot()"
+                            ],
+                            answer: 2,
+                            explanation: "Violin plots show distributions without displaying every point, reducing clutter."
+                        },
+                        {
+                            question: "How do you add a title to a Seaborn facet grid of Nigerian health data?",
+                            options: [
+                                "g.set_title()",
+                                "g.fig.suptitle()",
+                                "g.title()",
+                                "plt.title()"
+                            ],
+                            answer: 1,
+                            explanation: "Use g.fig.suptitle() to add a title to a Seaborn FacetGrid."
+                        },
+                        {
+                            question: "Which Seaborn theme is best for printed Nigerian health reports?",
+                            options: [
+                                "'whitegrid'",
+                                "'darkgrid'",
+                                "'white'",
+                                "'ticks'"
+                            ],
+                            answer: 0,
+                            explanation: "'whitegrid' provides a clean background with grid lines, ideal for print."
+                        }
+                    ]
+                },
+                {
+                    title: "Customizing Plots & Themes",
+                    questions: [
+                        {
+                            question: "Which Matplotlib parameter controls the default figure size for all plots?",
+                            options: [
+                                "plt.figsize",
+                                "plt.rcParams['figure.figsize']",
+                                "plt.set_default_size()",
+                                "plt.default_size()"
+                            ],
+                            answer: 1,
+                            explanation: "rcParams dictionary controls default settings including figure size."
+                        },
+                        {
+                            question: "To use the Nigerian flag colors in a health data visualization, which approach is best?",
+                            options: [
+                                "Define a custom color palette",
+                                "Use built-in colormaps",
+                                "Manually specify colors",
+                                "All of the above"
+                            ],
+                            answer: 0,
+                            explanation: "Creating a custom palette ensures consistent use of national colors."
+                        },
+                        {
+                            question: "Which function adds a Nigerian map as background to a health data plot?",
+                            options: [
+                                "plt.imshow() with map image",
+                                "Use GeoPandas for mapping",
+                                "Add basemap with contextily",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches can incorporate geographical context."
+                        },
+                        {
+                            question: "To create publication-quality visuals for a Nigerian health journal, which settings are important?",
+                            options: [
+                                "High DPI (300+)",
+                                "Vector formats (PDF/SVG)",
+                                "Appropriate font sizes",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All these elements contribute to publication-ready figures."
+                        },
+                        {
+                            question: "Which Matplotlib method rotates x-axis labels for long Nigerian state names?",
+                            options: [
+                                "plt.xticks(rotation=45)",
+                                "ax.tick_params(axis='x', rotation=45)",
+                                "plt.rotate_labels(45)",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both approaches can rotate tick labels for better readability."
+                        },
+                        {
+                            question: "How do you add a Nigerian Ministry of Health logo to a plot?",
+                            options: [
+                                "plt.imshow() with logo image",
+                                "fig.figimage()",
+                                "Add as annotation",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple approaches can incorporate logos into visualizations."
+                        },
+                        {
+                            question: "To create a consistent visual style across all plots in a Nigerian health report, which approach is best?",
+                            options: [
+                                "Define a custom stylesheet",
+                                "Use plt.style.use()",
+                                "Create template functions",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Combining these approaches ensures visual consistency."
+                        },
+                        {
+                            question: "Which parameter controls the transparency of elements in a plot?",
+                            options: [
+                                "opacity",
+                                "transparency",
+                                "alpha",
+                                "blend"
+                            ],
+                            answer: 2,
+                            explanation: "The alpha parameter controls transparency (0=transparent, 1=opaque)."
+                        },
+                        {
+                            question: "To highlight Lagos state in a plot of Nigerian health indicators, which technique is effective?",
+                            options: [
+                                "Use a different color",
+                                "Add an annotation",
+                                "Increase marker size",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Combining visual cues effectively draws attention."
+                        },
+                        {
+                            question: "Which library extends Matplotlib for geographic visualizations of Nigerian health data?",
+                            options: [
+                                "GeoPandas",
+                                "Cartopy",
+                                "Basemap",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All are Python libraries for geospatial data visualization."
+                        },
+                        {
+                            question: "How do you create a custom colorbar for a Nigerian disease prevalence heatmap?",
+                            options: [
+                                "plt.colorbar()",
+                                "sns.color_palette()",
+                                "mpl.colors.BoundaryNorm",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Combining colorbar with BoundaryNorm allows custom discrete colormaps."
+                        },
+                        {
+                            question: "To make a visualization accessible for colorblind viewers of Nigerian health data:",
+                            options: [
+                                "Use colorblind-friendly palettes",
+                                "Add patterns/textures",
+                                "Provide text alternatives",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple approaches ensure accessibility for all viewers."
+                        },
+                        {
+                            question: "Which approach creates a consistent font style across all plots?",
+                            options: [
+                                "Set rcParams['font.family']",
+                                "Use plt.rc('font', family='sans-serif')",
+                                "Set in style sheet",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods can establish consistent typography."
+                        },
+                        {
+                            question: "To animate changes in Nigerian disease outbreaks over time, which library is best?",
+                            options: [
+                                "Matplotlib.animation",
+                                "Plotly",
+                                "Bokeh",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All support animated visualizations of time-series data."
+                        },
+                        {
+                            question: "How do you add a north arrow and scale bar to a Nigerian health map?",
+                            options: [
+                                "Use Cartopy's gridliner",
+                                "Add manually with annotations",
+                                "Use dedicated scalebar libraries",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Multiple approaches add cartographic elements to maps."
+                        },
+                        {
+                            question: "Which function creates a multi-plot dashboard of Nigerian health indicators?",
+                            options: [
+                                "plt.subplots()",
+                                "GridSpec",
+                                "plt.subplot2grid()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All can create complex layouts for dashboards."
+                        },
+                        {
+                            question: "To export a visualization for a Nigerian health ministry presentation:",
+                            options: [
+                                "PDF for vector graphics",
+                                "PNG for high resolution",
+                                "SVG for editing",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Different formats serve different presentation needs."
+                        },
+                        {
+                            question: "How do you create a custom legend for Nigerian health facility types?",
+                            options: [
+                                "plt.legend() with handles",
+                                "Create Patch objects",
+                                "Use legend_elements()",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches allow custom legend creation."
+                        },
+                        {
+                            question: "Which technique improves readability of crowded Nigerian state labels?",
+                            options: [
+                                "Rotate labels",
+                                "Use smaller font",
+                                "Only label every nth state",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Rotation and selective labeling prevent overlapping text."
+                        },
+                        {
+                            question: "To create an interactive HTML report of Nigerian health data visualizations:",
+                            options: [
+                                "Use mpld3",
+                                "Export Plotly as HTML",
+                                "Use Bokeh",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All libraries can create interactive web-based visualizations."
+                        }
+                    ]
+                },
+                {
+                    title: "Interactive Visualizations with Plotly",
+                    questions: [
+                        {
+                            question: "Which Plotly Express function creates an interactive bar chart of Nigerian health data?",
+                            options: [
+                                "px.bar()",
+                                "px.chart_bar()",
+                                "px.plot_bar()",
+                                "px.create_bar()"
+                            ],
+                            answer: 0,
+                            explanation: "px.bar() creates interactive bar charts with minimal code."
+                        },
+                        {
+                            question: "How do you add hover information to a Plotly visualization of Nigerian disease rates?",
+                            options: [
+                                "hover_data parameter",
+                                "hovertemplate",
+                                "Customdata",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods provide control over hover information."
+                        },
+                        {
+                            question: "Which Plotly chart type is ideal for showing Nigerian health facility locations?",
+                            options: [
+                                "Scatter mapbox",
+                                "Choropleth",
+                                "Density mapbox",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All can visualize geographical point data effectively."
+                        },
+                        {
+                            question: "To create a Nigerian state-level choropleth map of vaccination rates, which approach is best?",
+                            options: [
+                                "px.choropleth with GeoJSON",
+                                "go.Choropleth with locationmode",
+                                "Both approaches work",
+                                "Neither supports Nigeria"
+                            ],
+                            answer: 2,
+                            explanation: "Both Plotly Express and Graph Objects support choropleth maps."
+                        },
+                        {
+                            question: "How do you save an interactive Plotly visualization of Nigerian health data?",
+                            options: [
+                                "fig.write_html()",
+                                "fig.show() and save manually",
+                                "plotly.offline.plot()",
+                                "Both 1 and 3"
+                            ],
+                            answer: 3,
+                            explanation: "Both methods save interactive HTML visualizations."
+                        },
+                        {
+                            question: "Which Plotly feature enables drilling down into Nigerian state health data?",
+                            options: [
+                                "Dropdown menus",
+                                "Slider filters",
+                                "Click events",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All enable interactive exploration of data."
+                        },
+                        {
+                            question: "To create a dashboard of multiple Nigerian health visualizations, which Plotly component is used?",
+                            options: [
+                                "make_subplots",
+                                "plotly.subplots",
+                                "Dash",
+                                "FigureWidget"
+                            ],
+                            answer: 2,
+                            explanation: "Dash is Plotly's framework for building analytical web applications."
+                        },
+                        {
+                            question: "How do you add a Nigerian map tile layer to a Plotly map visualization?",
+                            options: [
+                                "Set mapbox_style",
+                                "Use open-street-map",
+                                "Add custom tile server",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods allow customizing the basemap."
+                        },
+                        {
+                            question: "Which Plotly chart shows distributions of multiple Nigerian health indicators?",
+                            options: [
+                                "Violin plot",
+                                "Box plot",
+                                "Histogram",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All visualize distributions effectively."
+                        },
+                        {
+                            question: "To animate changes in Nigerian malaria prevalence over years, which parameter is used?",
+                            options: [
+                                "animation_frame",
+                                "animation_group",
+                                "animation_time",
+                                "animate"
+                            ],
+                            answer: 0,
+                            explanation: "animation_frame specifies which column defines the animation frames."
+                        },
+                        {
+                            question: "How do you customize the color scale for a Nigerian health choropleth map?",
+                            options: [
+                                "color_continuous_scale",
+                                "colorscale",
+                                "color_discrete_sequence",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Different parameters control colors for continuous vs discrete data."
+                        },
+                        {
+                            question: "Which Plotly feature enables users to download Nigerian health visualizations?",
+                            options: [
+                                "config: {toImageButtonOptions}",
+                                "Download buttons in Dash",
+                                "HTML download links",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches enable exporting visualizations."
+                        },
+                        {
+                            question: "To create a sunburst chart of Nigerian health system hierarchy, which function is used?",
+                            options: [
+                                "px.sunburst()",
+                                "go.Sunburst()",
+                                "create_sunburst()",
+                                "Both 1 and 2"
+                            ],
+                            answer: 3,
+                            explanation: "Both Express and Graph Objects support sunburst charts."
+                        },
+                        {
+                            question: "How do you add a Nigerian Ministry of Health logo to a Plotly dashboard?",
+                            options: [
+                                "Dash Image component",
+                                "Layout images",
+                                "Annotations",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All can incorporate logos into visualizations."
+                        },
+                        {
+                            question: "Which Plotly chart shows correlations between Nigerian health indicators?",
+                            options: [
+                                "Heatmap",
+                                "Scatter matrix",
+                                "Parallel coordinates",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All visualize multivariate relationships effectively."
+                        },
+                        {
+                            question: "To make a Plotly visualization responsive on mobile devices for Nigerian field workers:",
+                            options: [
+                                "Use responsive=True",
+                                "Set layout.autosize=True",
+                                "Use template='plotly'",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Combining these ensures mobile-friendly visualizations."
+                        },
+                        {
+                            question: "How do you create a tooltip showing multiple Nigerian health metrics on hover?",
+                            options: [
+                                "hovertemplate with <br>",
+                                "hover_data with multiple columns",
+                                "Custom hover text",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All approaches allow rich hover tooltips."
+                        },
+                        {
+                            question: "To embed a Plotly visualization in a Nigerian health ministry website:",
+                            options: [
+                                "Use iframe",
+                                "Plotly's embed feature",
+                                "Use Dash app",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All methods enable web embedding."
+                        },
+                        {
+                            question: "Which Plotly feature enables real-time updating of Nigerian disease surveillance data?",
+                            options: [
+                                "FigureWidget",
+                                "Dash callbacks",
+                                "Websockets",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All support dynamic data updating."
+                        },
+                        {
+                            question: "To create a 3D visualization of Nigerian disease spread, which Plotly chart is best?",
+                            options: [
+                                "Scatter3d",
+                                "Surface",
+                                "Volume",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All support 3D data visualization."
+                        }
+                    ]
+                },
+                {
+                    title: "Real Project: Nigerian Health Data",
+                    questions: [
+                        {
+                            question: "When visualizing malaria cases across Nigerian states, which map projection is most appropriate?",
+                            options: [
+                                "Mercator",
+                                "Albers Equal Area",
+                                "Robinson",
+                                "UTM"
+                            ],
+                            answer: 1,
+                            explanation: "Albers preserves area, important for accurate state comparisons."
+                        },
+                        {
+                            question: "To visualize the correlation between poverty and infant mortality in Nigeria, which plot is most effective?",
+                            options: [
+                                "Scatter plot with trend line",
+                                "Hexbin plot",
+                                "Correlation heatmap",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All effectively show relationships between variables."
+                        },
+                        {
+                            question: "Which color scheme is appropriate for showing disease risk levels in Nigeria?",
+                            options: [
+                                "Sequential (light to dark)",
+                                "Diverging (from neutral)",
+                                "Qualitative (distinct colors)",
+                                "All can be appropriate"
+                            ],
+                            answer: 0,
+                            explanation: "Sequential schemes best represent ordered data like risk levels."
+                        },
+                        {
+                            question: "To show changes in Nigerian immunization rates over 10 years, which visualization is best?",
+                            options: [
+                                "Line chart",
+                                "Stacked area chart",
+                                "Slope chart",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All effectively show trends over time."
+                        },
+                        {
+                            question: "When creating a dashboard of Nigerian health indicators for policymakers, which principles are most important?",
+                            options: [
+                                "Clarity and simplicity",
+                                "Context and annotations",
+                                "Interactive exploration",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All contribute to effective decision-making tools."
+                        },
+                        {
+                            question: "To compare doctor-to-patient ratios across Nigerian states, which visualization is most effective?",
+                            options: [
+                                "Choropleth map",
+                                "Ordered bar chart",
+                                "Dot plot",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All allow easy comparison across geographical units."
+                        },
+                        {
+                            question: "Which technique best handles missing data in Nigerian health facility surveys?",
+                            options: [
+                                "Clearly indicate missing values",
+                                "Impute with regional averages",
+                                "Use pattern fills in maps",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Transparent handling of missing data maintains credibility."
+                        },
+                        {
+                            question: "To show the distribution of health facilities by type in Lagos state, which plot is best?",
+                            options: [
+                                "Pie chart",
+                                "Treemap",
+                                "Waffle chart",
+                                "All of the above"
+                            ],
+                            answer: 1,
+                            explanation: "Treemaps effectively show hierarchical part-to-whole relationships."
+                        },
+                        {
+                            question: "When visualizing sensitive Nigerian health data, which considerations are most important?",
+                            options: [
+                                "Data anonymization",
+                                "Aggregation to protect privacy",
+                                "Secure hosting",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All are essential for ethical data visualization."
+                        },
+                        {
+                            question: "To show the relationship between multiple Nigerian health determinants, which advanced visualization is most effective?",
+                            options: [
+                                "Parallel coordinates plot",
+                                "Radar chart",
+                                "Sankey diagram",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All visualize multivariate relationships effectively."
+                        },
+                        {
+                            question: "Which annotation is essential on a map of Nigerian disease prevalence?",
+                            options: [
+                                "Data source and date",
+                                "Scale bar",
+                                "Legend",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All provide critical context for interpretation."
+                        },
+                        {
+                            question: "To compare Nigerian states across multiple health indicators simultaneously, which visualization is best?",
+                            options: [
+                                "Small multiples",
+                                "Scatterplot matrix",
+                                "Parallel coordinates",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All enable multivariate comparison."
+                        },
+                        {
+                            question: "Which color palette is accessible for visualizing Nigerian health disparities?",
+                            options: [
+                                "Viridis",
+                                "Cividis",
+                                "Plasma",
+                                "All of the above"
+                            ],
+                            answer: 1,
+                            explanation: "Cividis is specifically designed for color vision deficiency."
+                        },
+                        {
+                            question: "To show progress toward Nigerian health SDG targets, which visualization is most effective?",
+                            options: [
+                                "Gauge charts",
+                                "Bullet graphs",
+                                "Progress bars",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All clearly show progress against targets."
+                        },
+                        {
+                            question: "When creating an interactive dashboard of Nigerian health data, which features are essential?",
+                            options: [
+                                "Filter by region and time",
+                                "Download options",
+                                "Data source information",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All contribute to a useful analytical tool."
+                        },
+                        {
+                            question: "To visualize Nigerian disease outbreaks over time and space, which combination is powerful?",
+                            options: [
+                                "Animated map",
+                                "Linked histograms and maps",
+                                "Space-time cube",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All effectively show spatiotemporal patterns."
+                        },
+                        {
+                            question: "Which technique improves readability of dense Nigerian health facility data?",
+                            options: [
+                                "Aggregation",
+                                "Interactive filtering",
+                                "Focus+context techniques",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All help manage visual complexity."
+                        },
+                        {
+                            question: "To show the flow of patients through Nigerian health systems, which visualization is best?",
+                            options: [
+                                "Sankey diagram",
+                                "Alluvial diagram",
+                                "Flow map",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All effectively show movement and relationships."
+                        },
+                        {
+                            question: "When presenting Nigerian health visualizations to diverse audiences, which approach is best?",
+                            options: [
+                                "Multiple versions for different expertise levels",
+                                "Interactive exploration",
+                                "Guided narrative",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "Different approaches serve different audience needs."
+                        },
+                        {
+                            question: "To ensure Nigerian health visualizations drive policy action, which practice is essential?",
+                            options: [
+                                "Collaborate with stakeholders",
+                                "Highlight actionable insights",
+                                "Provide clear recommendations",
+                                "All of the above"
+                            ],
+                            answer: 3,
+                            explanation: "All transform data into meaningful impact."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Quiz app functionality
+        function quizApp() {
+            return {
+                // Quiz state
+                sections: quizData.sections,
+                currentSection: 0,
+                showAnswers: false,
+                showResults: false,
+                score: 0,
+                answeredCount: 0,
+                userAnswers: Array(quizData.sections.length).fill().map(() => []),
+                sectionScores: Array(quizData.sections.length).fill(0),
+                
+                // Get total questions
+                get totalQuestions() {
+                    return this.sections.reduce((total, section) => total + section.questions.length, 0);
+                },
+                
+                // Get answer status text
+                getAnswerStatus(sectionIndex, qIndex) {
+                    const userAnswer = this.userAnswers[sectionIndex][qIndex];
+                    const question = this.sections[sectionIndex].questions[qIndex];
+                    
+                    if (userAnswer === undefined) {
+                        return "Not answered. The correct answer is highlighted below.";
+                    } else if (userAnswer === question.answer) {
+                        return "Correct!";
+                    } else {
+                        return "Incorrect. The correct answer is highlighted below.";
+                    }
+                },
+                
+                // Select answer
+                selectAnswer(sectionIndex, qIndex, optionIndex) {
+                    if (this.showAnswers) return; // Prevent changing after submission
+                    
+                    // Save answer
+                    this.userAnswers[sectionIndex][qIndex] = optionIndex;
+                    
+                    // Update answered count
+                    this.calculateAnsweredCount();
+                },
+                
+                // Calculate how many questions have been answered
+                calculateAnsweredCount() {
+                    let count = 0;
+                    for (const section of this.userAnswers) {
+                        for (const answer of section) {
+                            if (answer !== undefined) count++;
+                        }
+                    }
+                    this.answeredCount = count;
+                },
+                
+                // Submit quiz
+                submitQuiz() {
+                    this.showAnswers = true;
+                    
+                    // Calculate score
+                    this.score = 0;
+                    this.sections.forEach((section, sIdx) => {
+                        let sectionScore = 0;
+                        section.questions.forEach((question, qIdx) => {
+                            if (this.userAnswers[sIdx][qIdx] === question.answer) {
+                                this.score++;
+                                sectionScore++;
+                            }
+                        });
+                        this.sectionScores[sIdx] = sectionScore;
+                    });
+                    
+                    // Show results after a delay
+                    setTimeout(() => {
+                        this.showResults = true;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 1000);
+                },
+                
+                // Reset quiz
+                resetQuiz() {
+                    this.userAnswers = Array(quizData.sections.length).fill().map(() => []);
+                    this.sections.forEach((section, sIdx) => {
+                        this.userAnswers[sIdx] = Array(section.questions.length).fill(undefined);
+                    });
+                    this.showAnswers = false;
+                    this.showResults = false;
+                    this.score = 0;
+                    this.answeredCount = 0;
+                    this.sectionScores = Array(quizData.sections.length).fill(0);
+                },
+                
+                // Get motivation message based on score
+                getMotivationMessage() {
+                    const percentage = this.score / this.totalQuestions;
+                    
+                    if (percentage >= 0.9) {
+                        return "Exceptional mastery! Your data visualization skills can transform Nigerian health insights.";
+                    } else if (percentage >= 0.7) {
+                        return "Strong expertise! You're ready to create impactful visualizations for Nigerian health data.";
+                    } else if (percentage >= 0.5) {
+                        return "Solid foundation! Keep practicing to master advanced visualization techniques for Nigeria.";
+                    } else {
+                        return "Good start! Review the concepts and try again to unlock the power of health data visualization.";
+                    }
+                },
+                
+                // Create cosmic background
+                createCosmicBackground() {
+                    const container = document.getElementById('cosmicCanvas');
+                    
+                    // Create stars
+                    for (let i = 0; i < 150; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        const size = Math.random() * 3;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.left = `${Math.random() * 100}%`;
+                        star.style.top = `${Math.random() * 100}%`;
+                        star.style.opacity = Math.random() * 0.8 + 0.2;
+                        star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                        container.appendChild(star);
+                    }
+                },
+                
+                // Initialize the quiz
+                init() {
+                    this.createCosmicBackground();
+                    this.calculateAnsweredCount();
+                    // Initialize answer arrays
+                    this.sections.forEach((section, sIdx) => {
+                        this.userAnswers[sIdx] = Array(section.questions.length).fill(undefined);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>

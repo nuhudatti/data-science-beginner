@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Cleaning Code Explanation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6dd5ed;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(109, 213, 237, 0.4);
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-comment { color: #75715e; }
+        .code-keyword { color: #f92672; }
+        .code-function { color: #66d9ef; }
+        .code-string { color: #a6e22e; }
+        .code-var { color: #fd971f; }
+        .code-number { color: #ae81ff; }
+        
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #6a6a6a;
+            text-align: right;
+            margin-right: 15px;
+            user-select: none;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .explain-btn {
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+        }
+        
+        .explain-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .explain-btn:active {
+            transform: translateY(0);
+        }
+        
+        .explain-btn i {
+            margin-right: 10px;
+        }
+        
+        .explanation-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+        }
+        
+        .explanation-panel.active {
+            max-height: 3000px;
+        }
+        
+        .explanation-content {
+            padding: 10px;
+        }
+        
+        .section-title {
+            color: #6dd5ed;
+            margin: 15px 0 10px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #6dd5ed;
+            padding-bottom: 5px;
+        }
+        
+        .code-line {
+            display: flex;
+            margin: 8px 0;
+            align-items: flex-start;
+        }
+        
+        .line-number-sm {
+            width: 30px;
+            color: #6a6a6a;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .line-explanation {
+            flex-grow: 1;
+        }
+        
+        .highlight {
+            background: rgba(109, 213, 237, 0.2);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .note-box {
+            background: rgba(253, 151, 31, 0.1);
+            border-left: 4px solid #fd971f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .concept-box {
+            background: rgba(166, 226, 46, 0.1);
+            border-left: 4px solid #a6e22e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .question-box {
+            background: rgba(102, 217, 239, 0.1);
+            border-left: 4px solid #66d9ef;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .breakdown-box {
+            background: rgba(174, 129, 255, 0.1);
+            border-left: 4px solid #ae81ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .code-breakdown {
+            font-family: monospace;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        .breakdown-step {
+            margin: 5px 0;
+            padding-left: 10px;
+            border-left: 2px solid #6dd5ed;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .code-block {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .line-number {
+                width: 30px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Python Data Cleaning Code Explanation</h1>
+        
+        <div class="code-block">
+            <div><span class="line-number">1</span><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd</div>
+            <div><span class="line-number">2</span><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np</div>
+            <div><span class="line-number">3</span><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt</div>
+            <div><span class="line-number">4</span><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns</div>
+            <div><span class="line-number">5</span></div>
+            <div><span class="line-number">6</span>file_name = <span class="code-string">"screen_time.csv"</span></div>
+            <div><span class="line-number">7</span><span class="code-keyword">try</span>:</div>
+            <div><span class="line-number">8</span>    df = pd.read_csv(file_name)</div>
+            <div><span class="line-number">9</span>    print(<span class="code-string">f"✅ Successfully loaded '{file_name}'"</span>)</div>
+            <div><span class="line-number">10</span><span class="code-keyword">except</span> FileNotFoundError:</div>
+            <div><span class="line-number">11</span>    print(<span class="code-string">f"❌ ERROR: '{file_name}' not found. Place it in the same folder as this script."</span>)</div>
+            <div><span class="line-number">12</span>    exit()</div>
+            <div><span class="line-number">13</span></div>
+            <div><span class="line-number">14</span><span class="code-comment"># Drop duplicate rows</span></div>
+            <div><span class="line-number">15</span>df = df.drop_duplicates()</div>
+            <div><span class="line-number">16</span></div>
+            <div><span class="line-number">17</span><span class="code-comment"># Handle missing values without inplace=True</span></div>
+            <div><span class="line-number">18</span><span class="code-keyword">for</span> column <span class="code-keyword">in</span> df.columns:</div>
+            <div><span class="line-number">19</span>    <span class="code-keyword">if</span> df[column].dtype <span class="code-keyword">in</span> [<span class="code-string">"int64"</span>, <span class="code-string">"float64"</span>]:</div>
+            <div><span class="line-number">20</span>        df[column] = df[column].fillna(df[column].mean())</div>
+            <div><span class="line-number">21</span>    <span class="code-keyword">else</span>:</div>
+            <div><span class="line-number">22</span>        df[column] = df[column].fillna(df[column].mode()[<span class="code-number">0</span>])</div>
+            <div><span class="line-number">23</span></div>
+            <div><span class="line-number">24</span>print(<span class="code-string">"✅ Missing values handled."</span>)</div>
+            <div><span class="line-number">25</span>print(<span class="code-string">"✅ Duplicates removed."</span>)</div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="explain-btn" id="explain-btn">
+                <i class="fas fa-code"></i> Explain This Code
+            </button>
+        </div>
+        
+        <div class="explanation-panel" id="explanation-panel">
+            <div class="explanation-content">
+                <h2 class="section-title">Code Explanation</h2>
+                <p>This Python code imports necessary libraries, loads a CSV file, and performs data cleaning operations including handling duplicates and missing values.</p>
+                
+                <h3 class="section-title">Line-by-Line Breakdown</h3>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">1</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import pandas as pd</span> - Imports the Pandas library and gives it the alias <span class="highlight">pd</span>.
+                        Pandas is used for data manipulation and analysis, providing DataFrame structures.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Detailed Breakdown</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Python looks for the pandas library</div>
+                        <div class="breakdown-step">2. Imports all its functions and classes</div>
+                        <div class="breakdown-step">3. Creates an alias 'pd' for easier reference</div>
+                        <div class="breakdown-step">4. Now we can use pd.read_csv() instead of pandas.read_csv()</div>
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">2</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import numpy as np</span> - Imports the NumPy library with alias <span class="highlight">np</span>.
+                        NumPy provides support for large, multi-dimensional arrays and matrices, along with mathematical functions.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">3</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import matplotlib.pyplot as plt</span> - Imports the pyplot module from Matplotlib with alias <span class="highlight">plt</span>.
+                        This is used for creating visualizations and plots.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">4</div>
+                    <div class="line-explanation">
+                        <span class="highlight">import seaborn as sns</span> - Imports the Seaborn library with alias <span class="highlight">sns</span>.
+                        Seaborn is built on Matplotlib and provides high-level interface for statistical graphics.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">6</div>
+                    <div class="line-explanation">
+                        <span class="highlight">file_name = "screen_time.csv"</span> - Creates a variable called <span class="highlight">file_name</span> and assigns the string value "screen_time.csv" to it.
+                        This makes it easier to change the filename later if needed.
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">7-12</div>
+                    <div class="line-explanation">
+                        <span class="highlight">try-except block</span> - Attempts to load the CSV file. If successful, prints a confirmation message. If the file is not found, prints an error message and exits the program.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How Try-Except Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Python tries to execute the code in the try block (lines 8-9)</div>
+                        <div class="breakdown-step">2. If pd.read_csv() succeeds, it prints success message</div>
+                        <div class="breakdown-step">3. If pd.read_csv() fails with FileNotFoundError, it jumps to except block</div>
+                        <div class="breakdown-step">4. The except block prints an error message and exits the program</div>
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">15</div>
+                    <div class="line-explanation">
+                        <span class="highlight">df = df.drop_duplicates()</span> - Removes duplicate rows from the DataFrame. This ensures each row in the dataset is unique.
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> How drop_duplicates() Works</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. Compares all rows in the DataFrame</div>
+                        <div class="breakdown-step">2. Identifies rows with identical values in all columns</div>
+                        <div class="breakdown-step">3. Keeps only the first occurrence of each duplicate set</div>
+                        <div class="breakdown-step">4. Returns a new DataFrame without duplicates</div>
+                        <div class="breakdown-step">5. We assign this back to df to update our dataset</div>
+                    </div>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">18-22</div>
+                    <div class="line-explanation">
+                        <span class="highlight">Missing value handling loop</span> - Iterates through each column in the DataFrame. For numeric columns (int64, float64), fills missing values with the column mean. For other data types (typically categorical), fills missing values with the mode (most frequent value).
+                    </div>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Line 20 Detailed Breakdown: df[column] = df[column].fillna(df[column].mean())</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. <span class="highlight">df[column]</span> - Selects a specific column from DataFrame</div>
+                        <div class="breakdown-step">2. <span class="highlight">df[column].mean()</span> - Calculates average of all non-missing values</div>
+                        <div class="breakdown-step">3. <span class="highlight">fillna(...)</span> - Replaces missing values (NaN) with the calculated mean</div>
+                        <div class="breakdown-step">4. <span class="highlight">df[column] = ...</span> - Updates the column with the filled values</div>
+                    </div>
+                    <p><strong>Example:</strong> If column values are [2, 3, NaN, 5], mean is (2+3+5)/3 = 3.33, so result becomes [2, 3, 3.33, 5]</p>
+                </div>
+                
+                <div class="breakdown-box">
+                    <h4><i class="fas fa-cogs"></i> Line 22 Detailed Breakdown: df[column] = df[column].fillna(df[column].mode()[0])</h4>
+                    <div class="code-breakdown">
+                        <div class="breakdown-step">1. <span class="highlight">df[column].mode()</span> - Finds the most frequent value(s) in the column</div>
+                        <div class="breakdown-step">2. <span class="highlight">[0]</span> - Selects the first mode (in case of multiple modes)</div>
+                        <div class="breakdown-step">3. <span class="highlight">fillna(...)</span> - Replaces missing values with this mode</div>
+                        <div class="breakdown-step">4. <span class="highlight">df[column] = ...</span> - Updates the column with the filled values</div>
+                    </div>
+                    <p><strong>Example:</strong> If column values are ["A", "B", NaN, "A", "C"], mode is "A", so result becomes ["A", "B", "A", "A", "C"]</p>
+                </div>
+                
+                <div class="code-line">
+                    <div class="line-number-sm">24-25</div>
+                    <div class="line-explanation">
+                        <span class="highlight">print() statements</span> - Outputs confirmation messages indicating that missing values have been handled and duplicates have been removed.
+                    </div>
+                </div>
+                
+                <div class="concept-box">
+                    <h3><i class="fas fa-lightbulb"></i> Key Concepts</h3>
+                    <p><strong>Error Handling:</strong> The try-except block is used to handle potential errors gracefully instead of letting the program crash.</p>
+                    <p><strong>Data Cleaning:</strong> Removing duplicates and handling missing values are essential steps in preparing data for analysis.</p>
+                    <p><strong>Data Imputation:</strong> Replacing missing values with statistical measures (mean for numerical data, mode for categorical data) is a common approach in data preprocessing.</p>
+                    <p><strong>Data Types:</strong> Different data types (numeric vs categorical) require different handling strategies.</p>
+                </div>
+                
+                <div class="note-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> Important Notes</h3>
+                    <p>• The CSV file must be in the same directory as the Python script for this code to work</p>
+                    <p>• Using mean/mode imputation is a simple approach but may not always be the best method for handling missing data</p>
+                    <p>• The code uses f-strings (formatted string literals) for printing messages</p>
+                    <p>• The emojis (✅) are optional but make the output more user-friendly</p>
+                    <p>• Using df[column] = ... instead of inplace=True is more explicit and preferred in modern pandas</p>
+                </div>
+                
+                <h3 class="section-title">Potential Questions & Answers</h3>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use try-except instead of just loading the file?</strong></p>
+                    <p>A: This makes our code more robust. If the file is missing, we get a clear error message instead of the program crashing unexpectedly. This is especially important in production environments.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What is the advantage of using aliases (pd, np, plt, sns)?</strong></p>
+                    <p>A: Aliases make the code shorter and more readable. Instead of writing "pandas.read_csv()" we can write "pd.read_csv()". This is a standard convention in the Python data science community.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why handle missing values differently for numeric and non-numeric columns?</strong></p>
+                    <p>A: Numeric columns can be filled with mean values, which is mathematically meaningful. For categorical data, the mode (most frequent value) is more appropriate as it preserves the distribution of categories. Using mean on categories would be meaningless.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why use mode()[0] instead of just mode()?</strong></p>
+                    <p>A: The mode() function returns a Series of mode values, even if there's only one mode. Using [0] selects the first (and often only) mode value. If there are multiple modes, we simply select the first one.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What happens if a column has all missing values?</strong></p>
+                    <p>A: For numeric columns, calling mean() on an all-NaN column would return NaN, so fillna(NaN) would not change anything. For categorical columns, mode() would return an empty Series, and [0] would raise an error. This code doesn't handle this edge case.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why not use inplace=True parameter?</strong></p>
+                    <p>A: Using inplace=True is being deprecated in pandas. The modern approach is to assign the result back to the variable (df = df.method() or df[column] = df[column].method()), which is more explicit and follows functional programming principles.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: What alternatives are there to mean/mode imputation?</strong></p>
+                    <p>A: Other methods include median imputation, interpolation, forward/backward fill, using machine learning models to predict missing values, or using dedicated libraries like fancyimpute. The choice depends on the data and context.</p>
+                </div>
+                
+                <div class="question-box">
+                    <p><strong>Q: Why check for specific dtypes (int64, float64) instead of using is_numeric?</strong></p>
+                    <p>A: Using specific dtypes is more explicit. df[column].dtype in ["int64", "float64"] specifically targets integer and float columns. Other numeric types like int32 would not be caught, which might be intentional or might need adjustment depending on the data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <style>
+       
+        /* Back Button Styles */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(33, 147, 176, 0.6);
+        }
+        
+        .back-btn i {
+            font-size: 24px;
+        }
+        
+        /* Example content styling */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            tab-size: 4;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    
+    <!-- Back Button -->
+    <button class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <script>
+        function goBack() {
+            // Check if there's a previous page in history
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // If no history, redirect to home or a default page
+                window.location.href = 'index.html'; // Change to your home page URL
+            }
+        }
+        
+        // Optional: Add keyboard shortcut (Esc key)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const explainBtn = document.getElementById('explain-btn');
+            const explanationPanel = document.getElementById('explanation-panel');
+            
+            explainBtn.addEventListener('click', function() {
+                explanationPanel.classList.toggle('active');
+                
+                if (explanationPanel.classList.contains('active')) {
+                    explainBtn.innerHTML = '<i class="fas fa-times"></i> Hide Explanation';
+                } else {
+                    explainBtn.innerHTML = '<i class="fas fa-code"></i> Explain This Code';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

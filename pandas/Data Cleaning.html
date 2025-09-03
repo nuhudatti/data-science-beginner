@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITDA/NCAIR ULA - Data Cleaning & Preprocessing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nca: {
+                            primary: '#1d4ed8',
+                            secondary: '#0f172a',
+                            accent: '#0ea5e9',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            position: relative;
+        }
+        .explanation {
+            background: #f8fafc;
+            border-left: 4px solid #10b981;
+        }
+        .hl-keyword { color: #c792ea; }
+        .hl-function { color: #82aaff; }
+        .hl-string { color: #c3e88d; }
+        .hl-comment { color: #546e7a; }
+        .hl-var { color: #f07178; }
+        .hl-param { color: #ffcb6b; }
+        .hl-operator { color: #89ddff; }
+        .hl-number { color: #f78c6c; }
+        .hl-builtin { color: #ff5370; }
+        .hl-tag { color: #ff5370; }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #0ea5e9;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .active-section {
+            border-left: 4px solid #10b981;
+            background: #f0fdf4;
+        }
+        
+        .data-vis {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .dirty-data {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+        
+        .clean-data {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        }
+        
+        .viz-bar {
+            height: 24px;
+            border-radius: 4px;
+            margin: 8px 0;
+            transition: width 0.8s ease;
+        }
+        
+        .interactive-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .checkpoint {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .checkpoint:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background-color: #0ea5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #0ea5e9;
+            color: white;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        /* code */
+        .code-block code {
+    color: #e5e7eb; /* light gray for visibility */
+}
+
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-nca-secondary text-white">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-nca-accent rounded-lg p-2">
+                    <i class="fas fa-broom text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">NITDA/NCAIR Universal Learning Archive</h1>
+                    <p class="text-nca-accent text-sm">Data Science Cohort 27 - Data Cleaning Mastery</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- <div class="text-right">
+                    <p class="text-sm">Learning Progress</p>
+                    <div class="progress-bar w-48 mt-1">
+                        <div class="progress-fill w-2/4"></div>
+                    </div>
+                </div> -->
+                <button class="bg-nca-primary hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-user-graduate mr-2"></i> DATTI
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Module Header -->
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
+                <span>Module 2 - Section 2</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-4">Data Cleaning & Preprocessing</h1>
+            <p class="text-xl max-w-3xl mx-auto mb-8">Master techniques to transform messy, real-world data into analysis-ready datasets</p>
+            
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="far fa-clock mr-2"></i> Estimated: 6-8 hours
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-medal mr-2"></i> Core Skill
+                </div>
+                <div class="bg-white/20 rounded-lg px-4 py-2">
+                    <i class="fas fa-tasks mr-2"></i> 4 Lessons, 3 Labs
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-question-circle"></i></div>
+                    <h3 class="font-semibold">Missing Values</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-clone"></i></div>
+                    <h3 class="font-semibold">Duplicates</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="font-semibold">Outliers</h3>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="text-2xl mb-2"><i class="fas fa-cogs"></i></div>
+                    <h3 class="font-semibold">Data Conversion</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                <h2 class="text-xl font-bold mb-4 text-nca-secondary">Learning Trail</h2>
+                
+                <div class="space-y-2">
+                    <a href="./Pandas Foundations.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            Section 1: pandas Foundations
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Series & DataFrame structures</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Data Cleaning.html">
+                    <div class="section-card active-section p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="fas fa-play-circle text-green-500 mr-2"></i>
+                            Section 2: Data Cleaning
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Preprocessing & handling missing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Filtering and Aggregation.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 3: Filtering & Aggregation
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Grouping, filtering and summarizing data</p>
+                    </div>
+                    </a>
+                    
+                    <a href="./Merging and Time Series.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 4: Merging & Time Series
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Combining datasets and time-based analysis</p>
+                    </div>
+                    </a>
+
+                    <a href="./Nigerian Economic Analysis.html">
+                    <div class="section-card p-4 rounded-lg cursor-pointer">
+                        <h3 class="font-semibold flex items-center">
+                            <i class="far fa-circle text-gray-400 mr-2"></i>
+                            Section 5: Nigerian Economic Analysis
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">Real-world data application</p>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Data Cleaning Resources</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                            <span>Data Cleaning Checklist</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-video text-purple-500 mr-2"></i>
+                            <span>Handling Missing Values</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-database text-blue-500 mr-2"></i>
+                            <span>Nigeria Population Dataset</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-book text-green-500 mr-2"></i>
+                            <span>Outlier Detection Guide</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold mb-3">Section Progress</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm mb-1">Missing Values</p>
+                            <div class="progress-bar w-full mt-1">
+                                <div class="progress-fill bg-green-500 w-3/4"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm mb-1">Duplicates</p>
+                            <div class="progress-bar w-full mt-1">
+                                <div class="progress-fill bg-yellow-500 w-1/2"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm mb-1">Outliers</p>
+                            <div class="progress-bar w-full mt-1">
+                                <div class="progress-fill bg-red-500 w-1/3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="lg:w-3/4">
+            <!-- Section Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="text-green-600 font-semibold">Section 2</span>
+                        <h2 class="text-2xl font-bold text-gray-800">Data Cleaning & Preprocessing</h2>
+                    </div>
+                    <!-- <div class="flex items-center space-x-4">
+                        <button class="flex items-center text-green-600">
+                            <i class="fas fa-download mr-2"></i> Download Notebook
+                        </button>
+                        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-flask mr-2"></i> Start Cleaning Lab
+                        </button>
+                    </div> -->
+                </div>
+                <p class="text-gray-600">Real-world data is often messy and incomplete. Learn essential techniques to identify and handle missing values, duplicates, outliers, and data type issues to prepare your datasets for analysis.</p>
+                
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Practical Skill</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Real-world Data</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Hands-on Labs</span>
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">45-60 mins</span>
+                </div>
+            </div>
+            
+            <!-- Data Cleaning Importance -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-100 rounded-xl p-6 mb-6 border border-green-200">
+                <div class="flex items-start">
+                    <div class="bg-green-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-lightbulb text-green-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Why Data Cleaning Matters</h3>
+                        <p class="text-gray-600 mb-4">Data scientists spend 60-80% of their time cleaning and preparing data. Mastering these skills is essential for accurate analysis and modeling.</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-white p-4 rounded-lg text-center">
+                                <div class="text-green-600 text-3xl font-bold">80%</div>
+                                <p class="text-sm">Data preparation time</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg text-center">
+                                <div class="text-green-600 text-3xl font-bold">40%</div>
+                                <p class="text-sm">Analysis errors from dirty data</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg text-center">
+                                <div class="text-green-600 text-3xl font-bold">5×</div>
+                                <p class="text-sm">Efficiency gain with clean data</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg text-center">
+                                <div class="text-green-600 text-3xl font-bold">94%</div>
+                                <p class="text-sm">Companies cite data quality issues</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson Content -->
+            <div class="space-y-6">
+                <!-- Lesson 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">2.1 Handling Missing Values</h3>
+                                <p class="text-gray-600 mt-2">Missing data is a common problem in real-world datasets. Learn strategies to detect, analyze, and handle missing values appropriately.</p>
+                            </div>
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Critical</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                        <!-- Data Visualization -->
+                        <div class="data-vis p-4">
+                            <h4 class="font-bold text-gray-800 mb-4">Missing Data Visualization</h4>
+                            <div class="dirty-data p-4 rounded-lg mb-4">
+                                <div class="flex justify-between mb-2">
+                                    <span>GDP Data</span>
+                                    <span class="text-red-600">25% missing</span>
+                                </div>
+                                <div class="viz-bar bg-gradient-to-r from-red-400 to-red-300 w-1/4"></div>
+                                
+                                <div class="flex justify-between mb-2">
+                                    <span>Population</span>
+                                    <span class="text-yellow-600">12% missing</span>
+                                </div>
+                                <div class="viz-bar bg-gradient-to-r from-yellow-400 to-yellow-300 w-1/8"></div>
+                                
+                                <div class="flex justify-between mb-2">
+                                    <span>Oil Production</span>
+                                    <span class="text-green-600">5% missing</span>
+                                </div>
+                                <div class="viz-bar bg-gradient-to-r from-green-400 to-green-300 w-1/16"></div>
+                            </div>
+                            
+                            <div class="clean-data p-4 rounded-lg">
+                                <div class="flex justify-between mb-2">
+                                    <span>After Cleaning</span>
+                                    <span class="text-green-600">0% missing</span>
+                                </div>
+                                <div class="viz-bar bg-gradient-to-r from-green-500 to-green-400 w-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Code Block -->
+                        <div class="code-block p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-gray-300 font-mono text-sm">Python</div>
+                                <div class="flex space-x-2">
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Load Nigerian economic dataset</span>
+<span class="hl-keyword">import</span> pandas <span class="hl-keyword">as</span> pd
+df = pd.read_csv(<span class="hl-string">"nigeria_economy.csv"</span>)
+
+<span class="hl-comment"># Detect missing values</span>
+missing = df.isnull().sum()
+print(missing)
+
+<span class="hl-comment"># Visualize missing data</span>
+<span class="hl-keyword">import</span> seaborn <span class="hl-keyword">as</span> sns
+sns.heatmap(df.isnull(), cbar=<span class="hl-keyword">False</span>)
+
+<span class="hl-comment"># Handle missing values</span>
+<span class="hl-comment"># Option 1: Remove rows with missing values</span>
+df_clean = df.dropna()
+
+<span class="hl-comment"># Option 2: Fill with mean (for numerical data)</span>
+df[<span class="hl-string">'GDP'</span>] = df[<span class="hl-string">'GDP'</span>].fillna(df[<span class="hl-string">'GDP'</span>].mean())
+
+<span class="hl-comment"># Option 3: Fill with mode (for categorical data)</span>
+df[<span class="hl-string">'Region'</span>] = df[<span class="hl-string">'Region'</span>].fillna(df[<span class="hl-string">'Region'</span>].mode()[<span class="hl-number">0</span>])
+
+<span class="hl-comment"># Option 4: Forward fill (time-series data)</span>
+df[<span class="hl-string">'Oil_Production'</span>] = df[<span class="hl-string">'Oil_Production'</span>].fillna(method=<span class="hl-string">'ffill'</span>)</code></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Missing Value Strategies</h4>
+                            <button class="text-green-600">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="checkpoint">
+                                <p class="font-semibold">Detection First</p>
+                                <p class="text-gray-700">Always analyze missing data patterns before deciding on a strategy. Use <code>isnull().sum()</code> and visualization to understand the extent and pattern of missingness.</p>
+                            </div>
+                            
+                            <div class="checkpoint">
+                                <p class="font-semibold">Deletion Strategy</p>
+                                <p class="text-gray-700">Use <code>dropna()</code> when missing values are random and small in number (&lt;5% of dataset). Avoid when it would cause significant data loss.</p>
+                            </div>
+                            
+                            <div class="checkpoint">
+                                <p class="font-semibold">Imputation Techniques</p>
+                                <p class="text-gray-700">For numerical data, mean/median imputation works well. For categorical data, use mode. For time-series, forward/backward fill maintains trends.</p>
+                            </div>
+                            
+                            <div class="checkpoint">
+                                <p class="font-semibold">Advanced Methods</p>
+                                <p class="text-gray-700">For complex datasets, consider regression imputation, KNN imputation, or multiple imputation techniques.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">2.2 Handling Duplicates & Outliers</h3>
+                                <p class="text-gray-600 mt-2">Identify and remove duplicate records, and detect outliers that might skew your analysis results.</p>
+                            </div>
+                            <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-sm">Important</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-gray-300 font-mono text-sm">Python</div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Identify and remove duplicates</span>
+duplicates = df.duplicated().sum()
+print(<span class="hl-string">f"Found </span><span class="hl-subst">{duplicates}</span><span class="hl-string"> duplicate rows"</span>)
+
+<span class="hl-comment"># Remove duplicates based on all columns</span>
+df = df.drop_duplicates()
+
+<span class="hl-comment"># Remove duplicates based on specific columns</span>
+df = df.drop_duplicates(subset=[<span class="hl-string">'State'</span>, <span class="hl-string">'Year'</span>])
+
+<span class="hl-comment"># Detect outliers using Z-score</span>
+<span class="hl-keyword">from</span> scipy <span class="hl-keyword">import</span> stats
+z_scores = stats.zscore(df[<span class="hl-string">'GDP'</span>])
+abs_z_scores = np.abs(z_scores)
+outliers = (abs_z_scores > <span class="hl-number">3</span>)
+print(<span class="hl-string">f"Found </span><span class="hl-subst">{outliers.sum()}</span><span class="hl-string"> GDP outliers"</span>)
+
+<span class="hl-comment"># Handling outliers</span>
+<span class="hl-comment"># Option 1: Remove outliers</span>
+df_clean = df[~outliers]
+
+<span class="hl-comment"># Option 2: Cap outliers (Winsorization)</span>
+q_low = df[<span class="hl-string">"GDP"</span>].quantile(<span class="hl-number">0.01</span>)
+q_high = df[<span class="hl-string">"GDP"</span>].quantile(<span class="hl-number">0.99</span>)
+df[<span class="hl-string">"GDP"</span>] = np.where(df[<span class="hl-string">"GDP"</span>] < q_low, q_low, df[<span class="hl-string">"GDP"</span>])
+df[<span class="hl-string">"GDP"</span>] = np.where(df[<span class="hl-string">"GDP"</span>] > q_high, q_high, df[<span class="hl-string">"GDP"</span>])</code></pre>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Duplicate & Outlier Management</h4>
+                            <button class="text-green-600">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-semibold">Duplicate Detection</p>
+                                <p class="text-gray-700">Duplicates often occur during data collection. Use <code>duplicated()</code> and <code>drop_duplicates()</code> to identify and remove them. Consider which columns should be unique when removing duplicates.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-semibold">Outlier Detection</p>
+                                <p class="text-gray-700">Outliers can significantly impact statistical analyses. Z-scores (values beyond ±3 standard deviations) and IQR (Interquartile Range) are common detection methods.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-semibold">Outlier Treatment</p>
+                                <p class="text-gray-700">Deciding to remove or transform outliers depends on context. Winsorization caps extreme values at a specified percentile, preserving data while reducing outlier impact.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lesson 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">2.3 Data Type Conversion</h3>
+                                <p class="text-gray-600 mt-2">Ensure your data is in the correct format for analysis by converting data types and creating new features.</p>
+                            </div>
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Essential</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Block -->
+                    <div class="code-block p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-gray-300 font-mono text-sm">Python</div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <pre class="font-mono text-sm overflow-x-auto"><code><span class="hl-comment"># Convert data types</span>
+df[<span class="hl-string">'Year'</span>] = df[<span class="hl-string">'Year'</span>].astype(<span class="hl-string">'int'</span>)        <span class="hl-comment"># To integer</span>
+df[<span class="hl-string">'GDP'</span>] = df[<span class="hl-string">'GDP'</span>].astype(<span class="hl-string">'float'</span>)      <span class="hl-comment"># To float</span>
+df[<span class="hl-string">'Date'</span>] = pd.to_datetime(df[<span class="hl-string">'Date'</span>])  <span class="hl-comment"># To datetime</span>
+
+<span class="hl-comment"># Create categorical types</span>
+df[<span class="hl-string">'Region'</span>] = df[<span class="hl-string">'Region'</span>].astype(<span class="hl-string">'category'</span>)
+
+<span class="hl-comment"># Feature engineering: Extract date parts</span>
+df[<span class="hl-string">'Year'</span>] = df[<span class="hl-string">'Date'</span>].dt.year
+df[<span class="hl-string">'Month'</span>] = df[<span class="hl-string">'Date'</span>].dt.month
+df[<span class="hl-string">'Quarter'</span>] = df[<span class="hl-string">'Date'</span>].dt.quarter
+
+<span class="hl-comment"># Create GDP per capita feature</span>
+df[<span class="hl-string">'GDP_per_capita'</span>] = df[<span class="hl-string">'GDP'</span>] * <span class="hl-number">1e9</span> / df[<span class="hl-string">'Population'</span>]  <span class="hl-comment"># GDP in billions, population in millions</span>
+
+<span class="hl-comment"># Bin continuous variables</span>
+bins = [<span class="hl-number">0</span>, <span class="hl-number">1000</span>, <span class="hl-number">5000</span>, <span class="hl-number">10000</span>, <span class="hl-number">50000</span>, <span class="hl-number">100000</span>, np.inf]
+labels = [<span class="hl-string">'&lt;1B'</span>, <span class="hl-string">'1-5B'</span>, <span class="hl-string">'5-10B'</span>, <span class="hl-string">'10-50B'</span>, <span class="hl-string">'50-100B'</span>, <span class="hl-string">'&gt;100B'</span>]
+df[<span class="hl-string">'GDP_Category'</span>] = pd.cut(df[<span class="hl-string">'GDP'</span>], bins=bins, labels=labels)</code></pre>
+                    </div>
+                    
+                    <!-- Explanation -->
+                    <div class="explanation p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-gray-800">Data Transformation Techniques</h4>
+                            <button class="text-green-600">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-semibold">Data Type Conversion</p>
+                                <p class="text-gray-700">Correct data types reduce memory usage and enable appropriate operations. Use <code>astype()</code> for basic conversions and <code>pd.to_datetime()</code> for date conversion.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-semibold">Categorical Data</p>
+                                <p class="text-gray-700">Convert string columns with limited unique values to categorical type to save memory and enable efficient grouping operations.</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-semibold">Feature Engineering</p>
+                                <p class="text-gray-700">Create new features from existing data to enhance analysis. Extract date components, calculate ratios (like GDP per capita), and create meaningful categories from continuous variables.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-World Lab -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-6 bg-blue-600 text-white">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold">Hands-On Lab: Clean Nigeria Population Data</h3>
+                            <span class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm">Practical Exercise</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <h4 class="font-bold text-gray-800 mb-3">Dataset Overview</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-blue-600 text-2xl font-bold">36</div>
+                                    <p class="text-sm">States + FCT</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-blue-600 text-2xl font-bold">15</div>
+                                    <p class="text-sm">Years (2008-2023)</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-blue-600 text-2xl font-bold">540</div>
+                                    <p class="text-sm">Total Records</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-blue-600 text-2xl font-bold">8</div>
+                                    <p class="text-sm">Variables</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-bold text-gray-800 mb-3">Lab Objectives</h4>
+                            <ol class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="step-number">1</span>
+                                    <span>Identify and handle missing values in population and GDP columns</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="step-number">2</span>
+                                    <span>Remove duplicate entries for state-year combinations</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="step-number">3</span>
+                                    <span>Detect and cap outliers in economic indicators</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="step-number">4</span>
+                                    <span>Convert data types and create GDP per capita feature</span>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                                <i class="fas fa-vial mr-2"></i> Launch Cleaning Lab
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                <div class="flex items-start">
+                    <div class="bg-green-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-arrow-right text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Ready for Advanced Analysis?</h3>
+                        <p class="text-gray-600 mb-4">Now that your data is clean, learn how to filter, group, and aggregate data to uncover meaningful insights.</p>
+                        <a href="./Filtering and Aggregation.html" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium">
+                            Continue 
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    /* Floating Home Button - NITDA/NCAIR Green Format */
+    .home-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #006400 0%, #004d00 100%); /* Dark green gradient */
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 100, 0, 0.4); /* Green shadow */
+        transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 100, 0, 0.6); /* Darker green hover shadow */
+    }
+</style>
+
+<!-- Floating Home Button -->
+<a href="./index.html" class="home-btn" title="Go Home">
+    <i class="fas fa-home"></i>
+</a>
+
+    
+    <!-- Footer -->
+    <footer class="bg-nca-secondary text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">NITDA/NCAIR ULA</h3>
+                    <p class="text-gray-400">Universal Learning Archive - Transforming digital education in Nigeria through accessible, world-class learning resources.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Data Science Track</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Python Fundamentals</li>
+                        <li>pandas Mastery</li>
+                        <li>Data Visualization</li>
+                        <li>Machine Learning</li>
+                        <li>Big Data Technologies</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Learning Materials</li>
+                        <li>Practice Labs</li>
+                        <li>Community Forum</li>
+                        <li>Career Pathways</li>
+                        <li>Industry Partnerships</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>nuhumuhammaddatti@gmail.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+234 808 844 0095</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Abuja, Nigeria</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 flex space-x-4">
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-linkedin-in"></i>
+                        </div>
+                        <div class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+                            <i class="fab fa-github"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2025 Created by Nuhu Muhammad Datti during Internship at the National Information Technology Development Agency (NITDA) / National Centre for Artificial Intelligence and Robotics (NCAIR). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to toggle code explanations
+        document.querySelectorAll('.explanation button').forEach(button => {
+            button.addEventListener('click', () => {
+                const explanation = button.closest('.explanation');
+                const content = explanation.querySelector('div:last-child');
+                
+                if (content.style.display === 'none' || !content.style.display) {
+                    content.style.display = 'block';
+                    button.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                } else {
+                    content.style.display = 'none';
+                    button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                }
+            });
+        });
+
+        // Animate progress bars
+        document.querySelectorAll('.viz-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+
+        // Simulate progress update
+        setInterval(() => {
+            const progress = document.querySelector('.progress-fill');
+            const currentWidth = parseInt(progress.style.width) || 50;
+            if (currentWidth < 100) {
+                progress.style.width = (currentWidth + 2) + '%';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

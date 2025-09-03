@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Data Pipeline - Code Documentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #1abc9c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+    
+    .research-info {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    
+    .research-info h3 {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .research-info ul {
+      padding-left: 20px;
+    }
+    
+    .research-info li {
+      margin-bottom: 8px;
+    }
+    
+    .tabs {
+      display: flex;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e6ed;
+    }
+    
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #6c757d;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      color: var(--secondary);
+      border-bottom: 3px solid var(--secondary);
+      background: rgba(52, 152, 219, 0.05);
+    }
+    
+    .tab:hover:not(.active) {
+      background: rgba(52, 152, 219, 0.1);
+    }
+    
+    .tab-content {
+      padding: 30px;
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .code-step {
+      margin-bottom: 25px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      background: white;
+      border: 1px solid #e9ecef;
+    }
+    
+    .step-header {
+      padding: 18px 25px;
+      background: #f8f9fa;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--dark);
+      transition: all 0.3s ease;
+    }
+    
+    .step-header:hover {
+      background: #e9f7fe;
+    }
+    
+    .step-header.active {
+      background: var(--secondary);
+      color: white;
+    }
+    
+    .step-content {
+      padding: 0 25px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #fdfdfd;
+    }
+    
+    .step-content-inner {
+      padding: 25px 0;
+      border-top: 1px solid #eee;
+    }
+    
+    .step-content.active {
+      max-height: 1000px;
+    }
+    
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .step-number {
+      background: var(--secondary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .step-header.active .step-number {
+      background: white;
+      color: var(--secondary);
+    }
+    
+    .step-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .step-details {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .explanation, .implementation {
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .explanation {
+      background: #f0f9ff;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .implementation {
+      background: #f0f7ff;
+      border-left: 4px solid #5d9cec;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      color: var(--dark);
+    }
+    
+    .code-block {
+      background: #2d3a4b;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      overflow-x: auto;
+    }
+    
+    .code-comment {
+      color: #7f8c8d;
+    }
+    
+    .code-keyword {
+      color: #f39c12;
+    }
+    
+    .code-function {
+      color: #3498db;
+    }
+    
+    .faq-container {
+      margin-top: 40px;
+    }
+    
+    .faq-item {
+      margin-bottom: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .faq-question {
+      padding: 18px 25px;
+      background: #f8f9fa;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+    
+    .faq-answer {
+      padding: 0 25px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: white;
+    }
+    
+    .faq-answer-inner {
+      padding: 25px 0;
+    }
+    
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+    }
+    
+    .research-impact {
+      background: linear-gradient(to right, #1a2980, #26d0ce);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+    
+    .impact-title {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .impact-points {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .impact-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .impact-card h4 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 30px;
+      color: #6c757d;
+      font-size: 0.9rem;
+      border-top: 1px solid #eee;
+      margin-top: 30px;
+    }
+    
+    .icon {
+      font-size: 1.2rem;
+    }
+    
+    .expand-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .step-header.active .expand-icon,
+    .faq-item.active .expand-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1><i class="fas fa-code"></i> Research Data Pipeline</h1>
+        <p class="subtitle">Comprehensive Documentation for Screen Time & Mental Wellbeing Analysis</p>
+        
+        <div class="research-info">
+          <h3><i class="fas fa-microscope"></i> Research Context</h3>
+          <ul>
+            <li><strong>Objective:</strong> Analyze relationships between screen time, mental wellbeing, and demographics</li>
+            <li><strong>Data Sources:</strong> Screen time logs, Wellbeing surveys, Demographic records</li>
+            <li><strong>Methodology:</strong> Data integration, cleaning, and preprocessing pipeline</li>
+            <li><strong>Team Members:</strong> Researchers, Data Scientists, Statisticians</li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="code">Code Documentation</div>
+      <div class="tab" data-tab="presentation">Presentation Notes</div>
+      <div class="tab" data-tab="faq">FAQ & Support</div>
+    </div>
+    
+    <div class="tab-content active" id="code-tab">
+      <h2><i class="fas fa-cogs"></i> Data Processing Pipeline</h2>
+      <p class="subtitle">Step-by-step explanation of the data integration and cleaning process</p>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <div class="step-title">
+            <div class="step-number">1</div>
+            <h3>Importing Essential Libraries</h3>
+          </div>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="step-details">
+              <div class="explanation">
+                <div class="section-title">
+                  <i class="fas fa-info-circle"></i>
+                  <h4>Explanation</h4>
+                </div>
+                <p>This step imports the core Python libraries required for data manipulation and analysis:</p>
+                <ul>
+                  <li><strong>pandas</strong>: Provides DataFrame structures for efficient data manipulation</li>
+                  <li><strong>numpy</strong>: Enables numerical operations and handling of missing values</li>
+                  <li>These libraries form the foundation for handling diverse data formats</li>
+                </ul>
+                <div class="research-info" style="margin-top: 15px; background: #e8f4fc; color: #333;">
+                  <p><i class="fas fa-lightbulb"></i> <strong>Research Significance:</strong> Ensures consistency in data handling methods across the team and provides standardized functions for data processing.</p>
+                </div>
+              </div>
+              
+              <div class="implementation">
+                <div class="section-title">
+                  <i class="fas fa-code"></i>
+                  <h4>Implementation</h4>
+                </div>
+                <div class="code-block">
+                  <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd<br>
+                  <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np<br><br>
+                  <span class="code-comment"># pandas: Data manipulation and analysis</span><br>
+                  <span class="code-comment"># numpy: Numerical computing and array operations</span>
+                </div>
+                <p><strong>Best Practices:</strong></p>
+                <ul>
+                  <li>Use standard aliases (pd, np) for consistency</li>
+                  <li>Import only necessary modules to reduce memory overhead</li>
+                  <li>Document library versions in requirements.txt</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <div class="step-title">
+            <div class="step-number">2</div>
+            <h3>Loading Research Datasets</h3>
+          </div>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="step-details">
+              <div class="explanation">
+                <div class="section-title">
+                  <i class="fas fa-info-circle"></i>
+                  <h4>Explanation</h4>
+                </div>
+                <p>This step loads three distinct research datasets from different sources:</p>
+                <ul>
+                  <li><strong>CSV</strong>: Screen time data (nigerian_screen_time.csv)</li>
+                  <li><strong>Excel</strong>: Mental wellbeing survey results (mental_wellbeing_survey.xlsx)</li>
+                  <li><strong>JSON</strong>: Participant demographics (demographics.json)</li>
+                </ul>
+                <p>Each dataset contains unique but complementary information about participants.</p>
+                <div class="research-info" style="margin-top: 15px; background: #e8f4fc; color: #333;">
+                  <p><i class="fas fa-lightbulb"></i> <strong>Research Significance:</strong> Maintains data integrity by loading each dataset with appropriate parsers. Different formats represent how data is collected from various sources in real research scenarios.</p>
+                </div>
+              </div>
+              
+              <div class="implementation">
+                <div class="section-title">
+                  <i class="fas fa-code"></i>
+                  <h4>Implementation</h4>
+                </div>
+                <div class="code-block">
+                  <span class="code-comment"># Load screen time data from CSV</span><br>
+                  screen_time = pd.<span class="code-function">read_csv</span>(<span class="code-string">'nigerian_screen_time.csv'</span>)<br><br>
+                  
+                  <span class="code-comment"># Load wellbeing survey from Excel</span><br>
+                  wellbeing = pd.<span class="code-function">read_excel</span>(<span class="code-string">'mental_wellbeing_survey.xlsx'</span>)<br><br>
+                  
+                  <span class="code-comment"># Load demographics from JSON</span><br>
+                  demographics = pd.<span class="code-function">read_json</span>(<span class="code-string">'demographics.json'</span>, orient=<span class="code-string">'records'</span>)<br><br>
+                  
+                  <span class="code-comment"># Display dataset summaries</span><br>
+                  <span class="code-function">print</span>(<span class="code-string">"Screen Time Data:"</span>, screen_time.<span class="code-function">shape</span>)<br>
+                  <span class="code-function">print</span>(<span class="code-string">"Wellbeing Data:"</span>, wellbeing.<span class="code-function">shape</span>)<br>
+                  <span class="code-function">print</span>(<span class="code-string">"Demographics Data:"</span>, demographics.<span class="code-function">shape</span>)
+                </div>
+                <p><strong>Data Validation:</strong></p>
+                <ul>
+                  <li>Check row counts match expected participant numbers</li>
+                  <li>Verify critical columns exist in each dataset</li>
+                  <li>Inspect data types for each column</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <div class="step-title">
+            <div class="step-number">3</div>
+            <h3>Merging Research Datasets</h3>
+          </div>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="step-details">
+              <div class="explanation">
+                <div class="section-title">
+                  <i class="fas fa-info-circle"></i>
+                  <h4>Explanation</h4>
+                </div>
+                <p>This step integrates the three datasets into a unified research dataset:</p>
+                <ul>
+                  <li>Datasets are merged using <code>participant_id</code> as the unique identifier</li>
+                  <li>Screen time and wellbeing data are merged first</li>
+                  <li>Demographic data is then added to the merged dataset</li>
+                  <li>Inner join ensures only participants present in all datasets are included</li>
+                </ul>
+                <div class="research-info" style="margin-top: 15px; background: #e8f4fc; color: #333;">
+                  <p><i class="fas fa-lightbulb"></i> <strong>Research Significance:</strong> Creates a comprehensive dataset where each row represents a complete participant record. This is essential for multivariate analysis examining relationships between screen time, wellbeing, and demographics.</p>
+                </div>
+              </div>
+              
+              <div class="implementation">
+                <div class="section-title">
+                  <i class="fas fa-code"></i>
+                  <h4>Implementation</h4>
+                </div>
+                <div class="code-block">
+                  <span class="code-comment"># Merge screen time and wellbeing data</span><br>
+                  merged_data = pd.<span class="code-function">merge</span>(<br>
+                  &nbsp;&nbsp;screen_time,<br>
+                  &nbsp;&nbsp;wellbeing,<br>
+                  &nbsp;&nbsp;on=<span class="code-string">'participant_id'</span>,<br>
+                  &nbsp;&nbsp;how=<span class="code-string">'inner'</span><br>
+                  )<br><br>
+                  
+                  <span class="code-comment"># Add demographic information</span><br>
+                  final_data = pd.<span class="code-function">merge</span>(<br>
+                  &nbsp;&nbsp;merged_data,<br>
+                  &nbsp;&nbsp;demographics,<br>
+                  &nbsp;&nbsp;on=<span class="code-string">'participant_id'</span>,<br>
+                  &nbsp;&nbsp;how=<span class="code-string">'inner'</span><br>
+                  )<br><br>
+                  
+                  <span class="code-comment"># Verify merged dataset</span><br>
+                  <span class="code-function">print</span>(<span class="code-string">"Final Dataset Shape:"</span>, final_data.<span class="code-function">shape</span>)<br>
+                  <span class="code-function">print</span>(<span class="code-string">"Columns:"</span>, list(final_data.columns))
+                </div>
+                <p><strong>Merging Strategy:</strong></p>
+                <ul>
+                  <li>Inner join preserves only complete cases across datasets</li>
+                  <li>Alternative: Left join preserves all screen time participants</li>
+                  <li>Check for duplicate participant_ids before merging</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <div class="step-title">
+            <div class="step-number">4</div>
+            <h3>Handling Missing Values</h3>
+          </div>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="step-details">
+              <div class="explanation">
+                <div class="section-title">
+                  <i class="fas fa-info-circle"></i>
+                  <h4>Explanation</h4>
+                </div>
+                <p>This step addresses missing data to ensure analysis validity:</p>
+                <ul>
+                  <li><strong>Social Media Time:</strong> Missing values replaced with median</li>
+                  <li><strong>Wellbeing Score:</strong> Missing values replaced with mean</li>
+                  <li>Median used for skewed distributions, mean for normal distributions</li>
+                  <li>Preserves participant data while minimizing bias</li>
+                </ul>
+                <div class="research-info" style="margin-top: 15px; background: #e8f4fc; color: #333;">
+                  <p><i class="fas fa-lightbulb"></i> <strong>Research Significance:</strong> Prevents loss of valuable participant data while minimizing potential bias from missing values. The choice of imputation method (median vs. mean) depends on variable distribution.</p>
+                </div>
+              </div>
+              
+              <div class="implementation">
+                <div class="section-title">
+                  <i class="fas fa-code"></i>
+                  <h4>Implementation</h4>
+                </div>
+                <div class="code-block">
+                  <span class="code-comment"># Calculate median social media time</span><br>
+                  social_median = final_data[<span class="code-string">'social_media_time'</span>].<span class="code-function">median</span>()<br><br>
+                  
+                  <span class="code-comment"># Impute missing social media values</span><br>
+                  final_data[<span class="code-string">'social_media_time'</span>] = final_data[<span class="code-string">'social_media_time'</span>].<span class="code-function">fillna</span>(social_median)<br><br>
+                  
+                  <span class="code-comment"># Calculate mean wellbeing score</span><br>
+                  wellbeing_mean = final_data[<span class="code-string">'wellbeing_score'</span>].<span class="code-function">mean</span>()<br><br>
+                  
+                  <span class="code-comment"># Impute missing wellbeing scores</span><br>
+                  final_data[<span class="code-string">'wellbeing_score'</span>] = final_data[<span class="code-string">'wellbeing_score'</span>].<span class="code-function">fillna</span>(wellbeing_mean)<br><br>
+                  
+                  <span class="code-comment"># Verify no missing values in key columns</span><br>
+                  <span class="code-function">print</span>(<span class="code-string">"Missing Values:"</span>)<br>
+                  <span class="code-function">print</span>(final_data[[<span class="code-string">'social_media_time'</span>, <span class="code-string">'wellbeing_score'</span>]].<span class="code-function">isna</span>().<span class="code-function">sum</span>())
+                </div>
+                <p><strong>Advanced Options:</strong></p>
+                <ul>
+                  <li>Regression imputation for multivariate relationships</li>
+                  <li>Multiple imputation for more robust results</li>
+                  <li>Create "missing" indicator variables</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="research-impact">
+        <div class="impact-title">
+          <i class="fas fa-chart-line icon"></i>
+          <h3>Research Impact & Applications</h3>
+        </div>
+        <p>This data pipeline enables sophisticated analysis of how screen time patterns relate to mental wellbeing outcomes across different demographic groups. The clean, integrated dataset supports:</p>
+        
+        <div class="impact-points">
+          <div class="impact-card">
+            <h4><i class="fas fa-brain"></i> Mental Health Research</h4>
+            <p>Identify screen time thresholds associated with wellbeing changes</p>
+          </div>
+          <div class="impact-card">
+            <h4><i class="fas fa-users"></i> Demographic Analysis</h4>
+            <p>Examine how relationships vary by age, gender, and location</p>
+          </div>
+          <div class="impact-card">
+            <h4><i class="fas fa-shield-alt"></i> Intervention Design</h4>
+            <p>Develop targeted digital wellbeing programs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="presentation-tab">
+      <h2><i class="fas fa-presentation-screen"></i> Presentation Guide</h2>
+      <p class="subtitle">Key talking points and visuals for research presentations</p>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <h3>Introduction Slides</h3>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="explanation">
+              <div class="section-title">
+                <i class="fas fa-sliders"></i>
+                <h4>Recommended Slides</h4>
+              </div>
+              <ul>
+                <li><strong>Title Slide:</strong> Research Title, Team Members, Institutional Affiliation</li>
+                <li><strong>Research Question:</strong> "How does screen time affect mental wellbeing across different demographic groups?"</li>
+                <li><strong>Study Significance:</strong> Rising screen time + mental health concerns</li>
+                <li><strong>Methodology Overview:</strong> Visual of data pipeline (sources → integration → analysis)</li>
+              </ul>
+            </div>
+            
+            <div class="implementation">
+              <div class="section-title">
+                <i class="fas fa-image"></i>
+                <h4>Visual Aids</h4>
+              </div>
+              <ul>
+                <li>Infographic showing data sources and integration process</li>
+                <li>Demographic pyramid of participants</li>
+                <li>Distribution of screen time across different platforms</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <h3>Data Processing Explanation</h3>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="explanation">
+              <div class="section-title">
+                <i class="fas fa-sliders"></i>
+                <h4>Key Points to Emphasize</h4>
+              </div>
+              <ul>
+                <li><strong>Data Integration:</strong> "We combined three complementary datasets to get a comprehensive view of each participant"</li>
+                <li><strong>Data Cleaning:</strong> "Missing data was handled using robust statistical methods to preserve data integrity"</li>
+                <li><strong>Quality Control:</strong> "We implemented multiple validation checks throughout the pipeline"</li>
+              </ul>
+            </div>
+            
+            <div class="implementation">
+              <div class="section-title">
+                <i class="fas fa-image"></i>
+                <h4>Visual Aids</h4>
+              </div>
+              <ul>
+                <li>Flowchart of data processing steps</li>
+                <li>Before/after missing value treatment visualization</li>
+                <li>Sample of final integrated dataset structure</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-step">
+        <div class="step-header">
+          <h3>Analysis & Findings</h3>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="step-content">
+          <div class="step-content-inner">
+            <div class="explanation">
+              <div class="section-title">
+                <i class="fas fa-sliders"></i>
+                <h4>Presentation Structure</h4>
+              </div>
+              <ul>
+                <li><strong>Descriptive Statistics:</strong> Participant characteristics, screen time patterns</li>
+                <li><strong>Correlation Analysis:</strong> Screen time vs wellbeing (overall and stratified)</li>
+                <li><strong>Regression Models:</strong> Controlling for demographic factors</li>
+                <li><strong>Key Findings:</strong> "Adolescents show strongest negative correlation between social media and wellbeing"</li>
+              </ul>
+            </div>
+            
+            <div class="implementation">
+              <div class="section-title">
+                <i class="fas fa-image"></i>
+                <h4>Visual Aids</h4>
+              </div>
+              <ul>
+                <li>Scatterplot of screen time vs wellbeing with regression line</li>
+                <li>Bar charts showing differences across demographic groups</li>
+                <li>Heatmap of correlation matrix</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="faq-tab">
+      <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+      <p class="subtitle">Common questions about the data pipeline and research</p>
+      
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Why use median for social media time but mean for wellbeing scores?</h3>
+            <i class="fas fa-chevron-down expand-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>This approach accounts for the different distribution characteristics of these variables:</p>
+              <ul>
+                <li><strong>Social Media Time:</strong> Typically has a right-skewed distribution (many low users, few high users). The median is more robust to outliers in skewed data.</li>
+                <li><strong>Wellbeing Scores:</strong> Usually follow a normal distribution where the mean accurately represents the central tendency.</li>
+                <li>Using distribution-appropriate measures prevents bias in our imputation.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How were participants recruited for this study?</h3>
+            <i class="fas fa-chevron-down expand-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Participants were recruited through:</p>
+              <ul>
+                <li>University participant pools</li>
+                <li>Community outreach programs in Lagos and Abuja</li>
+                <li>Online recruitment targeting diverse age groups</li>
+                <li>Stratified sampling to ensure demographic representation</li>
+              </ul>
+              <p>Inclusion criteria: 18+ years, smartphone ownership, willingness to install tracking app.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What ethical considerations were addressed in this research?</h3>
+            <i class="fas fa-chevron-down expand-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>This study followed strict ethical guidelines:</p>
+              <ul>
+                <li>Institutional Review Board (IRB) approval obtained</li>
+                <li>Informed consent from all participants</li>
+                <li>Data anonymization through participant IDs</li>
+                <li>Secure data storage with encryption</li>
+                <li>Right to withdraw at any time without penalty</li>
+                <li>Mental health resources provided for distressed participants</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How can I extend this analysis with machine learning?</h3>
+            <i class="fas fa-chevron-down expand-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>The clean dataset provides an excellent foundation for ML approaches:</p>
+              <ul>
+                <li><strong>Classification:</strong> Predict wellbeing categories (low/medium/high) from screen patterns</li>
+                <li><strong>Regression:</strong> Predict continuous wellbeing scores</li>
+                <li><strong>Clustering:</strong> Identify participant segments with similar screen time behaviors</li>
+                <li><strong>Feature Engineering:</strong> Create new features like "social media ratio" or "evening usage"</li>
+              </ul>
+              <p>We provide example Jupyter notebooks for these extensions in the research repository.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Research Data Pipeline Documentation | Version 2.1 | Last Updated: August 19, 2025</p>
+      <p>For additional support, contact: research-support@university.edu</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching functionality
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and content
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          tab.classList.add('active');
+          
+          // Show corresponding content
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+      });
+      
+      // Step accordion functionality
+      const stepHeaders = document.querySelectorAll('.step-header');
+      stepHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+          const content = header.nextElementSibling;
+          const isActive = header.classList.contains('active');
+          
+          // Close all open sections
+          stepHeaders.forEach(h => {
+            h.classList.remove('active');
+            h.nextElementSibling.classList.remove('active');
+          });
+          
+          // Open clicked section if it was closed
+          if (!isActive) {
+            header.classList.add('active');
+            content.classList.add('active');
+          }
+        });
+      });
+      
+      // FAQ accordion functionality
+      const faqQuestions = document.querySelectorAll('.faq-question');
+      faqQuestions.forEach(question => {
+        question.addEventListener('click', () => {
+          const faqItem = question.parentElement;
+          faqItem.classList.toggle('active');
+        });
+      });
+      
+      // Open first step by default
+      if (stepHeaders.length > 0) {
+        stepHeaders[0].classList.add('active');
+        stepHeaders[0].nextElementSibling.classList.add('active');
+      }
+    });
+  </script>
+</body>
+</html>
