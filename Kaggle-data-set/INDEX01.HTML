@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legacy Learning Trail | NITDA/NCAIR/ONDI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Montserrat:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --nitda-blue: #0a2e5a;
+            --nitda-gold: #d4af37;
+            --nitda-light: #e6f0fa;
+            --nitda-dark: #051a38;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--nitda-dark), #0c1e3e);
+            color: var(--nitda-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070') no-repeat center center/cover;
+            position: relative;
+        }
+        
+        .hero-overlay {
+            background: linear-gradient(120deg, rgba(5, 26, 56, 0.9) 0%, rgba(10, 46, 90, 0.85) 100%);
+        }
+        
+        .legacy-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .modern-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(10, 46, 90, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--nitda-gold);
+            border: 4px solid var(--nitda-blue);
+            z-index: 2;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--nitda-gold), #8b5cf6);
+            z-index: 1;
+        }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .floating {
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .trinity-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .trinity-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+        
+        .trinity-connector {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(to right, var(--nitda-gold), #8b5cf6);
+            transform-origin: left center;
+        }
+        
+        .hover-grow {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-grow:hover {
+            transform: scale(1.05);
+        }
+        
+        .video-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 46, 90, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+        
+        .video-container:hover .video-overlay {
+            background: rgba(10, 46, 90, 0.2);
+        }
+        
+        .play-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+            background: rgba(212, 175, 55, 1);
+        }
+        
+        .gold-border {
+            border: 2px solid var(--nitda-gold);
+        }
+        
+        .learning-card {
+            transition: all 0.4s ease;
+            perspective: 1000px;
+        }
+        
+        .learning-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .learning-card:hover .card-inner {
+            transform: rotateY(5deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .flourish {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.15);
+            z-index: 0;
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            transition: text-shadow 0.5s ease;
+        }
+        
+        .text-glow:hover {
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        
+        @media (max-width: 768px) {
+            .trinity-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .trinity-connector {
+                width: 4px;
+                height: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .timeline::before {
+                left: 28px;
+            }
+            
+            .timeline-item {
+                padding-left: 60px;
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nitda-blue': '#0a2e5a',
+                        'nitda-gold': '#d4af37',
+                        'nitda-light': '#e6f0fa',
+                        'nitda-dark': '#051a38'
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                        'modern': ['Space Grotesk', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen relative">
+    <!-- Background elements -->
+    <div class="absolute top-0 left-0 w-full h-full hero-pattern z-0"></div>
+    <div class="absolute top-20 right-20 w-64 h-64 bg-nitda-gold rounded-full mix-blend-soft-light opacity-10 floating"></div>
+    <div class="absolute bottom-10 left-10 w-40 h-40 bg-nitda-blue rounded-full mix-blend-soft-light opacity-20 floating" style="animation-delay: 2s;"></div>
+    
+    <!-- Floating decorative elements -->
+    <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 1s;"></div>
+    <div class="absolute top-1/3 right-15 w-16 h-16 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 3s;"></div>
+    <div class="absolute bottom-1/4 left-1/3 w-24 h-24 rounded-full border-2 border-nitda-gold opacity-20 floating" style="animation-delay: 0.5s;"></div>
+
+    <!-- Hero Section -->
+    <header class="hero-bg py-32 px-4 md:px-8 relative overflow-hidden">
+        <div class="hero-overlay absolute inset-0 z-0"></div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-8">
+                    <div class="inline-block bg-nitda-blue/80 px-6 py-2 rounded-full mb-6 border border-nitda-gold">
+                        <span class="text-nitda-gold modern-font uppercase tracking-widest">Eternal Legacy</span>
+                    </div>
+                    <h1 class="legacy-font text-5xl md:text-7xl font-bold mb-6 text-white">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-nitda-gold to-nitda-light">
+                            Legacy Learning Trail
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-nitda-light max-w-3xl mx-auto">
+                        Where innovation meets tradition in an eternal journey of discovery
+                    </p>
+                </div>
+                
+                <div class="w-full max-w-4xl glass-card p-8 mt-8 animate-in">
+                    <p class="text-lg md:text-xl text-center italic text-nitda-light mb-8">
+                        "Education is not preparation for life; education is life itself. Our legacy is the eternal trail we leave for others to discover."
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="#discovery" class="bg-gradient-to-r from-nitda-gold to-yellow-500 text-nitda-dark font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 hover:shadow-lg modern-font">
+                            Begin Discovery
+                        </a>
+                        <a href="#trinity" class="bg-transparent border-2 border-nitda-gold text-nitda-light font-bold py-3 px-8 rounded-full transition-all hover:bg-nitda-gold/10 modern-font">
+                            The Trinity Vision
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Legacy Showcase Section -->
+    <section id="discovery" class="py-20 px-4 md:px-8 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    Dual Legacy Showcase
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    Honoring the past, embracing the present, and building the future
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 mb-20">
+                <!-- NITDA/NCAIR Legacy -->
+                <div class="glass-card p-8 animate-in">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-nitda-gold flex items-center justify-center text-nitda-blue text-2xl mr-4">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="legacy-font text-3xl text-nitda-light">NITDA/NCAIR Legacy</h3>
+                    </div>
+                    <p class="text-nitda-light mb-6">
+                        For decades, NITDA and NCAIR have been the bedrock of technological advancement in our nation. Their unwavering commitment to innovation has paved the way for a digital revolution that continues to transform lives across every sector.
+                    </p>
+                    <div class="pl-2 border-l-2 border-nitda-gold">
+                        <p class="text-nitda-light italic">
+                            "Through visionary leadership and relentless pursuit of excellence, we have created ecosystems where innovation thrives and technology serves humanity."
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- ONDI Legacy -->
+                <div class="glass-card p-8 animate-in">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-nitda-gold flex items-center justify-center text-nitda-blue text-2xl mr-4">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="legacy-font text-3xl text-nitda-light">ONDI Legacy</h3>
+                    </div>
+                    <p class="text-nitda-light mb-6">
+                        The ONDI initiative represents the future of digital literacy, empowering generations with the skills to navigate and shape the technological landscape. Its legacy is the countless minds it has ignited with the spark of knowledge and possibility.
+                    </p>
+                    <div class="pl-2 border-l-2 border-nitda-gold">
+                        <p class="text-nitda-light italic">
+                            "Education is the most powerful catalyst for change. Our mission is to light the path for those who will build tomorrow."
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Milestone Timeline -->
+            <div class="glass-card p-8 animate-in">
+                <h3 class="legacy-font text-3xl text-center text-nitda-light mb-12">Milestone Timeline</h3>
+                
+                <div class="relative timeline pl-8">
+                    <!-- Timeline items -->
+                    <div class="timeline-item">
+                        <div class="glass-card p-6 hover-grow">
+                            <h4 class="modern-font text-xl text-nitda-gold mb-2">2001</h4>
+                            <p class="text-nitda-light">Establishment of NITDA with a mandate to develop Nigeria's IT sector</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="glass-card p-6 hover-grow">
+                            <h4 class="modern-font text-xl text-nitda-gold mb-2">2010</h4>
+                            <p class="text-nitda-light">National digital literacy initiatives launched across all states</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="glass-card p-6 hover-grow">
+                            <h4 class="modern-font text-xl text-nitda-gold mb-2">2018</h4>
+                            <p class="text-nitda-light">NCAIR established as Africa's first AI research center</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="glass-card p-6 hover-grow">
+                            <h4 class="modern-font text-xl text-nitda-gold mb-2">2020</h4>
+                            <p class="text-nitda-light">ONDI initiative launched to bridge the digital skills gap</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="glass-card p-6 hover-grow">
+                            <h4 class="modern-font text-xl text-nitda-gold mb-2">2023</h4>
+                            <p class="text-nitda-light">Legacy Learning Trail concept developed for eternal knowledge sharing</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trinity Visualization -->
+    <section id="trinity" class="py-20 px-4 md:px-8 bg-nitda-blue/20 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    The Trinity Vision
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    Where innovation, education, and legacy converge to create the future
+                </p>
+            </div>
+            
+            <div class="flex justify-center items-center trinity-container relative min-h-[500px]">
+                <!-- NITDA Circle -->
+                <div class="trinity-circle bg-nitda-blue/80 border-2 border-nitda-gold z-10 hover-grow">
+                    <div class="text-center">
+                        <div class="text-4xl text-nitda-gold mb-2">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="modern-font text-nitda-light font-bold">NITDA</h3>
+                        <p class="text-nitda-light text-sm mt-1">Technology Foundation</p>
+                    </div>
+                </div>
+                
+                <!-- Connector 1 -->
+                <div class="trinity-connector w-64 rotate-60 z-0"></div>
+                
+                <!-- NCAIR Circle -->
+                <div class="trinity-circle bg-nitda-blue/80 border-2 border-nitda-gold z-10 hover-grow">
+                    <div class="text-center">
+                        <div class="text-4xl text-nitda-gold mb-2">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="modern-font text-nitda-light font-bold">NCAIR</h3>
+                        <p class="text-nitda-light text-sm mt-1">Innovation Engine</p>
+                    </div>
+                </div>
+                
+                <!-- Connector 2 -->
+                <div class="trinity-connector w-64 rotate-120 z-0"></div>
+                
+                <!-- ONDI Circle -->
+                <div class="trinity-circle bg-nitda-blue/80 border-2 border-nitda-gold z-10 hover-grow">
+                    <div class="text-center">
+                        <div class="text-4xl text-nitda-gold mb-2">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="modern-font text-nitda-light font-bold">ONDI</h3>
+                        <p class="text-nitda-light text-sm mt-1">Knowledge Dissemination</p>
+                    </div>
+                </div>
+                
+                <!-- Connector 3 -->
+                <div class="trinity-connector w-64 rotate-180 z-0"></div>
+            </div>
+            
+            <div class="glass-card p-8 mt-16 max-w-4xl mx-auto">
+                <p class="text-center text-xl text-nitda-light italic">
+                    "The Trinity represents the inseparable bond between technological advancement, innovative research, and transformative education. Together, they form the cornerstone of our digital future."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Universal Learning Trail -->
+    <section class="py-20 px-4 md:px-8 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="legacy-font text-4xl md:text-5xl font-bold mb-4 text-white">
+                    Universal Learning Trail
+                </h2>
+                <div class="w-32 h-1 bg-nitda-gold mx-auto mb-6"></div>
+                <p class="text-xl text-nitda-light max-w-3xl mx-auto">
+                    A journey of discovery that transcends time and space
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <!-- Learning Card 1 -->
+                <div class="learning-card">
+                    <div class="card-inner">
+                        <div class="card-front glass-card p-8 h-full flex flex-col">
+                            <div class="text-5xl text-nitda-gold mb-6">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <h3 class="legacy-font text-2xl text-nitda-light mb-4">Roots of Knowledge</h3>
+                            <p class="text-nitda-light flex-grow">
+                                Explore the foundational principles that form the bedrock of technological innovation
+                            </p>
+                            <div class="mt-6 text-nitda-gold">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learning Card 2 -->
+                <div class="learning-card">
+                    <div class="card-inner">
+                        <div class="card-front glass-card p-8 h-full flex flex-col">
+                            <div class="text-5xl text-nitda-gold mb-6">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <h3 class="legacy-font text-2xl text-nitda-light mb-4">Connected Wisdom</h3>
+                            <p class="text-nitda-light flex-grow">
+                                Discover how interdisciplinary knowledge creates innovative solutions to complex problems
+                            </p>
+                            <div class="mt-6 text-nitda-gold">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learning Card 3 -->
+                <div class="learning-card">
+                    <div class="card-inner">
+                        <div class="card-front glass-card p-8 h-full flex flex-col">
+                            <div class="text-5xl text-nitda-gold mb-6">
+                                <i class="fas fa-infinity"></i>
+                            </div>
+                            <h3 class="legacy-font text-2xl text-nitda-light mb-4">Eternal Innovation</h3>
+                            <p class="text-nitda-light flex-grow">
+                                Engage with concepts that evolve and adapt, ensuring relevance across generations
+                            </p>
+                            <div class="mt-6 text-nitda-gold">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Section -->
+            <div class="glass-card overflow-hidden animate-in">
+                <div class="video-container">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=2070" alt="Visionary Learning" class="w-full h-auto">
+                    <div class="video-overlay">
+                        <div class="play-button pulse">
+                            <i class="fas fa-play text-nitda-blue text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-8">
+                    <h3 class="legacy-font text-3xl text-nitda-light mb-4">Visionary in the Video</h3>
+                    <p class="text-nitda-light mb-6">
+                        "The Legacy Learning Trail is not just an educational platform; it's a living, breathing ecosystem where knowledge transcends time. Each discovery builds upon the last, creating an eternal tapestry of human understanding."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-nitda-gold flex items-center justify-center text-nitda-blue mr-4">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4 class="modern-font text-nitda-light font-bold">Dr. Amina Suleiman</h4>
+                            <p class="text-nitda-light text-sm">Chief Visionary Officer, NCAIR</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emotional Closing -->
+    <section class="py-20 px-4 md:px-8 bg-nitda-dark relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="glass-card p-12 text-center animate-in">
+                <div class="text-5xl text-nitda-gold mb-8">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h2 class="legacy-font text-4xl text-nitda-light mb-8 text-glow">
+                    A Legacy That Echoes Through Eternity
+                </h2>
+                <p class="text-xl text-nitda-light mb-8">
+                    "In the heart of every innovation lies the soul of humanity. Our work is not measured in lines of code or technological breakthroughs, but in the lives transformed, the minds enlightened, and the futures reshaped. This is the legacy we build together - a trail of light that guides generations yet unborn toward their own greatness."
+                </p>
+                <div class="w-48 h-1 bg-nitda-gold mx-auto mb-8"></div>
+                <p class="modern-font text-nitda-light uppercase tracking-widest">
+                    The journey continues...
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-nitda-blue">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="legacy-font text-3xl text-nitda-gold mr-3">LLT</div>
+                        <div class="text-nitda-light">Legacy Learning Trail</div>
+                    </div>
+                    <div class="mt-4 text-nitda-light text-sm">
+                        An Eternal Digital Monument
+                    </div>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-nitda-light hover:text-nitda-gold transition text-2xl">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-nitda-blue mt-8 pt-8 text-center text-nitda-light text-sm">
+                <p>© 2025 NITDA/NCAIR/ONDI - This eternal legacy will continue to inspire for generations</p>
+                <p class="mt-2">"What we build today becomes the foundation of tomorrow's greatness"</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animate elements on scroll
+        gsap.utils.toArray('.animate-in').forEach(element => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+        
+        // Floating animation for decorative elements
+        gsap.to('.floating', {
+            y: 20,
+            duration: 4,
+            repeat: -1,
+            yoyo: true,
+            ease: 'power1.inOut'
+        });
+        
+        // Trinity visualization interaction
+        const trinityCircles = document.querySelectorAll('.trinity-circle');
+        trinityCircles.forEach(circle => {
+            circle.addEventListener('mouseenter', () => {
+                gsap.to(circle, {
+                    scale: 1.1,
+                    boxShadow: '0 0 30px rgba(212, 175, 55, 0.5)',
+                    duration: 0.5
+                });
+            });
+            
+            circle.addEventListener('mouseleave', () => {
+                gsap.to(circle, {
+                    scale: 1,
+                    boxShadow: '0 0 0px rgba(212, 175, 55, 0)',
+                    duration: 0.5
+                });
+            });
+        });
+        
+        // Text glow effect
+        const glowText = document.querySelector('.text-glow');
+        glowText.addEventListener('mouseenter', () => {
+            gsap.to(glowText, {
+                textShadow: '0 0 20px rgba(212, 175, 55, 0.8)',
+                duration: 0.5
+            });
+        });
+        
+        glowText.addEventListener('mouseleave', () => {
+            gsap.to(glowText, {
+                textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
+                duration: 0.5
+            });
+        });
+        
+        // Play button animation
+        const playButton = document.querySelector('.play-button');
+        playButton.addEventListener('mouseenter', () => {
+            gsap.to(playButton, {
+                scale: 1.1,
+                backgroundColor: 'rgba(212, 175, 55, 1)',
+                duration: 0.3
+            });
+        });
+        
+        playButton.addEventListener('mouseleave', () => {
+            gsap.to(playButton, {
+                scale: 1,
+                backgroundColor: 'rgba(212, 175, 55, 0.8)',
+                duration: 0.3
+            });
+        });
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate hero elements
+            gsap.from('header h1', {
+                opacity: 0,
+                y: -30,
+                duration: 1,
+                delay: 0.3
+            });
+            
+            gsap.from('header p', {
+                opacity: 0,
+                y: -20,
+                duration: 1,
+                delay: 0.6
+            });
+            
+            gsap.from('header .glass-card', {
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                delay: 0.9
+            });
+        });
+    </script>
+</body>
+</html>

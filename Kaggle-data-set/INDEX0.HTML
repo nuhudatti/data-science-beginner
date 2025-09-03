@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaggle Dataset Analysis - Legacy Assignment Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                        linear-gradient(to bottom, #0f172a, #1e293b);
+        }
+        
+        .legacy-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .step-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .code-block {
+            font-family: 'Fira Code', monospace;
+            background: #1e293b;
+            color: #f1f5f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            border: 1px solid #334155;
+        }
+        
+        .keyword {
+            color: #f472b6; /* Pink for keywords */
+        }
+        
+        .function {
+            color: #60a5fa; /* Blue for functions */
+        }
+        
+        .string {
+            color: #34d399; /* Green for strings */
+        }
+        
+        .comment {
+            color: #94a3b8; /* Gray for comments */
+        }
+        
+        .explanation-card {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 0 0 8px 8px;
+            margin-top: -8px;
+        }
+        
+        .explanation-card.open {
+            max-height: 500px;
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 4px solid var(--dark);
+        }
+        
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .package-badge {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            padding: 4px 12px;
+            margin: 0 5px 5px 0;
+            font-size: 0.85rem;
+        }
+        
+        .diagram-container {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .workflow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .workflow-step {
+            width: 18%;
+            text-align: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .workflow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -15%;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.5rem;
+        }
+        
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(37, 99, 235, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-step {
+                width: 100%;
+                margin-bottom: 30px;
+            }
+            
+            .workflow-step:not(:last-child)::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -25px;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        primaryDark: '#1d4ed8',
+                        accent: '#8b5cf6',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen">
+    <!-- Hero Section -->
+    <header class="hero-bg py-20 px-4 md:px-8 relative overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-10 left-10 w-40 h-40 rounded-full bg-purple-900 opacity-10 blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-blue-900 opacity-10 blur-3xl"></div>
+            <div class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-indigo-900 opacity-5 blur-3xl"></div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 text-center md:text-left">
+                    <h1 class="legacy-font text-4xl md:text-6xl font-bold mb-6">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            Kaggle Dataset Analysis
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-gray-300 max-w-2xl">
+                        The timeless guide to mastering data science for NITDA/NCAIR
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="#steps" class="bg-gradient-to-r from-primary to-accent text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 hover:shadow-lg">
+                            Start Learning Journey
+                        </a>
+                        <a href="#packages" class="bg-transparent border-2 border-primary text-white font-bold py-3 px-6 rounded-full transition-all hover:bg-primary/10">
+                            Required Packages
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center floating">
+                            <div class="w-56 h-56 md:w-72 md:h-72 bg-dark rounded-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-5xl text-white mb-2">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <div class="text-white uppercase tracking-widest">Data Science</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-dark text-primary py-2 px-6 rounded-full border border-primary text-sm">
+                            Legacy Learning Resource
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Assignment Definition -->
+    <section class="py-20 px-4 md:px-8" id="overview">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card p-8 mb-16 animate-in">
+                <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-6 text-center text-white">
+                    <i class="fas fa-clipboard-list mr-3"></i>
+                    Assignment Definition
+                </h2>
+                
+                <div class="mt-8 bg-gradient-to-r from-gray-800 to-gray-900 p-6 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-primary">What You're Being Asked To Do</h3>
+                    <p class="text-gray-300 mb-6">
+                        In this assignment, you'll transform raw data into valuable insights using Python. Think of it like being a detective who finds hidden patterns in numbers and facts. You'll:
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-bold text-lg text-primary mb-3 flex items-center">
+                                <i class="fas fa-search mr-2"></i>
+                                Investigate Real-World Data
+                            </h4>
+                            <p class="text-gray-300">
+                                Choose a dataset from Kaggle (a treasure trove of real-world data) about something interesting like house prices, cars, or student performance.
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-bold text-lg text-primary mb-3 flex items-center">
+                                <i class="fas fa-broom mr-2"></i>
+                                Clean and Organize
+                            </h4>
+                            <p class="text-gray-300">
+                                Prepare the data by fixing missing values, removing errors, and organizing it neatly - like preparing ingredients before cooking.
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-bold text-lg text-primary mb-3 flex items-center">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Discover Insights
+                            </h4>
+                            <p class="text-gray-300">
+                                Analyze relationships between different pieces of information. For example: "Do bigger houses cost more?" or "Does more studying lead to better grades?"
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-bold text-lg text-primary mb-3 flex items-center">
+                                <i class="fas fa-cogs mr-2"></i>
+                                Build a Prediction Model
+                            </h4>
+                            <p class="text-gray-300">
+                                Create a simple "crystal ball" that can make predictions based on patterns in the data. For example: "Based on these features, what would this house cost?"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12">
+                    <h3 class="text-xl font-bold mb-4 text-white text-center">
+                        The Complete Data Science Workflow
+                    </h3>
+                    <div class="diagram-container">
+                        <div class="workflow-diagram">
+                            <div class="workflow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <h4 class="font-bold text-white">Data Collection</h4>
+                                <p class="text-gray-400 text-sm mt-1">Gather raw information</p>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-shower"></i>
+                                </div>
+                                <h4 class="font-bold text-white">Data Cleaning</h4>
+                                <p class="text-gray-400 text-sm mt-1">Fix errors and gaps</p>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <h4 class="font-bold text-white">Exploratory Analysis</h4>
+                                <p class="text-gray-400 text-sm mt-1">Find patterns and insights</p>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <h4 class="font-bold text-white">Model Building</h4>
+                                <p class="text-gray-400 text-sm mt-1">Create prediction system</p>
+                            </div>
+                            
+                            <div class="workflow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <h4 class="font-bold text-white">Visualization</h4>
+                                <p class="text-gray-400 text-sm mt-1">Present findings clearly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Required Packages -->
+    <section class="py-20 px-4 md:px-8 bg-dark/50" id="packages">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card p-8 animate-in">
+                <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-8 text-center text-white">
+                    <i class="fas fa-box-open mr-3"></i>
+                    Required Python Packages
+                </h2>
+                
+                <p class="text-center text-gray-300 mb-10 max-w-3xl mx-auto">
+                    These are the tools you'll need to install. Think of them as specialized instruments in a scientist's toolkit, each designed for a specific task.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+                            <i class="fab fa-python text-yellow-400 mr-3"></i>
+                            Core Packages
+                        </h3>
+                        
+                        <div class="mt-6">
+                            <div class="package-badge">
+                                <span class="text-primary">pandas</span> - Data organization tool
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                The Excel of Python. It helps you store and manipulate data in tables (called DataFrames). Perfect for cleaning and organizing messy data.
+                            </p>
+                            
+                            <div class="package-badge mt-4">
+                                <span class="text-primary">numpy</span> - Number crunching powerhouse
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                The calculator for data science. Handles all mathematical operations with lightning speed. Essential for any numerical work.
+                            </p>
+                            
+                            <div class="package-badge mt-4">
+                                <span class="text-primary">matplotlib</span> - Chart creator
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                Your art set for data. Creates beautiful charts and graphs to visualize patterns in your data.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+                            <i class="fas fa-robot text-purple-400 mr-3"></i>
+                            Machine Learning Packages
+                        </h3>
+                        
+                        <div class="mt-6">
+                            <div class="package-badge">
+                                <span class="text-primary">scikit-learn</span> - AI toolbox
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                Your machine learning Swiss Army knife. Contains ready-to-use tools for building prediction models without needing a PhD.
+                            </p>
+                            
+                            <div class="package-badge mt-4">
+                                <span class="text-primary">seaborn</span> - Advanced visualization
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                Makes matplotlib even better. Creates beautiful statistical visualizations with minimal code.
+                            </p>
+                            
+                            <div class="package-badge mt-4">
+                                <span class="text-primary">jupyter</span> - Interactive notebook
+                            </div>
+                            <p class="text-gray-400 mt-3">
+                                Your digital lab notebook. Lets you write code, see results, and add notes all in one document.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-10 bg-gray-900 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-white">
+                        <i class="fas fa-terminal text-green-400 mr-2"></i>
+                        Installation Instructions
+                    </h3>
+                    
+                    <div class="code-block mt-4">
+                        <pre><code><span class="comment"># Open your command prompt or terminal</span>
+<span class="comment"># Copy and paste this command:</span>
+
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter</code></pre>
+                    </div>
+                    
+                    <div class="mt-6 bg-gray-800 rounded-lg p-4">
+                        <h4 class="font-bold text-lg text-primary mb-2">
+                            <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                            In Simple Terms
+                        </h4>
+                        <p class="text-gray-300">
+                            This command downloads and installs all the necessary tools onto your computer. It's like installing apps on your phone, but for data science!
+                        </p>
+                        <p class="text-gray-300 mt-2">
+                            <span class="text-primary font-bold">Note:</span> You only need to run this once. Make sure you have Python installed first.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step-by-Step Guide -->
+    <section class="py-20 px-4 md:px-8" id="steps">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-16 text-center text-white">
+                <i class="fas fa-road mr-3"></i>
+                Step-by-Step Guide
+            </h2>
+            
+            <div class="timeline">
+                <!-- Step 1 -->
+                <div class="timeline-item animate-in">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-4">
+                                1
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Download a Dataset from Kaggle</h3>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mt-6">
+                            <div>
+                                <h4 class="font-bold text-lg text-primary mb-3">What to Do:</h4>
+                                <ul class="space-y-2 text-gray-300">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <span>Go to <a href="https://www.kaggle.com/" class="text-primary hover:underline">kaggle.com</a> and create a free account</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <span>Search for "House Prices" or "Car Sales"</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <span>Click "Download" to get the ZIP file</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                                        <span>Extract the CSV file to a folder on your computer</span>
+                                    </li>
+                                </ul>
+                                
+                                <div class="mt-6">
+                                    <h4 class="font-bold text-lg text-primary mb-3">Recommended First Dataset:</h4>
+                                    <div class="bg-gray-900 rounded-lg p-4">
+                                        <h5 class="font-bold text-white">House Prices: Advanced Regression Techniques</h5>
+                                        <p class="text-gray-400 mt-2">This dataset contains information about house features and their prices. Perfect for learning because:</p>
+                                        <ul class="list-disc list-inside mt-2 text-gray-400">
+                                            <li>It has both numbers (size, rooms) and categories (neighborhood, style)</li>
+                                            <li>Real-world relevance - everyone understands houses</li>
+                                            <li>Clear goal: predict the sale price</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-4 flex items-center justify-center">
+                                <img src="https://i.imgur.com/5JQZ6Qe.png" alt="Kaggle Download" class="rounded max-w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="timeline-item animate-in">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-4">
+                                2
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Load and Explore the Dataset</h3>
+                        </div>
+                        
+                        <div class="code-block mt-6">
+                            <pre><code><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># Load dataset from CSV file</span>
+df = <span class="function">pd</span>.read_csv(<span class="string">'dataset/house_prices.csv'</span>)
+
+<span class="comment"># Display first 5 rows</span>
+<span class="function">print</span>(<span class="string">"First look at the data:"</span>)
+<span class="function">print</span>(<span class="function">df</span>.head())
+
+<span class="comment"># Show dataset information</span>
+<span class="function">print</span>(<span class="string">"\nData information:"</span>)
+<span class="function">print</span>(<span class="function">df</span>.info())
+
+<span class="comment"># Generate descriptive statistics</span>
+<span class="function">print</span>(<span class="string">"\nBasic statistics:"</span>)
+<span class="function">print</span>(<span class="function">df</span>.describe())</code></pre>
+                        </div>
+                        
+                        <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="2">
+                            <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                        </button>
+                        
+                        <div class="explanation-card">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                                <p class="text-gray-300">Think of this as your "first look" at the data, like unwrapping a present:</p>
+                                <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                    <li><strong>Import tools</strong> - Like getting your magnifying glass and notebook ready</li>
+                                    <li><strong>Load the data</strong> - Taking the dataset out of its box and putting it on your work table</li>
+                                    <li><strong>First look</strong> - Peeking at the first 5 rows to see what's inside</li>
+                                    <li><strong>Check information</strong> - Counting how many items you have and what type they are</li>
+                                    <li><strong>Basic statistics</strong> - Calculating averages, min, max values - the "vital signs" of your data</li>
+                                </ol>
+                                <div class="mt-4 flex items-center text-sm text-gray-400">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    This step helps you understand what you're working with before diving deeper
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="timeline-item animate-in">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-4">
+                                3
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Clean the Dataset</h3>
+                        </div>
+                        
+                        <p class="text-gray-300 mb-6">
+                            Data cleaning is like preparing ingredients before cooking. You remove bad parts and organize everything so it's ready to use.
+                        </p>
+                        
+                        <div class="grid md:grid-cols-3 gap-6 mt-6">
+                            <div class="bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg text-primary mb-3">
+                                    <i class="fas fa-question-circle mr-2"></i>
+                                    Missing Values
+                                </h4>
+                                <p class="text-gray-300">Handle empty cells in your data</p>
+                                <div class="code-block mt-3">
+                                    <pre><code><span class="comment"># Fill missing values with median</span>
+df[<span class="string">'LotFrontage'</span>].fillna(
+    df[<span class="string">'LotFrontage'</span>].median(), 
+    inplace=True
+)</code></pre>
+                                </div>
+                                <p class="text-gray-400 mt-3 text-sm">
+                                    <i class="fas fa-lightbulb text-yellow-400 mr-1"></i> 
+                                    Median is the middle value - a good replacement for missing numbers
+                                </p>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg text-primary mb-3">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    Outliers
+                                </h4>
+                                <p class="text-gray-300">Remove unrealistic values</p>
+                                <div class="code-block mt-3">
+                                    <pre><code><span class="comment"># Remove outliers using IQR method</span>
+Q1 = df[<span class="string">'SalePrice'</span>].quantile(0.25)
+Q3 = df[<span class="string">'SalePrice'</span>].quantile(0.75)
+IQR = Q3 - Q1
+df = df[~((df[<span class="string">'SalePrice'</span>] < (Q1 - 1.5 * IQR)) | 
+          (df[<span class="string">'SalePrice'</span>] > (Q3 + 1.5 * IQR))]</code></pre>
+                                </div>
+                                <p class="text-gray-400 mt-3 text-sm">
+                                    <i class="fas fa-lightbulb text-yellow-400 mr-1"></i> 
+                                    Like removing houses priced at $1 or $1 billion - obvious errors
+                                </p>
+                            </div>
+                            
+                            <div class="bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg text-primary mb-3">
+                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    Skewness
+                                </h4>
+                                <p class="text-gray-300">Fix unbalanced distributions</p>
+                                <div class="code-block mt-3">
+                                    <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Apply log transformation to skewed data</span>
+df[<span class="string">'GrLivArea'</span>] = <span class="function">np</span>.log1p(
+    df[<span class="string">'GrLivArea'</span>]
+)</code></pre>
+                                </div>
+                                <p class="text-gray-400 mt-3 text-sm">
+                                    <i class="fas fa-lightbulb text-yellow-400 mr-1"></i> 
+                                    Adjusts data that's piled up on one side to spread it out evenly
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-lg text-white mb-3">Before Cleaning</h4>
+                                <img src="https://i.imgur.com/8nBq6c1.png" alt="Before Cleaning" class="rounded-lg w-full">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-white mb-3">After Cleaning</h4>
+                                <img src="https://i.imgur.com/6TQJ9Zl.png" alt="After Cleaning" class="rounded-lg w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="timeline-item animate-in">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-4">
+                                4
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Explore Relationships</h3>
+                        </div>
+                        
+                        <p class="text-gray-300 mb-6">
+                            Now we play detective! We'll look for connections between different pieces of information.
+                        </p>
+                        
+                        <div class="code-block mt-6">
+                            <pre><code><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns
+
+<span class="comment"># Visualize relationship between house size and price</span>
+plt.figure(figsize=(10, 6))
+sns.scatterplot(
+    x=<span class="string">'GrLivArea'</span>, 
+    y=<span class="string">'SalePrice'</span>, 
+    data=df,
+    alpha=0.6
+)
+plt.title(<span class="string">'House Size vs. Price'</span>)
+plt.xlabel(<span class="string">'Living Area (sq ft)'</span>)
+plt.ylabel(<span class="string">'Sale Price ($)'</span>)
+plt.show()
+
+<span class="comment"># Calculate correlation matrix</span>
+corr_matrix = df.corr()
+plt.figure(figsize=(12, 8))
+sns.heatmap(corr_matrix, annot=True, cmap=<span class="string">'coolwarm'</span>)
+plt.title(<span class="string">'Feature Correlation Matrix'</span>)
+plt.show()</code></pre>
+                        </div>
+                        
+                        <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="4">
+                            <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                        </button>
+                        
+                        <div class="explanation-card">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                                <p class="text-gray-300">This is where we start finding interesting patterns:</p>
+                                <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                    <li><strong>Scatter plot</strong> - Creates a dot graph showing how house size relates to price (bigger dots = more expensive)</li>
+                                    <li><strong>Correlation matrix</strong> - A "relationship map" showing how all features connect to each other</li>
+                                    <li><strong>Heatmap</strong> - Color-coded grid where warm colors = strong positive relationship, cool colors = strong negative relationship</li>
+                                </ol>
+                                <div class="mt-4 flex items-center text-sm text-gray-400">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    This helps us identify which features most influence house prices
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-white mb-3">House Size vs. Price</h4>
+                                <img src="https://i.imgur.com/9zGjK7p.png" alt="Scatter plot" class="rounded-lg w-full">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-3">Feature Correlation</h4>
+                                <img src="https://i.imgur.com/kLdRfzQ.png" alt="Correlation heatmap" class="rounded-lg w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 5 -->
+                <div class="timeline-item animate-in">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold mr-4">
+                                5
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Build a Prediction Model</h3>
+                        </div>
+                        
+                        <p class="text-gray-300 mb-6">
+                            Now we'll create our "crystal ball" - a model that can predict house prices based on their features.
+                        </p>
+                        
+                        <div class="code-block mt-6">
+                            <pre><code><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split
+<span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error, r2_score
+
+<span class="comment"># Prepare data for modeling</span>
+X = df[[<span class="string">'GrLivArea'</span>, <span class="string">'BedroomAbvGr'</span>, <span class="string">'FullBath'</span>, <span class="string">'YearBuilt'</span>]]
+y = df[<span class="string">'SalePrice'</span>]
+
+<span class="comment"># Split into training and testing sets</span>
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+<span class="comment"># Create and train the model</span>
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+<span class="comment"># Make predictions</span>
+predictions = model.predict(X_test)
+
+<span class="comment"># Evaluate model performance</span>
+mse = mean_squared_error(y_test, predictions)
+r2 = r2_score(y_test, predictions)
+
+<span class="function">print</span>(<span class="string">f"Mean Squared Error: </span>{mse:.2f}<span class="string">"</span>)
+<span class="function">print</span>(<span class="string">f"R² Score: </span>{r2:.2f}<span class="string">"</span>)</code></pre>
+                        </div>
+                        
+                        <button class="explain-btn mt-4 bg-primary hover:bg-primaryDark text-white font-bold py-2 px-4 rounded transition w-full" data-step="5">
+                            <i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms
+                        </button>
+                        
+                        <div class="explanation-card">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-primary mb-2">What This Code Does:</h4>
+                                <p class="text-gray-300">This creates our prediction machine:</p>
+                                <ol class="list-decimal list-inside space-y-2 mt-2 text-gray-300">
+                                    <li><strong>Prepare data</strong> - Select features (size, bedrooms, etc.) and target (price)</li>
+                                    <li><strong>Split data</strong> - Use 80% to teach the model, 20% to test its knowledge</li>
+                                    <li><strong>Train model</strong> - The computer studies patterns in the training data</li>
+                                    <li><strong>Make predictions</strong> - The model guesses prices for the test houses</li>
+                                    <li><strong>Evaluate</strong> - We check how accurate the guesses were using two scores</li>
+                                </ol>
+                                <div class="mt-4">
+                                    <p class="text-gray-300"><span class="text-primary font-bold">MSE (Mean Squared Error)</span>: Average of the squared differences between actual and predicted prices. Lower is better.</p>
+                                    <p class="text-gray-300 mt-2"><span class="text-primary font-bold">R² Score</span>: Measures how well the model explains price variations. 1.0 is perfect, 0.7+ is good.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-white mb-3">Actual vs. Predicted Prices</h4>
+                                <img src="https://i.imgur.com/3m9w8Rl.png" alt="Actual vs Predicted" class="rounded-lg w-full">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-3">Model Performance Metrics</h4>
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div class="text-gray-300">Mean Squared Error</div>
+                                        <div class="text-xl font-bold text-red-400">1,892,347</div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="text-gray-300">R² Score</div>
+                                        <div class="text-xl font-bold text-green-400">0.76</div>
+                                    </div>
+                                    <div class="mt-6 bg-gray-900 p-3 rounded">
+                                        <p class="text-gray-400 text-sm">
+                                            <i class="fas fa-info-circle text-blue-400 mr-1"></i> 
+                                            An R² of 0.76 means our model explains 76% of price variations - a solid first model!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Submission -->
+    <section class="py-20 px-4 md:px-8 bg-dark/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-card p-8 animate-in">
+                <h2 class="legacy-font text-3xl md:text-4xl font-bold mb-8 text-center text-white">
+                    <i class="fas fa-flag-checkered mr-3"></i>
+                    Final Submission
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center mt-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Submission Requirements</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start">
+                                <i class="fas fa-folder text-primary text-xl mr-3 mt-1"></i>
+                                <span>
+                                    <strong>Project folder</strong> containing all your files
+                                    <div class="text-sm text-gray-500 mt-1">Use this structure: ProjectName/your_files</div>
+                                </span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-file-code text-primary text-xl mr-3 mt-1"></i>
+                                <span>
+                                    <strong>Python script</strong> (.py file) with all your code
+                                    <div class="text-sm text-gray-500 mt-1">Name it: analysis_script.py</div>
+                                </span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-file-alt text-primary text-xl mr-3 mt-1"></i>
+                                <span>
+                                    <strong>README.txt</strong> explaining your work
+                                    <div class="text-sm text-gray-500 mt-1">Include dataset info and key findings</div>
+                                </span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-database text-primary text-xl mr-3 mt-1"></i>
+                                <span>
+                                    <strong>Dataset folder</strong> with your CSV file
+                                    <div class="text-sm text-gray-500 mt-1">Name it: dataset/your_data.csv</div>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-900 rounded-xl p-6">
+                        <div class="font-mono text-gray-300">
+                            <div class="text-green-400">House_Price_Analysis/</div>
+                            <div class="ml-4">
+                                <div class="text-blue-400">├── analysis_script.py</div>
+                                <div class="text-blue-400">├── README.txt</div>
+                                <div class="text-blue-400">├── visualizations/</div>
+                                <div class="ml-8 text-yellow-400">├── price_vs_size.png</div>
+                                <div class="ml-8 text-yellow-400">└── correlation.png</div>
+                                <div class="text-blue-400">└── dataset/</div>
+                                <div class="ml-8 text-yellow-400">└── house_prices.csv</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-bold text-lg text-white mb-3">Sample README.txt:</h4>
+                            <div class="bg-gray-800 p-4 rounded-lg text-gray-300 text-sm">
+                                <p class="font-bold">House Price Prediction Analysis</p>
+                                <p class="mt-2"><span class="text-primary">Dataset:</span> House Prices from Kaggle</p>
+                                <p><span class="text-primary">Goal:</span> Predict house prices using key features</p>
+                                <p class="mt-3"><span class="text-primary">Key Steps:</span></p>
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>Loaded and explored 1,460 house records</li>
+                                    <li>Cleaned data by handling missing values and outliers</li>
+                                    <li>Discovered that living area has the strongest impact on price</li>
+                                    <li>Trained a Linear Regression model</li>
+                                    <li>Achieved 76% accuracy in price prediction</li>
+                                </ul>
+                                <p class="mt-3"><span class="text-primary">Author:</span> Your Name</p>
+                                <p><span class="text-primary">Date:</span> August 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-16 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-6">Congratulations on Completing Your Analysis!</h3>
+                    <div class="max-w-2xl mx-auto bg-gradient-to-r from-primary/20 to-accent/20 p-6 rounded-xl">
+                        <p class="text-gray-300 italic">
+                            "You've transformed raw data into meaningful insights. This is the essence of data science - turning numbers into knowledge that can inform decisions and create value."
+                        </p>
+                        <p class="mt-4 text-gray-400">- NITDA/NCAIR Learning Philosophy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="legacy-font text-3xl text-primary mr-3">NCAIR</div>
+                        <div class="text-gray-400">National Centre for AI and Robotics</div>
+                    </div>
+                    <div class="mt-4 text-gray-500 text-sm">
+                        Building Nigeria's AI Future, One Student at a Time
+                    </div>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-twitter text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2023 NITDA/NCAIR - This legacy resource will continue to guide students for generations</p>
+                <p class="mt-2">"The best way to predict the future is to create it." - Peter Drucker</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize animations when elements come into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.animate-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Explanation toggle functionality
+        document.querySelectorAll('.explain-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const explanation = btn.nextElementSibling;
+                explanation.classList.toggle('open');
+                
+                // Change button icon
+                const icon = btn.querySelector('i');
+                if (explanation.classList.contains('open')) {
+                    icon.classList.remove('fa-lightbulb');
+                    icon.classList.add('fa-times');
+                    btn.innerHTML = '<i class="fas fa-times mr-2"></i>Close Explanation';
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-lightbulb');
+                    btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i>Explain This Code in Simple Terms';
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
